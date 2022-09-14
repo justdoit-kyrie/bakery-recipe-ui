@@ -1,21 +1,17 @@
 import { Button, Text, useColorMode } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { InputField } from '~/components/Form-field';
 import { EyesClose, EyesOpen } from '~/components/Icons';
-import { COLOR_MODE_TYPE, EMAIL_REGEX, PASSWORD_REGEX_FULL } from '~/constants';
+import { COLOR_MODE_TYPE, PASSWORD_REGEX_FULL } from '~/constants';
 
 const schema = yup
   .object({
-    email: yup
-      .string()
-      .required('Email is a required field')
-      .matches(EMAIL_REGEX, 'Enter a valid email address'),
+    username: yup.string().required('Username is a required field'),
     password: yup
       .string()
       .required('Password is a required field')
@@ -27,7 +23,7 @@ const schema = yup
   .required();
 
 const defaultValues = {
-  email: '',
+  username: '',
   password: '',
 };
 
@@ -66,8 +62,8 @@ const FormLogin = ({ initialRef }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <InputField
         initialRef={initialRef}
-        name="email"
-        placeholder="Email"
+        name="username"
+        placeholder="User name"
         control={control}
         errors={errors}
       />
