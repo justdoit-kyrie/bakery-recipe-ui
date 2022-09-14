@@ -1,0 +1,19 @@
+{
+  "header": {
+    "action": {
+      "btn-1": "Upload",
+      "btn-2": "Log in",
+      "menu": {
+        "item-1": "Language",
+        "item-2": {
+          "label": "Theme mode",
+          "children": ["Dark", "Light"]
+        },
+        "item-3": "Keyboard shortcuts"
+      }
+    },
+    "search": {
+      "placeholder": "Search accounts and posts"
+    }
+  }
+}

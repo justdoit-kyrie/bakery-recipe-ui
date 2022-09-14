@@ -1,0 +1,19 @@
+{
+  "header": {
+    "action": {
+      "btn-1": "Tải lên",
+      "btn-2": "Đăng nhập",
+      "menu": {
+        "item-1": "Ngôn ngữ",
+        "item-2": {
+          "label": "Chủ đề",
+          "children": ["Tối", "Sáng"]
+        },
+        "item-3": "Phím tắt trên bàn phím"
+      }
+    },
+    "search": {
+      "placeholder": "Tìm kiếm tài khoản và bài viết"
+    }
+  }
+}
