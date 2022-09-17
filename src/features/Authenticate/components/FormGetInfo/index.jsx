@@ -16,7 +16,7 @@ const defaultValues = {
   username: '',
 };
 
-const FormGetInfo = ({ initialRef }) => {
+const FormGetInfo = ({ initialRef, handleCloseModal }) => {
   const {
     control,
     handleSubmit,
@@ -28,7 +28,15 @@ const FormGetInfo = ({ initialRef }) => {
   });
 
   const onSubmit = (data) => {
+    // call API & set userInfo into redux
     console.log({ data });
+    handleActions();
+    if (typeof handleCloseModal === 'function') handleCloseModal();
+  };
+
+  const handleActions = () => {
+    console.log('inside handle actions');
+    // set userInfo into redux
   };
 
   return (
@@ -50,9 +58,23 @@ const FormGetInfo = ({ initialRef }) => {
         type="submit"
         size="lg"
         mt="2.1rem"
+        w="100%"
         variant={!isValid ? 'disabled' : 'primary'}
       >
         Sign up
+      </Button>
+
+      <Button
+        size="lg"
+        variant="default"
+        mt="1rem"
+        w="100%"
+        onClick={() => {
+          handleActions();
+          handleCloseModal();
+        }}
+      >
+        Skip
       </Button>
     </form>
   );

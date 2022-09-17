@@ -1,72 +1,28 @@
-/* eslint-disable no-unused-vars */
 import { Box, Text, useColorMode } from '@chakra-ui/react';
 import Tippy from '@tippyjs/react/headless';
-import _ from 'lodash';
 import React, { useState } from 'react';
 import { withTranslation } from 'react-i18next';
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import { FaRegKeyboard } from 'react-icons/fa';
 import { HiOutlineChevronLeft } from 'react-icons/hi';
-import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
-import { VscColorMode } from 'react-icons/vsc';
-import i18n from '~/app/i18n';
 
 import { CustomButton, PopperWrapper } from '~/components';
 import { COLOR_MODE_TYPE, LANGUAGES } from '~/constants';
 
-const MOCK_DATA = (t) => [
-  {
-    icon: MdLanguage,
-    label: 'Language',
-    children: {
-      label: t('header.action.menu.item-1'),
-      data: [
-        {
-          type: LANGUAGES.code,
-          value: LANGUAGES.English,
-          label: 'English',
-        },
-        {
-          type: LANGUAGES.code,
-          value: LANGUAGES['Tiếng Việt (Việt Nam)'],
-          label: 'Tiếng Việt (Việt Nam)',
-        },
-      ],
-    },
-  },
-  {
-    icon: VscColorMode,
-    label: t('header.action.menu.item-2.label'),
-    children: {
-      label: t('header.action.menu.item-2.label'),
-      data: [
-        {
-          type: COLOR_MODE_TYPE.code,
-          value: COLOR_MODE_TYPE.dark,
-          icon: MdDarkMode,
-          label: t('header.action.menu.item-2.children.0'),
-        },
-        {
-          type: COLOR_MODE_TYPE.code,
-          value: COLOR_MODE_TYPE.light,
-          icon: MdLightMode,
-          label: t('header.action.menu.item-2.children.1'),
-        },
-      ],
-    },
-  },
-  {
-    to: '*',
-    icon: FaRegKeyboard,
-    label: t('header.action.menu.item-3'),
-  },
-];
+/**
+ * component PopperMenu
+ * @param {i18next-react} t translate
+ * @param {React.Component} children
+ * @param {[]} data data of dropdown popper
+ * @param {function} renderCustomContent opposite prop data -> render content not base on props data
+ * @param {any} passProps remaining tippy props
+ * @param {i18next-react} tReady not used because have props passProps
+x * @returns
+ */
 
-const PopperMenu = ({ t }) => {
+// eslint-disable-next-line no-unused-vars
+const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...passProps }) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const [language, setLanguage] = useState(i18n.language);
-  const [historyList, setHistoryList] = useState([{ data: MOCK_DATA(t) }]);
+  const [historyList, setHistoryList] = useState([{ data }]);
   const currentMenu = historyList[historyList.length - 1];
 
   const handleChangeStepMenu = (item) => {
@@ -113,7 +69,7 @@ const PopperMenu = ({ t }) => {
               case LANGUAGES.code:
                 {
                   i18n.changeLanguage(item.value);
-                  setLanguage(item.value);
+                  window.location.reload();
                 }
                 break;
             }
@@ -131,51 +87,54 @@ const PopperMenu = ({ t }) => {
       render={(attrs) => (
         <div className="box" tabIndex="-1" {...attrs}>
           <PopperWrapper>
-            <>
-              {historyList.length > 1 && (
-                <Box
-                  minH="5rem"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  position="relative"
-                  w="100%"
-                  fontSize="1.6rem"
-                  mt="-8px"
-                >
-                  <Text
-                    as="span"
-                    position="absolute"
-                    top="50%"
-                    transform="translateY(-50%)"
-                    left="2rem"
-                    fontSize="2.5rem"
-                    cursor="pointer"
-                    onClick={handleBack}
+            {typeof renderCustomContent === 'function' ? (
+              renderCustomContent()
+            ) : (
+              <>
+                {historyList.length > 1 && (
+                  <Box
+                    minH="5rem"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    position="relative"
+                    w="100%"
+                    fontSize="1.6rem"
+                    mt="-8px"
                   >
-                    <HiOutlineChevronLeft />
-                  </Text>
-                  <Text className="text">{currentMenu.label}</Text>
-                </Box>
-              )}
+                    <Text
+                      as="span"
+                      position="absolute"
+                      top="50%"
+                      transform="translateY(-50%)"
+                      left="2rem"
+                      fontSize="2.5rem"
+                      cursor="pointer"
+                      onClick={handleBack}
+                    >
+                      <HiOutlineChevronLeft />
+                    </Text>
+                    <Text className="text">{currentMenu.label}</Text>
+                  </Box>
+                )}
 
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-              >
-                {renderContent()}
-              </Box>
-            </>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-start"
+                  alignItems="flex-start"
+                >
+                  {renderContent()}
+                </Box>
+              </>
+            )}
           </PopperWrapper>
         </div>
       )}
       onHide={() => setHistoryList((prev) => prev.slice(0, 1))}
+      {...passProps}
     >
-      <Box fontSize="2rem" p="0 1rem" cursor="pointer">
-        <BsThreeDotsVertical />
-      </Box>
+      {children}
     </Tippy>
   );
 };

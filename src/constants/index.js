@@ -6,7 +6,7 @@ export const ROUTES_TYPE = {
 
 export const ROUTES_PATH = {
   home: '/',
-  profile: '/profile/:id',
+  profile: '/profile/@:id',
 };
 //#endregion
 
@@ -72,3 +72,5 @@ export const DOB_MONTH = [
 ];
 export const DOB_YEAR = [1900, new Date().getFullYear() - 1];
 //#endregion
+
+export const CODE_GMAIL_LENGTH = 6;

@@ -16,14 +16,13 @@ const publicRoutes = [
     component: HomePage,
     layout: HeaderOnlyLayout,
   },
-];
-
-const privateRoutes = [
   {
-    type: ROUTES_TYPE.private,
+    type: ROUTES_TYPE.public,
     path: ROUTES_PATH.profile,
     component: ProfilePage,
     layout: HeaderOnlyLayout,
   },
 ];
+
+const privateRoutes = [];
 export const totalRoutes = [...privateRoutes, ...publicRoutes];

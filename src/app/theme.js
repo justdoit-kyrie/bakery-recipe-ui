@@ -15,6 +15,7 @@ export const theme = extendTheme({
     },
     textColor: {
       200: 'rgba(22, 24, 35, 0.5)',
+      300: 'rgba(22, 24, 35, 0.75)',
       400: 'rgba(22, 24, 35, 1.0)',
     },
     darkTextColor: {
@@ -55,7 +56,7 @@ export const theme = extendTheme({
         WebkitFontSmoothing: 'antialiased',
       },
       'input, button, textArea, select': {
-        fontFamily: 'ProximaNova, Arial, Tahoma, PingFangSC, sans-serif',
+        fontFamily: 'ProximaNova',
       },
       img: {
         maxW: '100%',
@@ -93,13 +94,15 @@ export const theme = extendTheme({
         fontWeight: '600',
         lineHeight: '22px',
       },
+      '.secondary-font': {
+        fontFamily: 'SofiaPro',
+      },
     }),
   },
   components: {
     Button: {
       // 1. We can update the base styles
       baseStyle: {
-        width: '100%',
         lineHeight: '22px',
         fontWeight: 700,
         borderRadius: '4px',
@@ -136,6 +139,11 @@ export const theme = extendTheme({
         primary: {
           bg: 'red.400',
           color: 'white',
+        },
+
+        'default-primary': {
+          bg: 'rgba(22, 24, 35, 0.06)',
+          color: 'textColor.400',
         },
 
         disabled: {

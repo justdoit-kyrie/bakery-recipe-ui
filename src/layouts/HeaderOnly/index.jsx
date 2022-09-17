@@ -1,4 +1,4 @@
-import { Box, useColorMode } from '@chakra-ui/react';
+import { Box, Flex, useColorMode } from '@chakra-ui/react';
 import React from 'react';
 import { Header } from '~/components';
 import { COLOR_MODE_TYPE } from '~/constants';
@@ -8,7 +8,7 @@ const HeaderOnlyLayout = ({ children }) => {
 
   return (
     <Box w="100vw" h="100vh" bg={colorMode === COLOR_MODE_TYPE.dark && 'gray.800'}>
-      <Box className="wrapper" h="100%">
+      <Flex direction="column" className="wrapper" h="100%">
         {/* header */}
         <Box
           boxShadow={`0px 1px 1px ${
@@ -19,8 +19,10 @@ const HeaderOnlyLayout = ({ children }) => {
         </Box>
 
         {/* content */}
-        <Box mt="2rem">{children}</Box>
-      </Box>
+        <Box mt="2rem" flex="1">
+          {children}
+        </Box>
+      </Flex>
     </Box>
   );
 };

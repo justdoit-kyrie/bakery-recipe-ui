@@ -1,10 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import React from 'react';
 import { RotatingTriangles } from 'react-loader-spinner';
 
-const Loading = () => {
+const Loading = ({ label, h = 80, w = 80, ...passProps }) => {
   return (
     <Box
+      {...passProps}
       w="100%"
       h="100%"
       bg="rgba(0,0,0,0.2)"
@@ -15,16 +16,22 @@ const Loading = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      flexDirection="column"
       zIndex={999}
     >
       <RotatingTriangles
         visible={true}
-        height="80"
-        width="80"
+        height={h}
+        width={w}
         ariaLabel="rotating-triangels-loading"
         wrapperStyle={{}}
         wrapperClass="rotating-triangels-wrapper"
       />
+      {label && (
+        <Text className="text" color="white">
+          {label}
+        </Text>
+      )}
     </Box>
   );
 };

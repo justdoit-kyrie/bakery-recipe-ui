@@ -19,7 +19,7 @@
     "i18next": "^21.9.1",
     "i18next-browser-languagedetector": "^6.1.5",
     "lodash": "^4.17.21",
-    "momment": "0.0.1",
+    "moment": "^2.29.4",
     "normalize.css": "^8.0.1",
     "primeicons": "^5.0.0",
     "primereact": "^8.5.0",

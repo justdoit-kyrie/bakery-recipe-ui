@@ -1,12 +1,15 @@
+import { useDisclosure } from '@chakra-ui/react';
 import { AnimatePresence } from 'framer-motion';
 import React, { Fragment } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { ModalContext } from './app/context';
 import { totalRoutes } from './app/routes';
 import { PrivateRoute } from './components';
 import { ROUTES_TYPE } from './constants';
 import { DefaultLayout } from './layouts';
 
 function App() {
+  const { onOpen, isOpen, onClose } = useDisclosure();
   const location = useLocation();
 
   const renderRoute = () =>
@@ -34,11 +37,13 @@ function App() {
     });
 
   return (
-    <AnimatePresence exitBeforeEnter>
-      <Routes location={location} key={location.pathname}>
-        {renderRoute()}
-      </Routes>
-    </AnimatePresence>
+    <ModalContext.Provider value={{ onOpen, isOpen, onClose }}>
+      <AnimatePresence exitBeforeEnter>
+        <Routes location={location} key={location.pathname}>
+          {renderRoute()}
+        </Routes>
+      </AnimatePresence>
+    </ModalContext.Provider>
   );
 }
 

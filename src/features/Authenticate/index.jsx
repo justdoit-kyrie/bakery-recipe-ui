@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,7 +15,7 @@ import { motion } from 'framer-motion';
 import React, { useRef, useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'react-toastify';
-import Firebase from '~/app/firebase';
+import firebase from '~/app/firebase';
 import { Loading } from '~/components';
 import { FacebookLogo } from '~/components/Icons';
 import {
@@ -51,12 +50,11 @@ const AuthenticateModal = ({ isOpen, onClose }) => {
       case AUTHENTICATE_FORM_TYPE.register:
         return <FormRegister initialRef={initialRef} setType={setType} />;
       default:
-        return <FormGetInfo initialRef={initialRef} />;
+        return <FormGetInfo initialRef={initialRef} handleCloseModal={onClose} />;
     }
   };
 
   const handleOthersLogin = (provider) => {
-    const firebase = new Firebase();
     let AuthProvider = GoogleAuthProvider;
     switch (provider) {
       case OTHERS_LOGIN.facebook:
@@ -81,6 +79,7 @@ const AuthenticateModal = ({ isOpen, onClose }) => {
       })
       .finally(() => {
         setLoading(false);
+        onClose();
       });
   };
 
@@ -190,12 +189,6 @@ const AuthenticateModal = ({ isOpen, onClose }) => {
 
               {renderOthersLogin()}
             </>
-          )}
-
-          {type === AUTHENTICATE_FORM_TYPE.getInfo && (
-            <Button size="lg" variant="default" mt="1rem" onClick={onClose}>
-              Skip
-            </Button>
           )}
         </ModalBody>
 

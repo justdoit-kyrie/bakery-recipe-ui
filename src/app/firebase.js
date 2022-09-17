@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -14,7 +15,7 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-export default class Firebase {
+class Firebase {
   constructor() {
     // Initialize Firebase
     this.app = initializeApp(firebaseConfig);
@@ -25,4 +26,11 @@ export default class Firebase {
     auth.languageCode = 'it';
     return auth;
   }
+
+  getStorage() {
+    const storage = getStorage();
+    return storage;
+  }
 }
+
+export default new Firebase();

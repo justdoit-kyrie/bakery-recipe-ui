@@ -13,14 +13,31 @@ import React, { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { COLOR_MODE_TYPE } from '~/constants';
 
+/**
+ * component InputField
+ * @param {ref} initialRef auto focus input
+ * @param {string} label label display, if not pass can get name for display
+ * @param {boolean} showLabel label display or not
+ * @param {string} placeholder
+ * @param {boolean} showError error message display or not
+ * @param {string (css code)} errorBorderColor combine with prop showError, handle delete color red of border when inputField error
+ * @param {object} leftIcon in this object have field required icon, remaining is style of icon (width, heigh, ...)[chakra UI rule props components]
+ * @param {object} rightIcon in this object have field required icon, remaining is style of icon (width, heigh, ...)[chakra UI rule props components]
+ * @param {function} onBlur custom blur instead of default onBlur of react-hook-form lib
+ * @param {any} passProps remaining style of input (width, heigh, ...)[chakra UI rule props components]
+ * @returns
+ */
+
 const InputField = ({
   initialRef,
   name,
   label = name,
+  showLabel = true,
   control,
   placeholder,
   errors,
   showError = true,
+  errorBorderColor,
   formHelperText,
   setIsFocus = () => {},
   leftIcon: { icon: leftIcon, w: leftIconW, h: leftIconH, ...leftIconPassProps } = {},
@@ -35,7 +52,6 @@ const InputField = ({
   const LeftIcon = leftIcon;
 
   useEffect(() => {
-    console.log('inside use Effect');
     if (isError) {
       setIsFocus(true);
     } else {
@@ -50,10 +66,12 @@ const InputField = ({
       render={({ field }) => {
         const { onBlur } = field;
         return (
-          <FormControl mt={4} isInvalid={isError}>
-            <FormLabel fontSize="1.5rem" fontWeight={600} textTransform="capitalize">
-              {label}
-            </FormLabel>
+          <FormControl mt={showLabel ? 4 : 0} isInvalid={isError}>
+            {showLabel && (
+              <FormLabel fontSize="1.5rem" fontWeight={600} textTransform="capitalize">
+                {label}
+              </FormLabel>
+            )}
 
             <InputGroup>
               {LeftIcon && (
@@ -79,7 +97,10 @@ const InputField = ({
                 lineHeight="100%"
                 placeholder={placeholder}
                 focusBorderColor="none"
-                errorBorderColor="rgb(255, 76, 58)"
+                errorBorderColor={
+                  !showError && errorBorderColor ? errorBorderColor : 'rgb(255, 76, 58)'
+                }
+                _hover={{}}
                 sx={{
                   caretColor: 'rgba(254, 44, 85, 1.0)',
                   '&[aria-invalid=true],&[data-invalid]': {

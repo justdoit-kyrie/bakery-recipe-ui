@@ -5,7 +5,9 @@ const baseConfig = {
   storage,
   recoiler: autoMergeLevel2,
 };
-export const counterConfig = {
+
+export const authConfig = {
   ...baseConfig,
-  key: 'root',
+  key: 'auth',
+  whitelist: ['accessToken', 'refreshToken'],
 };

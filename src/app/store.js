@@ -10,17 +10,15 @@ import {
   REHYDRATE,
 } from 'redux-persist';
 
-import counterReducer from '../features/counter/counterSlice';
-import { counterConfig } from './configs';
+import authReducer from '~/features/Authenticate/authSlice';
+import { authConfig } from './configs';
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
+  auth: persistReducer(authConfig, authReducer),
 });
 
-const persistedReducer = persistReducer(counterConfig, rootReducer);
-
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
