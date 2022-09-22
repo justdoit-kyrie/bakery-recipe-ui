@@ -7,6 +7,8 @@ export const ROUTES_TYPE = {
 export const ROUTES_PATH = {
   home: '/',
   profile: '/profile/@:id',
+  postDetail: '/post/@:id',
+  upload: '/upload',
 };
 //#endregion
 
@@ -14,7 +16,8 @@ export const ROUTES_PATH = {
 export const AUTHENTICATE_FORM_TYPE = {
   login: 'login',
   register: 'register',
-  getInfo: 'getInfo',
+  getInfo: 'get_info',
+  forgotPassword: 'forgot_password',
 };
 
 export const OTHERS_LOGIN = {
@@ -74,3 +77,14 @@ export const DOB_YEAR = [1900, new Date().getFullYear() - 1];
 //#endregion
 
 export const CODE_GMAIL_LENGTH = 6;
+
+export const CONTENT_POST_LENGTH = 250;
+
+export const IMAGE_TYPES = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/tiff'];
+
+export const FIREBASE_ERR_CODE = {
+  storage: {
+    objectNotFound: 'storage/object-not-found',
+    userCanceled: 'storage/canceled',
+  },
+};

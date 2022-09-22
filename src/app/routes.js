@@ -1,6 +1,6 @@
 import { ROUTES_PATH, ROUTES_TYPE } from '~/constants';
-import { HomePage, ProfilePage } from '~/features';
-import { HeaderOnlyLayout } from '~/layouts';
+import { HomePage, PostDetailPage, ProfilePage, UploadPage } from '~/features';
+import { DefaultLayout, HeaderOnlyLayout } from '~/layouts';
 
 /**
  * @param {string} type để phân loại public với private
@@ -14,12 +14,24 @@ const publicRoutes = [
     type: ROUTES_TYPE.public,
     path: ROUTES_PATH.home,
     component: HomePage,
-    layout: HeaderOnlyLayout,
+    layout: DefaultLayout,
   },
   {
     type: ROUTES_TYPE.public,
     path: ROUTES_PATH.profile,
     component: ProfilePage,
+    layout: HeaderOnlyLayout,
+  },
+  {
+    type: ROUTES_TYPE.public,
+    path: ROUTES_PATH.upload,
+    component: UploadPage,
+    layout: HeaderOnlyLayout,
+  },
+  {
+    type: ROUTES_TYPE.public,
+    path: ROUTES_PATH.postDetail,
+    component: PostDetailPage,
     layout: HeaderOnlyLayout,
   },
 ];

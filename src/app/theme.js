@@ -26,9 +26,13 @@ export const theme = extendTheme({
       300: 'rgb(255, 76, 58)',
       400: 'rgb(254, 44, 85)',
       500: 'rgba(254, 44, 85, 1.0)',
+      600: 'rgba(227,90,67, 1)',
     },
     green: {
       400: 'rgb(11, 224, 155)',
+    },
+    yellow: {
+      400: 'rgba(245,206,90, 1)',
     },
   },
   styles: {
@@ -61,6 +65,7 @@ export const theme = extendTheme({
       img: {
         maxW: '100%',
         display: 'block',
+        objectFit: 'cover',
       },
       a: {
         color: 'text.400',
@@ -78,6 +83,7 @@ export const theme = extendTheme({
         borderRadius: 0,
         backgroundColor: 'rgba(0, 0, 0, 0)',
       },
+
       // structure
       '.wrapper': {
         maxW: '1920px',
@@ -85,6 +91,11 @@ export const theme = extendTheme({
       },
       '.container': {
         maxW: 'calc(1300px + 30px)',
+        p: '0 15px',
+        m: '0 auto',
+      },
+      '.lg-container': {
+        maxW: 'calc(1670px + 30px)',
         p: '0 15px',
         m: '0 auto',
       },

@@ -7,15 +7,15 @@ export const Wrapper = styled.div`
     width: 100%;
     min-height: 4.4rem;
     background-color: rgba(22, 24, 35, 0.06);
-    border: 1px solid rgba(22, 24, 35, 0.12);
+    border: 1px solid ${(props) => (props.isError ? 'rgb(255, 76, 58)' : 'rgba(22, 24, 35, 0.12)')};
 
     &:not(.p-disabled).p-focus {
       box-shadow: none;
-      border-color: rgba(22, 24, 35, 0.12);
+      border-color: ${(props) => (props.isError ? 'rgb(255, 76, 58)' : 'rgba(22, 24, 35, 0.12)')};
     }
 
     &:not(.p-disabled):hover {
-      border-color: rgba(22, 24, 35, 0.12);
+      border-color: ${(props) => (props.isError ? 'rgb(255, 76, 58)' : 'rgba(22, 24, 35, 0.12)')};
     }
 
     .p-dropdown-label {

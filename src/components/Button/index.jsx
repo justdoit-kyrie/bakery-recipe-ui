@@ -8,8 +8,8 @@ const CustomButton = ({
   href,
   label,
   target,
-  leftIcon: { icon: leftIcon, ...leftIconPassProps } = {},
-  rightIcon: { icon: rightIcon, ...rightIconPassProps } = {},
+  leftIcon: { icon: leftIcon, ...leftIconPassProps },
+  rightIcon: { icon: rightIcon, ...rightIconPassProps },
   ...Props
 }) => {
   const LeftIcon = leftIcon;
@@ -39,6 +39,11 @@ const CustomButton = ({
       </Text>
     </Comp>
   );
+};
+
+CustomButton.defaultProps = {
+  leftIcon: {},
+  rightIcon: {},
 };
 
 export default CustomButton;

@@ -93,3 +93,17 @@ export const BellIcon = ({ width = 70, height = 70 }) => (
     <path d="M49.6956 31.2955H21.7368C20.8926 31.2955 20.2112 30.6141 20.2112 29.7699C20.2112 28.9258 20.8926 28.2443 21.7368 28.2443H49.6956C50.5398 28.2443 51.2212 28.9258 51.2212 29.7699C51.2212 30.6141 50.5398 31.2955 49.6956 31.2955Z"></path>
   </svg>
 );
+
+export const UndoIcon = () => (
+  <svg viewBox="0 0 18 18">
+    <polygon className="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10" />
+    <path className="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9" />
+  </svg>
+);
+
+export const RedoIcon = () => (
+  <svg viewBox="0 0 18 18">
+    <polygon className="ql-fill ql-stroke" points="12 10 14 12 16 10 12 10" />
+    <path className="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5" />
+  </svg>
+);

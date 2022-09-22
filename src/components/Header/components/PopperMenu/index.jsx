@@ -1,6 +1,6 @@
 import { Box, Text, useColorMode } from '@chakra-ui/react';
 import Tippy from '@tippyjs/react/headless';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { HiOutlineChevronLeft } from 'react-icons/hi';
 
@@ -24,6 +24,8 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
 
   const [historyList, setHistoryList] = useState([{ data }]);
   const currentMenu = historyList[historyList.length - 1];
+
+  useEffect(() => setHistoryList([{ data }]), [data]);
 
   const handleChangeStepMenu = (item) => {
     if (item.children) {

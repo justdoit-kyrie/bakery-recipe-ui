@@ -3,14 +3,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
-import { Loading } from '~/components';
 import { InputField } from '~/components/Form-field';
 import { EyesClose, EyesOpen } from '~/components/Icons';
-import { COLOR_MODE_TYPE, PASSWORD_REGEX_FULL } from '~/constants';
-import { login, selectAuth, setLoading } from '../../authSlice';
+import { AUTHENTICATE_FORM_TYPE, COLOR_MODE_TYPE, PASSWORD_REGEX_FULL } from '~/constants';
+import { login } from '../../authSlice';
 
 const schema = yup
   .object({
@@ -30,7 +28,7 @@ const defaultValues = {
   password: '',
 };
 
-const FormLogin = ({ initialRef }) => {
+const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, setIsLevel }) => {
   const {
     control,
     handleSubmit,
@@ -46,15 +44,16 @@ const FormLogin = ({ initialRef }) => {
 
   const { colorMode } = useColorMode();
   const dispatch = useDispatch();
-  const { loading } = useSelector(selectAuth);
   const [pwdType, setPwdType] = useState(true);
 
   const onSubmit = (data) => {
     // call api
-    dispatch(setLoading());
+    setLoading(true);
     console.log({ data });
     setTimeout(() => {
       dispatch(login({ userInfo: { ...data }, accessToken: 1, refreshToken: 2 }));
+      handleCloseModal();
+      setLoading(false);
     }, 1000);
   };
 
@@ -69,8 +68,6 @@ const FormLogin = ({ initialRef }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {loading && <Loading />}
-
       <InputField
         initialRef={initialRef}
         name="username"
@@ -95,17 +92,20 @@ const FormLogin = ({ initialRef }) => {
         }}
       />
 
-      <Link to="*">
-        <Text
-          fontWeight="600"
-          fontSize="1.2rem"
-          mt="9px"
-          _hover={{ textDecoration: 'underline' }}
-          display="inline-block"
-        >
-          Forgot password?
-        </Text>
-      </Link>
+      <Text
+        fontWeight="600"
+        fontSize="1.2rem"
+        mt="9px"
+        display="inline-block"
+        cursor="pointer"
+        _hover={{ textDecoration: 'underline' }}
+        onClick={() => {
+          setIsLevel(true);
+          setHistoryForm((prev) => [...prev, AUTHENTICATE_FORM_TYPE.forgotPassword]);
+        }}
+      >
+        Forgot password?
+      </Text>
       <Button
         as={motion.button}
         whileHover={{ scale: 1.03 }}
@@ -120,6 +120,13 @@ const FormLogin = ({ initialRef }) => {
       </Button>
     </form>
   );
+};
+
+FormLogin.defaultProps = {
+  handleCloseModal: () => {},
+  setLoading: () => {},
+  setHistoryForm: () => {},
+  setIsLevel: () => {},
 };
 
 export default FormLogin;

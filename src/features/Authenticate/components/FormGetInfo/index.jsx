@@ -80,4 +80,8 @@ const FormGetInfo = ({ initialRef, handleCloseModal }) => {
   );
 };
 
+FormGetInfo.defaultProps = {
+  handleCloseModal: () => {},
+};
+
 export default FormGetInfo;

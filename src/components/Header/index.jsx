@@ -10,7 +10,7 @@ import { IoLogOutOutline } from 'react-icons/io5';
 import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
 import { VscColorMode } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ModalContext } from '~/app/context';
 import i18n from '~/app/i18n';
 
@@ -71,7 +71,7 @@ const MOCK_DATA = (t) => ({
   ],
   private: [
     {
-      to: '/profile/123',
+      to: '/profile/@123',
       icon: AiOutlineUser,
       label: 'View profile',
     },
@@ -131,6 +131,7 @@ const MOCK_DATA = (t) => ({
 const Header = ({ t }) => {
   const { onOpen, isOpen, onClose } = useContext(ModalContext);
   const userInfo = useSelector(selectUserInfo);
+  const { pathname } = useLocation();
 
   const [isBellClicked, setIsBellClicked] = useState(false);
 
@@ -194,7 +195,7 @@ const Header = ({ t }) => {
 
         {/* actions */}
         <Box display="flex" gap="1.6rem" alignItems="center">
-          <Link to="/upload">
+          <Link to={ROUTES_PATH.upload} state={{ from: pathname }}>
             <Button
               leftIcon={<HiUpload />}
               variant="outline-default"
@@ -210,7 +211,6 @@ const Header = ({ t }) => {
           {userInfo ? (
             <>
               <PopperMenu
-                data={MOCK_DATA(t).private}
                 trigger="click"
                 appendTo="parent"
                 hideOnClick="toggle"
