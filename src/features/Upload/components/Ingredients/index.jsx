@@ -21,7 +21,7 @@ const MOCK_DATA = {
   },
 };
 
-const IngredientsField = ({ setValue }) => {
+const IngredientsField = ({ setValue, isReset }) => {
   const { action } = MOCK_DATA;
   const { colorMode } = useColorMode();
 
@@ -34,6 +34,16 @@ const IngredientsField = ({ setValue }) => {
   const currentItem = useRef();
 
   useEffect(() => {
+    if (isReset.current) {
+      setHasMore([]);
+      setResult([]);
+      setCategories(MOCK_DATA.categories);
+    }
+  }, [isReset.current]);
+
+  useEffect(() => {
+    // update again for not delete prev value
+    isReset.current = false;
     setValue(result);
     if (actionType.current) {
       switch (actionType.current) {

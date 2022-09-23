@@ -9,7 +9,7 @@ import Loading from '~/components/Loading';
 import { FIREBASE_ERR_CODE } from '~/constants';
 import { firebaseImageName, imageValidatorHandler } from '~/utils';
 
-const ImageField = ({ name, label = name, setImageUrl, textHelper }) => {
+const ImageField = ({ name, label = name, setImageUrl, textHelper, isReset, isSave }) => {
   const [files, setFiles] = useState([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,9 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper }) => {
     onDragLeave: () => setIsDragOver(false),
     onDrop: (acceptedFiles) => {
       isUploaded.current = false;
+      // update again isReset for not delete object prev
+      isReset.current = false;
+      isSave.current = false;
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -50,10 +53,15 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper }) => {
   const handleDelete = () => {
     // handle comp unmount and edit image
     if (files.length !== 0 && isUploaded.current) {
+      setLoading(true);
       const storageRef = ref(firebase.getStorage(), files[0].firebaseName);
 
       deleteObject(storageRef)
-        .then(() => setImageUrl(''))
+        .then(() => {
+          setImageUrl('');
+          setFiles([]);
+          setLoading(false);
+        })
         .catch((error) => {
           switch (error.code) {
             case FIREBASE_ERR_CODE.storage.objectNotFound:
@@ -65,6 +73,10 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper }) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (isReset.current) handleDelete();
+  }, [isReset.current]);
 
   useEffect(() => {
     if (acceptedFiles.length > 0) {
@@ -101,7 +113,9 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper }) => {
     }
     return () => {
       if (isUploaded.current) {
-        handleDelete();
+        if (!isSave.current) {
+          handleDelete();
+        }
       } else {
         if (uploadTask.current) uploadTask.current.cancel();
       }

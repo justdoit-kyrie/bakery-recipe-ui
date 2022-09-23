@@ -9,6 +9,7 @@ export const ROUTES_PATH = {
   profile: '/profile/@:id',
   postDetail: '/post/@:id',
   upload: '/upload',
+  notFound: '*',
 };
 //#endregion
 
@@ -88,3 +89,5 @@ export const FIREBASE_ERR_CODE = {
     userCanceled: 'storage/canceled',
   },
 };
+
+export const EDITOR_EMPTY_STRING = '<p><br></p>';

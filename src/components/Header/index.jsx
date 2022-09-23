@@ -3,9 +3,8 @@ import _ from 'lodash';
 import React, { useContext, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { AiOutlineUser } from 'react-icons/ai';
-import { BsBell, BsBellFill, BsThreeDotsVertical } from 'react-icons/bs';
+import { BsBell, BsBellFill, BsPlusLg, BsThreeDotsVertical } from 'react-icons/bs';
 import { FaRegKeyboard } from 'react-icons/fa';
-import { HiUpload } from 'react-icons/hi';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
 import { VscColorMode } from 'react-icons/vsc';
@@ -197,7 +196,7 @@ const Header = ({ t }) => {
         <Box display="flex" gap="1.6rem" alignItems="center">
           <Link to={ROUTES_PATH.upload} state={{ from: pathname }}>
             <Button
-              leftIcon={<HiUpload />}
+              leftIcon={<BsPlusLg />}
               variant="outline-default"
               sx={{
                 '& .chakra-button__icon': {

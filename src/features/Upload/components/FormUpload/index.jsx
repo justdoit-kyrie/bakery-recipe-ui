@@ -1,13 +1,17 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { EditorField, ImageField, InputField, SelectField } from '~/components/Form-field';
-import { CONTENT_POST_LENGTH } from '~/constants';
-import { useDebounce } from '~/hooks';
+import { CONTENT_POST_LENGTH, EDITOR_EMPTY_STRING } from '~/constants';
+import { useCallbackPrompt, useDebounce } from '~/hooks';
+import { getBannerFromContent } from '~/utils';
+import DiscardModal from '../Discard';
 import IngredientsField from '../Ingredients';
+import PreviewModal from '../Preview';
+import SaveDraftModal from '../SaveDraft';
 import { optionTemplate, selectedValueTemplate } from './templates';
 
 const schema = yup
@@ -35,40 +39,62 @@ const MOCK_DATA = {
   ],
 };
 
-const FormUpload = ({ initialRef }) => {
+const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
   const {
     control,
     handleSubmit,
+    getValues,
     watch,
+    reset,
     formState: { errors, isValid },
   } = useForm({
     defaultValues,
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDiscardOpen, onOpen: onDiscardOpen, onClose: onDiscardClose } = useDisclosure();
 
-  const type = watch('type');
-  const debounceType = useDebounce(type, 800);
+  const content = useDebounce(watch('content'), 800);
+  const title = useDebounce(watch('title'), 800);
+  const type = useDebounce(watch('type'), 800);
 
   const [banner, setBanner] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [categoriesSearch, setCategoriesSearch] = useState([]);
+  const [isSaveDraft, setIsSaveDraft] = useState(false);
 
+  const isReset = useRef(false);
+  const isSave = useRef(false);
+
+  const { isShow, onConfirm, onCancel } = useCallbackPrompt(isSaveDraft);
+
+  // handle unblock button post
   const isCustomValid = useMemo(() => isValid && ingredients.length > 0, [ingredients, isValid]);
 
   const onSubmit = (data) => {
     // auto get first image in the content post
+    let _banner = banner;
     if (!banner) {
-      const content = data.content;
-      const positionStart = content.indexOf('<img src="');
-      const positionEnd = content.indexOf('">');
-      const image = content.substring(positionStart, positionEnd).replace('<img src="', '');
-
-      console.log({ image });
+      _banner = getBannerFromContent(data.content);
     }
     // call api
-    console.log({ data: { ...data, banner: banner, ingredients } });
+    _handleSubmit({ data: { ...data, banner: _banner, ingredients } });
+  };
+
+  const handleResetForm = () => {
+    isReset.current = true;
+    reset(defaultValues);
+    setIsSaveDraft(false);
+  };
+
+  const _handleUmountForm = () => {
+    isSave.current = true;
+    let _banner = banner;
+    if (!banner) {
+      _banner = getBannerFromContent(content);
+    }
+    handleUmountForm({ title, content, type, banner: _banner, ingredients });
   };
 
   useEffect(() => {
@@ -76,114 +102,160 @@ const FormUpload = ({ initialRef }) => {
     setCategories(MOCK_DATA.categories);
   }, []);
 
+  // handle whether show save draft modal
+  useEffect(() => {
+    !title && !content.replace(EDITOR_EMPTY_STRING, '') && !type
+      ? setIsSaveDraft(false)
+      : setIsSaveDraft(true);
+  }, [title, content, type]);
+
   useEffect(() => {
     const subscription = watch(() => {});
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  useEffect(() => {
-    if (typeof debounceType === 'string' && debounceType) {
-      // call api search categories
-      setCategoriesSearch([{ id: 0, name: 'test' }]);
-      document.querySelector('.p-dropdown-trigger').click();
-    } else {
-      setCategoriesSearch([]);
-    }
-  }, [debounceType]);
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
-      <Flex
-        h="100%"
-        gap="2.5rem"
-        sx={{
-          '& > *': {
-            width: 'calc(50% - 2.5rem)',
-          },
-        }}
-      >
-        {/* react-quill  */}
-        <Box>
-          <EditorField name="content" control={control} errors={errors} />
-        </Box>
+    <>
+      {isOpen && (
+        <PreviewModal
+          onClose={onClose}
+          isOpen={isOpen}
+          title={getValues('title')}
+          content={getValues('content')}
+        />
+      )}
 
-        {/* others-field */}
-        <Box position="relative">
-          <Flex
-            direction="column"
-            gap="2rem"
-            position="absolute"
-            inset="0"
-            overflowY="auto"
-            p="2rem 1rem"
-          >
-            <InputField
-              initialRef={initialRef}
-              name="title"
-              label="Title"
-              placeholder="Enter Title"
-              control={control}
-              errors={errors}
-            />
+      {isDiscardOpen && (
+        <DiscardModal
+          onClose={onDiscardClose}
+          isOpen={isDiscardOpen}
+          isReset={isReset}
+          handleResetForm={handleResetForm}
+        />
+      )}
 
-            <ImageField
-              name="image"
-              label="cover"
-              setImageUrl={setBanner}
-              textHelper={[
-                'Accepted file types: jpeg, jpg, png, gif, tiff',
-                'This cover can get be taken of the content',
-              ]}
-            />
+      {isShow && (
+        <SaveDraftModal
+          onClose={onCancel}
+          isOpen={isShow}
+          onConfirm={onConfirm}
+          handleUmountForm={_handleUmountForm}
+        />
+      )}
 
-            <Box w="50%">
-              <SelectField
-                name="type"
-                options={categoriesSearch.length > 0 ? categoriesSearch : categories}
-                label="what's type do you make?"
-                placeholder="Select categories"
-                optionLabel="name"
-                filterBy="name"
-                filter={categoriesSearch.length > 0 ? false : true}
-                itemTemplate={optionTemplate}
-                valueTemplate={selectedValueTemplate}
-                editable
+      <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
+        <Flex
+          h="100%"
+          gap="2.5rem"
+          sx={{
+            '& > *': {
+              width: 'calc(50% - 2.5rem)',
+            },
+          }}
+        >
+          {/* react-quill  */}
+          <Box>
+            <EditorField name="content" control={control} errors={errors} />
+          </Box>
+
+          {/* others-field */}
+          <Box position="relative">
+            <Flex
+              direction="column"
+              gap="2rem"
+              position="absolute"
+              inset="0"
+              overflowY="auto"
+              p="1.6rem 1rem 2rem"
+            >
+              <InputField
+                name="title"
+                label="Title"
+                placeholder="Enter Title"
                 control={control}
                 errors={errors}
-                showOnFocus
               />
-            </Box>
 
-            {/* ingredients */}
-            <IngredientsField setValue={setIngredients} />
+              <ImageField
+                name="image"
+                label="cover"
+                setImageUrl={setBanner}
+                textHelper={[
+                  'Accepted file types: jpeg, jpg, png, gif, tiff',
+                  'This cover can get be taken of the content',
+                ]}
+                isReset={isReset}
+                isSave={isSave}
+              />
 
-            <Flex gap="1.6rem" sx={{ '& > *': { w: 'calc(36% - 1.6rem)' } }} h="48px">
-              <Button
-                as={motion.button}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                size="lg"
-                h="100%"
-                variant="outline-default"
-              >
-                Cancel
-              </Button>
-              <Button
-                as={motion.button}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                size="lg"
-                h="100%"
-                variant={!isCustomValid ? 'disabled' : 'primary'}
-              >
-                Post
-              </Button>
+              <Box w="50%">
+                <SelectField
+                  name="type"
+                  options={categories}
+                  label="what's type do you make?"
+                  placeholder="Select categories"
+                  optionLabel="name"
+                  filterBy="name"
+                  itemTemplate={optionTemplate}
+                  valueTemplate={selectedValueTemplate}
+                  editable
+                  control={control}
+                  errors={errors}
+                  showOnFocus
+                />
+              </Box>
+
+              {/* ingredients */}
+              <IngredientsField setValue={setIngredients} isReset={isReset} />
+
+              <Flex gap="1.6rem" sx={{ '& > *': { w: 'calc(36% - 1.6rem)' } }} h="48px">
+                <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  size="lg"
+                  h="100%"
+                  variant="outline-default"
+                  onClick={onDiscardOpen}
+                >
+                  Discard
+                </Button>
+
+                {getValues('content').replace(EDITOR_EMPTY_STRING, '') && (
+                  <Button
+                    as={motion.button}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    size="lg"
+                    h="100%"
+                    variant={
+                      !getValues('content').replace(EDITOR_EMPTY_STRING, '') || !getValues('title')
+                        ? 'disabled'
+                        : 'preview'
+                    }
+                    onClick={onOpen}
+                  >
+                    Preview
+                  </Button>
+                )}
+
+                <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  size="lg"
+                  h="100%"
+                  variant={!isCustomValid ? 'disabled' : 'primary'}
+                >
+                  Post
+                </Button>
+              </Flex>
             </Flex>
-          </Flex>
-        </Box>
-      </Flex>
-    </form>
+          </Box>
+        </Flex>
+      </form>
+    </>
   );
 };
 

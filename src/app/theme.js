@@ -33,6 +33,7 @@ export const theme = extendTheme({
     },
     yellow: {
       400: 'rgba(245,206,90, 1)',
+      500: 'rgba(255,184,2,1)',
     },
   },
   styles: {
@@ -108,6 +109,14 @@ export const theme = extendTheme({
       '.secondary-font': {
         fontFamily: 'SofiaPro',
       },
+
+      '.hide-scroll': {
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
+      },
+      '.hide-scroll::-webkit-scrollbar': {
+        display: 'none',
+      },
     }),
   },
   components: {
@@ -149,6 +158,11 @@ export const theme = extendTheme({
 
         primary: {
           bg: 'red.400',
+          color: 'white',
+        },
+
+        preview: {
+          bg: 'yellow.500',
           color: 'white',
         },
 

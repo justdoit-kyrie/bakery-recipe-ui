@@ -3,6 +3,16 @@ import React from 'react';
 import FormUpload from './components/FormUpload';
 
 const UploadPage = () => {
+  const handleUmountForm = (data) => {
+    // call api save daft
+    console.log({ name: 'draft', data });
+  };
+
+  const handleSubmit = (data) => {
+    // call api save daft
+    console.log({ name: 'submit', data });
+  };
+
   return (
     <Center h="100%">
       <Flex
@@ -24,7 +34,7 @@ const UploadPage = () => {
         </Text>
 
         <Box flex="1" mt="2.4rem">
-          <FormUpload />
+          <FormUpload handleUmountForm={handleUmountForm} handleSubmit={handleSubmit} />
         </Box>
       </Flex>
     </Center>

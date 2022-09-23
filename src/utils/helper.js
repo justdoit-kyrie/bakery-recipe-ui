@@ -22,3 +22,9 @@ export const imageValidatorHandler = (file) => {
 
 export const firebaseImageName = (file, userId = 'user1') =>
   `${userId}/${moment(new Date()).toDate().toISOString()}_${file.name}`;
+
+export const getBannerFromContent = (content) => {
+  const positionStart = content.indexOf('<img src="');
+  const positionEnd = content.indexOf('">');
+  return content.substring(positionStart, positionEnd).replace('<img src="', '');
+};
