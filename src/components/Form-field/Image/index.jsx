@@ -9,8 +9,8 @@ import Loading from '~/components/Loading';
 import { FIREBASE_ERR_CODE } from '~/constants';
 import { firebaseImageName, imageValidatorHandler } from '~/utils';
 
-const ImageField = ({ name, label = name, setImageUrl, textHelper, isReset, isSave }) => {
-  const [files, setFiles] = useState([]);
+const ImageField = ({ name, label = name, imageUrl, setImageUrl, textHelper, isReset, isSave }) => {
+  const [files, setFiles] = useState(imageUrl ? [imageUrl] : []);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -42,15 +42,15 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper, isReset, isSa
   const previews = files.map((file, idx) => (
     <Image
       key={idx}
-      src={file.preview}
+      src={file?.preview || file}
       alt="preview"
       onLoad={() => {
-        URL.revokeObjectURL(file.preview);
+        URL.revokeObjectURL(file?.preview);
       }}
     />
   ));
 
-  const handleDelete = () => {
+  const handleDelete = (defaultFiles = []) => {
     // handle comp unmount and edit image
     if (files.length !== 0 && isUploaded.current) {
       setLoading(true);
@@ -59,7 +59,7 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper, isReset, isSa
       deleteObject(storageRef)
         .then(() => {
           setImageUrl('');
-          setFiles([]);
+          setFiles(defaultFiles);
           setLoading(false);
         })
         .catch((error) => {
@@ -75,7 +75,9 @@ const ImageField = ({ name, label = name, setImageUrl, textHelper, isReset, isSa
   };
 
   useEffect(() => {
-    if (isReset.current) handleDelete();
+    if (isReset.current) handleDelete([imageUrl]);
+
+    if (isReset.current && !isUploaded.current) setFiles([imageUrl]);
   }, [isReset.current]);
 
   useEffect(() => {

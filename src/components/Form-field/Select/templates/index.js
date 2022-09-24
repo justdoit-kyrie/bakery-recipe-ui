@@ -4,7 +4,7 @@ import { GoCheck } from 'react-icons/go';
 
 export const selectedValueTemplate = (option, props) => {
   if (option) {
-    return <Text fontSize="1.6rem">{option}</Text>;
+    return <Text fontSize="1.6rem">{option?.name}</Text>;
   }
 
   return <Text>{props.placeholder}</Text>;
@@ -13,8 +13,8 @@ export const selectedValueTemplate = (option, props) => {
 export const optionTemplate = (option, selectedValue) => {
   return (
     <Flex align="center" gap="0.5rem" fontSize="1.6rem">
-      <Text>{option}</Text>
-      {selectedValue === option && <GoCheck fontSize="1.8rem" />}
+      <Text>{option?.name}</Text>
+      {selectedValue?.name === option?.name && <GoCheck fontSize="1.8rem" />}
     </Flex>
   );
 };

@@ -53,6 +53,7 @@ export const PASSWORD_REGEX_FULL =
 export const PASSWORD_REGEX_WITHOUT_LENGTH =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}(g|kg|ml|l|mg)$/;
 //#endregion
 
 //#region regex
@@ -91,3 +92,14 @@ export const FIREBASE_ERR_CODE = {
 };
 
 export const EDITOR_EMPTY_STRING = '<p><br></p>';
+
+export const FORM_TYPE = {
+  add: 'add',
+  edit: 'edit',
+};
+
+export const SELECT_TYPE = {
+  single: 'dropdown',
+  multi: 'multiSelect',
+  autoCompleted: 'autoCompleted',
+};

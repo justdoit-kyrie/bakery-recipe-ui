@@ -31,6 +31,12 @@ const publicRoutes = [
   },
   {
     type: ROUTES_TYPE.public,
+    path: `${ROUTES_PATH.upload}/@:id`,
+    component: UploadPage,
+    layout: HeaderOnlyLayout,
+  },
+  {
+    type: ROUTES_TYPE.public,
     path: ROUTES_PATH.postDetail,
     component: PostDetailPage,
     layout: HeaderOnlyLayout,

@@ -1,12 +1,13 @@
-import { Box, Circle, Flex, Input, Text, useColorMode } from '@chakra-ui/react';
+import { Box, Circle, Flex, Input, Text, Tooltip, useColorMode } from '@chakra-ui/react';
 import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
-import { Dropdown } from 'primereact/dropdown';
+import _ from 'lodash';
+import { AutoComplete } from 'primereact/autocomplete';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineClose, AiOutlinePlusCircle } from 'react-icons/ai';
 import { BsPatchCheck, BsTrash2Fill } from 'react-icons/bs';
-import { COLOR_MODE_TYPE } from '~/constants';
-import { optionTemplate, selectedValueTemplate } from '../FormUpload/templates';
+import { COLOR_MODE_TYPE, INGREDIENTS_REGEX } from '~/constants';
+import { optionTemplate } from '../FormUpload/templates';
 import { Wrapper } from './style';
 
 const MOCK_DATA = {
@@ -21,28 +22,44 @@ const MOCK_DATA = {
   },
 };
 
-const IngredientsField = ({ setValue, isReset }) => {
+const IngredientsField = ({ value, setValue, isReset }) => {
   const { action } = MOCK_DATA;
   const { colorMode } = useColorMode();
 
   const [hasMore, setHasMore] = useState([]);
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState(value);
   const [categories, setCategories] = useState([]);
+  const [filteredValue, setFilteredValue] = useState(null);
+  const [hasError, setHasError] = useState([]);
 
   // handle remove || add again category when been chosen
   const actionType = useRef();
   const currentItem = useRef();
 
+  const searchIngredients = (event) => {
+    setTimeout(() => {
+      let _filteredIngredients;
+      if (!event.query.trim().length) {
+        _filteredIngredients = [...categories];
+      } else {
+        _filteredIngredients = categories.filter((item) => {
+          return item.name.toLowerCase().includes(event.query.toLowerCase());
+        });
+      }
+
+      setFilteredValue(_filteredIngredients);
+    }, 250);
+  };
+
   useEffect(() => {
     if (isReset.current) {
       setHasMore([]);
-      setResult([]);
+      setResult(value);
       setCategories(MOCK_DATA.categories);
     }
   }, [isReset.current]);
 
   useEffect(() => {
-    // update again for not delete prev value
     isReset.current = false;
     setValue(result);
     if (actionType.current) {
@@ -51,7 +68,7 @@ const IngredientsField = ({ setValue, isReset }) => {
           setCategories((prev) => prev.filter((x) => !result.some((v) => v.name.id === x.id)));
           break;
         case action.remove:
-          setCategories((prev) => [...prev, currentItem.current.name]);
+          setCategories((prev) => _.sortBy([...prev, currentItem.current.name], ['name']));
           break;
       }
     }
@@ -64,11 +81,20 @@ const IngredientsField = ({ setValue, isReset }) => {
   const handleChange = (idx, event, field = 'name') => {
     const cloneList = [...hasMore];
     cloneList[idx][field] = event.target.value;
+    if (!INGREDIENTS_REGEX.test(event.target.value)) {
+      setHasError((prev) => {
+        if (!prev.some((v) => v.id === cloneList[idx].id))
+          return [...prev, { id: cloneList[idx].id, value: true }];
+        return prev;
+      });
+    } else {
+      setHasError((prev) => prev.filter((v) => v.id !== cloneList[idx].id));
+    }
     setHasMore(cloneList);
   };
 
   const handleBlur = (item) => {
-    if (item.value && item.name) {
+    if (item.value && item.name && !hasError.some((v) => v.id === item.id)) {
       setResult((prev) => [...prev, { name: item.name, value: item.value }]);
       setHasMore((prev) => prev.filter((v) => v.id !== item.id));
     }
@@ -101,18 +127,17 @@ const IngredientsField = ({ setValue, isReset }) => {
         }}
       >
         <Wrapper>
-          <Dropdown
+          <AutoComplete
             value={item.name}
-            appendTo="self"
-            filter
-            showClear
-            options={categories}
+            label="what's type do you make?"
             placeholder="Select categories"
-            optionLabel="name"
-            filterBy="name"
+            appendTo="self"
+            suggestions={filteredValue}
+            completeMethod={searchIngredients}
             itemTemplate={optionTemplate}
-            valueTemplate={selectedValueTemplate}
-            editable
+            dropdown
+            field="name"
+            forceSelection
             onChange={(e) => handleChange(idx, e)}
             onBlur={() => {
               actionType.current = action.add;
@@ -121,39 +146,52 @@ const IngredientsField = ({ setValue, isReset }) => {
           />
         </Wrapper>
 
-        <Input
-          value={item.value}
-          fontSize="1.6rem"
-          color={colorMode === COLOR_MODE_TYPE.light ? 'textColor.400' : 'darkTextColor.400'}
-          h="auto"
-          backgroundColor="rgba(22, 24, 35, 0.06)"
-          border="1px solid rgba(22, 24, 35, 0.12)"
-          lineHeight="100%"
-          placeholder="quantity"
-          focusBorderColor="none"
-          sx={{
-            caretColor: 'rgba(254, 44, 85, 1.0)',
-            '&[aria-invalid=true],&[data-invalid]': {
-              boxShadow: 'none',
-            },
-            '&[data-focus-visible], &:focus-visible': {
-              boxShadow: 'none',
-            },
-            '&[type=password]::-ms-reveal,&[type=password]::-ms-clear': {
-              display: 'none',
-            },
+        <Tooltip
+          label={hasError.some((v) => v.id === item.id) ? 'Please provide valid ingredients' : ''}
+          placement="auto"
+          fontSize="1.4rem"
+          bg="red.400"
+          p="0 1rem"
+          hasArrow
+          textAlign="center"
+        >
+          <Input
+            value={item.value}
+            fontSize="1.6rem"
+            color={colorMode === COLOR_MODE_TYPE.light ? 'textColor.400' : 'darkTextColor.400'}
+            h="auto"
+            backgroundColor="rgba(22, 24, 35, 0.06)"
+            border="1px solid rgba(22, 24, 35, 0.12)"
+            lineHeight="100%"
+            placeholder="quantity"
+            borderColor={
+              hasError.some((v) => v.id === item.id) ? 'rgb(255, 76, 58)' : 'rgba(22, 24, 35, 0.12)'
+            }
+            focusBorderColor="none"
+            sx={{
+              caretColor: 'rgba(254, 44, 85, 1.0)',
+              '&[aria-invalid=true],&[data-invalid]': {
+                boxShadow: 'none',
+              },
+              '&[data-focus-visible], &:focus-visible': {
+                boxShadow: 'none',
+              },
+              '&[type=password]::-ms-reveal,&[type=password]::-ms-clear': {
+                display: 'none',
+              },
 
-            '&:focus-within + .ingredient-trash': {
-              opacity: 1,
-            },
-          }}
-          _hover={{}}
-          onChange={(e) => handleChange(idx, e, 'value')}
-          onBlur={() => {
-            actionType.current = action.add;
-            handleBlur(item);
-          }}
-        />
+              '&:focus-within + .ingredient-trash': {
+                opacity: 1,
+              },
+            }}
+            _hover={{}}
+            onChange={(e) => handleChange(idx, e, 'value')}
+            onBlur={() => {
+              actionType.current = action.add;
+              handleBlur(item);
+            }}
+          />
+        </Tooltip>
 
         {/* remove button */}
         <Tippy content="Delete item" delay={[0, 200]}>
@@ -168,7 +206,10 @@ const IngredientsField = ({ setValue, isReset }) => {
             cursor="pointer"
             transition="all 0.25s ease"
             _hover={{ bg: 'rgba(0,0,0,0.06)' }}
-            onClick={() => setHasMore((prev) => prev.filter((v) => v.id !== item.id))}
+            onClick={() => {
+              setHasMore((prev) => prev.filter((v) => v.id !== item.id));
+              setHasError((prev) => prev.filter((v) => v.id !== item.id));
+            }}
           >
             <AiOutlineClose fontSize="1.4rem" color="rgba(22, 24, 35, 0.37)" />
           </Circle>

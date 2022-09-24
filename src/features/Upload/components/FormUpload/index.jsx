@@ -5,14 +5,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { EditorField, ImageField, InputField, SelectField } from '~/components/Form-field';
-import { CONTENT_POST_LENGTH, EDITOR_EMPTY_STRING } from '~/constants';
+import { CONTENT_POST_LENGTH, EDITOR_EMPTY_STRING, FORM_TYPE, SELECT_TYPE } from '~/constants';
 import { useCallbackPrompt, useDebounce } from '~/hooks';
 import { getBannerFromContent } from '~/utils';
 import DiscardModal from '../Discard';
 import IngredientsField from '../Ingredients';
 import PreviewModal from '../Preview';
 import SaveDraftModal from '../SaveDraft';
-import { optionTemplate, selectedValueTemplate } from './templates';
 
 const schema = yup
   .object({
@@ -25,12 +24,6 @@ const schema = yup
   })
   .required();
 
-const defaultValues = {
-  title: '',
-  type: undefined,
-  content: '',
-};
-
 const MOCK_DATA = {
   categories: [
     { id: 0, name: 'category1' },
@@ -39,7 +32,7 @@ const MOCK_DATA = {
   ],
 };
 
-const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
+const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubmit, formType }) => {
   const {
     control,
     handleSubmit,
@@ -52,6 +45,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDiscardOpen, onOpen: onDiscardOpen, onClose: onDiscardClose } = useDisclosure();
 
@@ -59,15 +53,17 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
   const title = useDebounce(watch('title'), 800);
   const type = useDebounce(watch('type'), 800);
 
-  const [banner, setBanner] = useState('');
-  const [ingredients, setIngredients] = useState([]);
+  const [banner, setBanner] = useState(defaultValues.banner);
+  const [ingredients, setIngredients] = useState(defaultValues.ingredients);
   const [categories, setCategories] = useState([]);
   const [isSaveDraft, setIsSaveDraft] = useState(false);
 
   const isReset = useRef(false);
   const isSave = useRef(false);
 
-  const { isShow, onConfirm, onCancel } = useCallbackPrompt(isSaveDraft);
+  const { isShow, onConfirm, onCancel } = useCallbackPrompt(
+    formType === FORM_TYPE.edit ? false : isSaveDraft
+  );
 
   // handle unblock button post
   const isCustomValid = useMemo(() => isValid && ingredients.length > 0, [ingredients, isValid]);
@@ -104,7 +100,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
 
   // handle whether show save draft modal
   useEffect(() => {
-    !title && !content.replace(EDITOR_EMPTY_STRING, '') && !type
+    !title && !content?.replace(EDITOR_EMPTY_STRING, '') && !type
       ? setIsSaveDraft(false)
       : setIsSaveDraft(true);
   }, [title, content, type]);
@@ -179,6 +175,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
               <ImageField
                 name="image"
                 label="cover"
+                imageUrl={defaultValues.banner}
                 setImageUrl={setBanner}
                 textHelper={[
                   'Accepted file types: jpeg, jpg, png, gif, tiff',
@@ -190,23 +187,25 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
 
               <Box w="50%">
                 <SelectField
+                  type={SELECT_TYPE.autoCompleted}
                   name="type"
                   options={categories}
                   label="what's type do you make?"
                   placeholder="Select categories"
-                  optionLabel="name"
-                  filterBy="name"
-                  itemTemplate={optionTemplate}
-                  valueTemplate={selectedValueTemplate}
-                  editable
+                  dropdown
+                  field="name"
+                  forceSelection
                   control={control}
                   errors={errors}
-                  showOnFocus
                 />
               </Box>
 
               {/* ingredients */}
-              <IngredientsField setValue={setIngredients} isReset={isReset} />
+              <IngredientsField
+                value={[...defaultValues.ingredients]}
+                setValue={setIngredients}
+                isReset={isReset}
+              />
 
               <Flex gap="1.6rem" sx={{ '& > *': { w: 'calc(36% - 1.6rem)' } }} h="48px">
                 <Button
@@ -221,7 +220,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
                   Discard
                 </Button>
 
-                {getValues('content').replace(EDITOR_EMPTY_STRING, '') && (
+                {getValues('content')?.replace(EDITOR_EMPTY_STRING, '') && (
                   <Button
                     as={motion.button}
                     whileHover={{ scale: 1.03 }}
@@ -229,7 +228,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
                     size="lg"
                     h="100%"
                     variant={
-                      !getValues('content').replace(EDITOR_EMPTY_STRING, '') || !getValues('title')
+                      !getValues('content')?.replace(EDITOR_EMPTY_STRING, '') || !getValues('title')
                         ? 'disabled'
                         : 'preview'
                     }
@@ -248,7 +247,7 @@ const FormUpload = ({ handleUmountForm, handleSubmit: _handleSubmit }) => {
                   h="100%"
                   variant={!isCustomValid ? 'disabled' : 'primary'}
                 >
-                  Post
+                  {formType === FORM_TYPE.add ? 'Post' : 'Save'}
                 </Button>
               </Flex>
             </Flex>
