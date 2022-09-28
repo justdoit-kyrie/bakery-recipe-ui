@@ -57,7 +57,7 @@ const FormRegister = ({ initialRef, setType, setLoading }) => {
       setLoading(true);
       const { code, user } = await axios.post(API_PATH.users.register, {
         ...data,
-        userName: `${data.userName}-${data.email}`,
+        userName: data.email.split('@')[0],
       });
       if (+code === API_CODE.success) {
         dispatch(register({ userInfo: user }));
