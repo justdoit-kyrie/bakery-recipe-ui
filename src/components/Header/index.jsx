@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
 import _ from 'lodash';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { AiOutlineUser } from 'react-icons/ai';
 import { BsBell, BsBellFill, BsPlusLg, BsThreeDotsVertical } from 'react-icons/bs';
@@ -9,13 +9,14 @@ import { IoLogOutOutline } from 'react-icons/io5';
 import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
 import { VscColorMode } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ModalContext } from '~/app/context';
 import i18n from '~/app/i18n';
 
 import { COLOR_MODE_TYPE, LANGUAGES, ROUTES_PATH } from '~/constants';
 import { AuthenticateModal } from '~/features';
 import { selectUserInfo } from '~/features/Authenticate/authSlice';
+import { useCallbackPrompt } from '~/hooks';
 import { BellIcon, Logo } from '../Icons';
 import PopperMenu from './components/PopperMenu';
 import Search from './components/Search';
@@ -128,11 +129,18 @@ const MOCK_DATA = (t) => ({
 });
 
 const Header = ({ t }) => {
-  const { onOpen, isOpen, onClose } = useContext(ModalContext);
+  const { isOpen, onOpen, onClose } = useContext(ModalContext);
   const userInfo = useSelector(selectUserInfo);
-  const { pathname } = useLocation();
 
   const [isBellClicked, setIsBellClicked] = useState(false);
+  const isTouched = useRef(false);
+
+  const { isShow, onConfirm, onCancel } = useCallbackPrompt(false);
+  // const { isShow, onConfirm, onCancel } = useCallbackPrompt(userInfo ? false : true);
+
+  useEffect(() => {
+    if (userInfo && !isTouched.current) onConfirm();
+  }, [userInfo]);
 
   const renderCustomContent = () => (
     <Flex direction="column" minH="40rem" maxH="64rem" minW="37.6rem">
@@ -183,7 +191,9 @@ const Header = ({ t }) => {
 
   return (
     <Box className="container">
-      {isOpen && <AuthenticateModal isOpen={isOpen} onClose={onClose} />}
+      {(isShow || isOpen) && (
+        <AuthenticateModal isShow={isShow} isOpen={isOpen} onClose={onClose} onCancel={onCancel} />
+      )}
       <Box display="flex" justifyContent="space-between" alignItems="center" p="0.5rem 0">
         <Link to={ROUTES_PATH.home}>
           <Logo width="11.8rem" height="5rem" />
@@ -194,7 +204,7 @@ const Header = ({ t }) => {
 
         {/* actions */}
         <Box display="flex" gap="1.6rem" alignItems="center">
-          <Link to={ROUTES_PATH.upload} state={{ from: pathname }}>
+          <Link to={ROUTES_PATH.upload}>
             <Button
               leftIcon={<BsPlusLg />}
               variant="outline-default"
@@ -203,6 +213,7 @@ const Header = ({ t }) => {
                   mr: '8px',
                 },
               }}
+              onClick={() => (isTouched.current = false)}
             >
               {t('header.action.btn-1')}
             </Button>
@@ -241,7 +252,14 @@ const Header = ({ t }) => {
             </>
           ) : (
             <>
-              <Button onClick={onOpen}>{t('header.action.btn-2')}</Button>
+              <Button
+                onClick={() => {
+                  isTouched.current = true;
+                  onOpen();
+                }}
+              >
+                {t('header.action.btn-2')}
+              </Button>
               <PopperMenu data={MOCK_DATA(t).public}>
                 <Box fontSize="2rem" p="0 1rem" cursor="pointer">
                   <BsThreeDotsVertical />

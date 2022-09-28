@@ -33,7 +33,7 @@ const HeaderOnlyLayout = ({ children }) => {
         </Box>
 
         {/* content */}
-        <Box pt="1rem" flex="1" ref={childrenElement}>
+        <Box flex="1" ref={childrenElement}>
           {children}
         </Box>
       </Flex>

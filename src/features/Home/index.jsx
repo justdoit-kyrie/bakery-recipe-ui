@@ -261,9 +261,11 @@ const Home = () => {
           cursor: 'pointer',
         }}
       >
-        <Text fontSize="2rem" fontWeight="700">
-          View more
-        </Text>
+        <Link to={ROUTES_PATH.collections.replace(':category', 'popular')}>
+          <Text fontSize="2rem" fontWeight="700">
+            View more
+          </Text>
+        </Link>
       </Box>
 
       {/* category */}

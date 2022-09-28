@@ -10,10 +10,11 @@ export const ROUTES_PATH = {
   postDetail: '/post/@:id',
   upload: '/upload',
   notFound: '*',
+  collections: '/collections/:category',
 };
 //#endregion
 
-//#region routes variables
+//#region variables
 export const AUTHENTICATE_FORM_TYPE = {
   login: 'login',
   register: 'register',
@@ -56,7 +57,6 @@ export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}(g|kg|ml|l|mg)$/;
 //#endregion
 
-//#region regex
 export const DOB_DAY = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
   28, 29, 30, 31,
@@ -76,7 +76,6 @@ export const DOB_MONTH = [
   'December',
 ];
 export const DOB_YEAR = [1900, new Date().getFullYear() - 1];
-//#endregion
 
 export const CODE_GMAIL_LENGTH = 6;
 
@@ -102,4 +101,31 @@ export const SELECT_TYPE = {
   single: 'dropdown',
   multi: 'multiSelect',
   autoCompleted: 'autoCompleted',
+};
+
+export const MY_POST_TYPE = {
+  recent: 'recent',
+  draft: 'draft',
+};
+
+export const MY_POST_DISPLAY = {
+  grid: 'grid',
+  list: 'list',
+};
+
+export const API_PATH = {
+  users: {
+    login: '/Users/login',
+    register: '/Users/register',
+    sendEmail: '/Users/email',
+    forgotPassword: '/Users/forgot',
+  },
+};
+
+export const API_CODE = {
+  success: 200,
+  tokenExp: 500,
+  tokenInvalid: 501,
+  wrongPath: 403,
+  exception: 400,
 };

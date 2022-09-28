@@ -21,6 +21,7 @@ export const theme = extendTheme({
     darkTextColor: {
       400: 'rgba(233, 234,216, 1)',
       500: '#23313A',
+      600: '#4a5878',
     },
     red: {
       300: 'rgb(255, 76, 58)',
@@ -34,6 +35,10 @@ export const theme = extendTheme({
     yellow: {
       400: 'rgba(245,206,90, 1)',
       500: 'rgba(255,184,2,1)',
+    },
+    primeColor: {
+      lightPurple: '#EEF2FF',
+      darkPurple: '#4338CA',
     },
   },
   styles: {
@@ -116,6 +121,12 @@ export const theme = extendTheme({
       },
       '.hide-scroll::-webkit-scrollbar': {
         display: 'none',
+      },
+
+      // prime-react
+      '.p-component': {
+        fontFamily: 'ProximaNova, sans-serif',
+        color: 'rgba(22, 24, 35, 1.0)',
       },
     }),
   },
