@@ -23,6 +23,8 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.loading = false;
       state.userInfo = null;
+      state.accessToken = '';
+      state.refreshToken = '';
     },
     register: (state, { payload: { userInfo } }) => {
       state.loading = false;

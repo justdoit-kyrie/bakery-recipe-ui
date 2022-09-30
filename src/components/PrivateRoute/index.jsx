@@ -4,8 +4,10 @@ import { selectAuth, setLoading } from '~/features/Authenticate/authSlice';
 import Loading from '../Loading';
 
 const PrivateRoute = ({ children }) => {
-  const { loading, userInfo } = useSelector(selectAuth);
+  const { loading, userInfo, refreshToken } = useSelector(selectAuth);
   const dispatch = useDispatch();
+
+  console.log({ refreshToken });
 
   useEffect(() => {
     if (!userInfo) {

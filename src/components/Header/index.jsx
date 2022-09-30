@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import { ModalContext } from '~/app/context';
 import i18n from '~/app/i18n';
 
-import { COLOR_MODE_TYPE, LANGUAGES, ROUTES_PATH } from '~/constants';
+import { COLOR_MODE_TYPE, LANGUAGES, LOGOUT_TYPE, ROUTES_PATH } from '~/constants';
 import { AuthenticateModal } from '~/features';
 import { selectUserInfo } from '~/features/Authenticate/authSlice';
 import { useCallbackPrompt } from '~/hooks';
@@ -121,6 +121,7 @@ const MOCK_DATA = (t) => ({
       label: t('header.action.menu.item-3'),
     },
     {
+      type: LOGOUT_TYPE,
       borderTop: '1px solid rgba(22, 24, 35, 0.12)',
       icon: IoLogOutOutline,
       label: 'Log out',

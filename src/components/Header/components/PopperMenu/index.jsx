@@ -3,9 +3,12 @@ import Tippy from '@tippyjs/react/headless';
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { HiOutlineChevronLeft } from 'react-icons/hi';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { CustomButton, PopperWrapper } from '~/components';
-import { COLOR_MODE_TYPE, LANGUAGES } from '~/constants';
+import { COLOR_MODE_TYPE, LANGUAGES, LOGOUT_TYPE, ROUTES_PATH } from '~/constants';
+import { logout } from '~/features/Authenticate/authSlice';
 
 /**
  * component PopperMenu
@@ -21,6 +24,8 @@ x * @returns
 // eslint-disable-next-line no-unused-vars
 const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...passProps }) => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [historyList, setHistoryList] = useState([{ data }]);
   const currentMenu = historyList[historyList.length - 1];
@@ -34,6 +39,11 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
   };
 
   const handleBack = () => setHistoryList((prev) => prev.slice(0, prev.length - 1));
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate(ROUTES_PATH.home);
+  };
 
   const renderContent = () =>
     currentMenu.data.map((item, idx) => {
@@ -74,6 +84,10 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
                   window.location.reload();
                 }
                 break;
+              case LOGOUT_TYPE: {
+                handleLogout();
+                break;
+              }
             }
             handleChangeStepMenu(item);
           }}

@@ -48,6 +48,8 @@ export const LANGUAGES = {
 };
 //#endregion
 
+export const LOGOUT_TYPE = 'logoout';
+
 //#region regex
 export const PASSWORD_REGEX_FULL =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;

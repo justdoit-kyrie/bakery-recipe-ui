@@ -13,7 +13,9 @@ const CodeField = ({ control, errors, isValid, getValues }) => {
     try {
       setLoading(true);
       const email = getValues('email');
-      const { code, message } = await axios.get(API_PATH.users.sendEmail, { params: { email } });
+      const { code, message } = await axios.get(API_PATH.users.sendEmail, {
+        params: { email },
+      });
       if (+code === API_CODE.success) {
         toast.success(message);
       }
