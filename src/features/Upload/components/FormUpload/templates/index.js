@@ -10,11 +10,11 @@ export const selectedValueTemplate = (option, props) => {
   return <Text>{props.placeholder}</Text>;
 };
 
-export const optionTemplate = (option, selectedValue) => {
+export const optionTemplate = (option, selectedValue, field = 'productName') => {
   return (
     <Flex align="center" gap="0.5rem" fontSize="1.6rem">
-      <Text>{option?.name}</Text>
-      {selectedValue?.name === option?.name && <GoCheck fontSize="1.8rem" />}
+      <Text>{option?.[field]}</Text>
+      {selectedValue?.[field] === option?.[field] && <GoCheck fontSize="1.8rem" />}
     </Flex>
   );
 };

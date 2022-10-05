@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { default as axios } from '~/app/api';
@@ -11,6 +12,7 @@ import { default as axios } from '~/app/api';
 import { InputField } from '~/components/Form-field';
 import { EyesClose, EyesOpen } from '~/components/Icons';
 import {
+  API_CODE,
   API_PATH,
   AUTHENTICATE_FORM_TYPE,
   COLOR_MODE_TYPE,
@@ -37,7 +39,13 @@ const defaultValues = {
   password: '',
 };
 
-const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, setIsLevel }) => {
+const FormLogin = ({
+  initialRef,
+  handleCloseModal = () => {},
+  setLoading = () => {},
+  setHistoryForm = () => {},
+  setIsLevel = () => {},
+}) => {
   const {
     control,
     handleSubmit,
@@ -53,6 +61,8 @@ const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, s
 
   const { colorMode } = useColorMode();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [pwdType, setPwdType] = useState(true);
 
   const onSubmit = async ({ username, password }) => {
@@ -68,13 +78,22 @@ const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, s
             userName: username,
             password,
           };
-      const { accessToken, refreshToken, user } = await axios.post(API_PATH.users.login, apiProps);
+      const { code, message, accessToken, refreshToken, user } = await axios.post(
+        API_PATH.users.login,
+        apiProps
+      );
 
-      if (accessToken && refreshToken) {
+      if (+code === API_CODE.success) {
         dispatch(
           login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
         );
         handleCloseModal();
+
+        if (location.state?.from === '/privateRoute' && location.state.to) {
+          return navigate(location.state.to);
+        }
+      } else {
+        toast.error(message);
       }
     } catch (error) {
       toast.error(error);
@@ -146,13 +165,6 @@ const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, s
       </Button>
     </form>
   );
-};
-
-FormLogin.defaultProps = {
-  handleCloseModal: () => {},
-  setLoading: () => {},
-  setHistoryForm: () => {},
-  setIsLevel: () => {},
 };
 
 export default FormLogin;

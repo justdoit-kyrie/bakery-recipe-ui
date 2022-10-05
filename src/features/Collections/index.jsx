@@ -1,146 +1,98 @@
-/* eslint-disable no-unused-vars */
 import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-
-const MOCK_DATA = {
-  category: [
-    { id: 0, name: 'Everything' },
-    { id: 1, name: 'Pop Culture' },
-    { id: 2, name: 'News' },
-    { id: 3, name: 'Recognition' },
-    { id: 4, name: 'Technique' },
-    { id: 5, name: 'European' },
-  ],
-  list: [
-    {
-      id: 0,
-      type: 'european',
-      title:
-        'Exciting New Tools for Designers, September 2022 Exciting New Tools for Exciting New Tools for Designers, September 2022 Exciting New Tools for',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'PADDI MACDONNELL' },
-    },
-    {
-      id: 1,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1662859009178-62afb0cff049?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'DANIEL SEGUN' },
-    },
-    {
-      id: 2,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'BEN MOSS' },
-    },
-    {
-      id: 3,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'CARRIE COUSINS' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1664176702106-4196b5cf06d3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1664136262345-daa7e71f0c0b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1661956603025-8310b2e3036d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHw2fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1664187390565-bcb72ded82e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-  ],
-};
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ROUTES_PATH } from '~/constants';
+import { CategoryServices, PostServices } from '~/services';
 
 const CollectionsPage = () => {
   const { category } = useParams();
+  const navigate = useNavigate();
 
-  const [currentCategory, setCurrentCategory] = useState(category);
-  const [lists, setLists] = useState(MOCK_DATA.list);
+  const [categories, setCategories] = useState([]);
+  const [lists, setLists] = useState([]);
+  const [pagination, setPagination] = useState();
+
+  const _pageSize = useRef(10);
+  const _currentPage = useRef(1);
+
+  const fetchData = async () => {
+    if (category === 'popular') {
+      PostServices.getList(
+        (data, pagination) => {
+          setLists(data);
+          setPagination(pagination);
+        },
+        {
+          pageSize: _pageSize.current,
+          _order: -1,
+          _by: 'createdDate',
+        }
+      );
+      return;
+    }
+    const data = await CategoryServices.getList({ _order: -1 });
+    PostServices.getListByCategory(
+      (data, pagination) => {
+        setLists(data);
+        setPagination(pagination);
+      },
+      {
+        pageSize: _pageSize.current,
+        _order: -1,
+        _by: 'createdDate',
+        categoryID: data.find((item) => item.categoryName.toLowerCase() === category.toLowerCase())
+          .categoryId,
+      }
+    );
+    setCategories(data);
+  };
 
   useEffect(() => {
-    // call api get categories
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    // call api get list
-  }, [currentCategory]);
+  const fetchMoreData = () => {
+    try {
+      if (category === 'popular') {
+        PostServices.getList(
+          (data, pagination) => {
+            setLists((prev) => [...prev, ...data]);
+            setPagination(pagination);
+          },
+          {
+            pageNumber: _currentPage.current + 1,
+            pageSize: _pageSize.current,
+            _order: -1,
+            _by: 'createdDate',
+          }
+        );
+        return;
+      }
 
-  const fetchMoreData = () => setLists((prev) => [...prev, ...prev]);
+      PostServices.getListByCategory(
+        (data, pagination) => {
+          setLists((prev) => [...prev, ...data]);
+          setPagination(pagination);
+        },
+        {
+          pageNumber: _currentPage.current + 1,
+          pageSize: _pageSize.current,
+          _order: -1,
+          _by: 'createdDate',
+          categoryID: categories.find(
+            (item) => item.categoryName.toLowerCase() === category.toLowerCase()
+          ).categoryId,
+        }
+      );
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   const renderCategories = () =>
-    MOCK_DATA.category.map((item, idx) => {
+    categories.map((item, idx) => {
       const passProps =
-        item.name.toLowerCase() === currentCategory
+        item.categoryName.toLowerCase() === category.toLowerCase()
           ? {
               backgroundImage: 'linear-gradient(180deg, #fff06b, #fff06b)',
               backgroundRepeat: 'no-repeat',
@@ -168,9 +120,11 @@ const CollectionsPage = () => {
             backgroundSize: '100% 10px',
           }}
           {...passProps}
-          onClick={() => setCurrentCategory(item.name.toLowerCase())}
+          onClick={() =>
+            navigate(ROUTES_PATH.user.collections.replace(':category', item.categoryName))
+          }
         >
-          {item.name}
+          {item.categoryName}
         </Text>
       );
     });
@@ -188,7 +142,7 @@ const CollectionsPage = () => {
               fontWeight="600"
               fontSize="1.2rem"
             >
-              {item.type}
+              {category}
             </Text>
 
             <Text
@@ -212,7 +166,7 @@ const CollectionsPage = () => {
             </Text>
 
             <Text as="p" fontSize="1.2rem" color="textColor.200" mt="auto">
-              {item.author.name}
+              {item.authorName}
             </Text>
           </Flex>
         </Flex>
@@ -246,7 +200,7 @@ const CollectionsPage = () => {
             textTransform="capitalize"
             letterSpacing="2px"
           >
-            {currentCategory}
+            {category}
           </Text>
         </Box>
       </Box>
@@ -266,28 +220,30 @@ const CollectionsPage = () => {
           {renderContent()}
         </Grid>
 
-        <Box
-          backgroundImage="linear-gradient(180deg, #fff06b,#fff06b)"
-          backgroundPosition="4px 1.5rem"
-          backgroundRepeat="no-repeat"
-          backgroundSize="100% 20px"
-          display="inline-block"
-          position="relative"
-          left="50%"
-          transform="translateX(-50%)"
-          p="0 1rem"
-          mb="3rem"
-          _hover={{
-            transition: 'all 0.25s linear',
-            backgroundImage: 'linear-gradient(180deg,#ffc200,#ffc200)',
-            cursor: 'pointer',
-          }}
-          onClick={fetchMoreData}
-        >
-          <Text fontSize="2rem" fontWeight="700">
-            View more
-          </Text>
-        </Box>
+        {pagination?.hasNext && (
+          <Box
+            backgroundImage="linear-gradient(180deg, #fff06b,#fff06b)"
+            backgroundPosition="4px 1.5rem"
+            backgroundRepeat="no-repeat"
+            backgroundSize="100% 20px"
+            display="inline-block"
+            position="relative"
+            left="50%"
+            transform="translateX(-50%)"
+            p="0 1rem"
+            mb="3rem"
+            _hover={{
+              transition: 'all 0.25s linear',
+              backgroundImage: 'linear-gradient(180deg,#ffc200,#ffc200)',
+              cursor: 'pointer',
+            }}
+            onClick={fetchMoreData}
+          >
+            <Text fontSize="2rem" fontWeight="700">
+              View more
+            </Text>
+          </Box>
+        )}
       </Box>
     </Flex>
   );

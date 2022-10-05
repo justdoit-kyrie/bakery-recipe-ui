@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import { Box, Circle, Flex, Input, Text, Tooltip, useColorMode } from '@chakra-ui/react';
 import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
@@ -6,7 +7,15 @@ import { AutoComplete } from 'primereact/autocomplete';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineClose, AiOutlinePlusCircle } from 'react-icons/ai';
 import { BsPatchCheck, BsTrash2Fill } from 'react-icons/bs';
-import { COLOR_MODE_TYPE, INGREDIENTS_REGEX } from '~/constants';
+import { toast } from 'react-toastify';
+import { default as axios } from '~/app/api';
+import {
+  API_CODE,
+  API_PATH,
+  COLOR_MODE_TYPE,
+  INGREDIENTS_REGEX,
+  INGREDIENTS_TYPE,
+} from '~/constants';
 import { optionTemplate } from '../FormUpload/templates';
 import { Wrapper } from './style';
 
@@ -22,7 +31,7 @@ const MOCK_DATA = {
   },
 };
 
-const IngredientsField = ({ value, setValue, isReset }) => {
+const IngredientsField = ({ value, setValue = () => {}, isReset }) => {
   const { action } = MOCK_DATA;
   const { colorMode } = useColorMode();
 
@@ -31,10 +40,13 @@ const IngredientsField = ({ value, setValue, isReset }) => {
   const [categories, setCategories] = useState([]);
   const [filteredValue, setFilteredValue] = useState(null);
   const [hasError, setHasError] = useState([]);
+  const [_order] = useState(-1);
+  const [_by] = useState('createdDate');
 
   // handle remove || add again category when been chosen
   const actionType = useRef();
   const currentItem = useRef();
+  const defaultCategories = useRef();
 
   const searchIngredients = (event) => {
     setTimeout(() => {
@@ -43,7 +55,7 @@ const IngredientsField = ({ value, setValue, isReset }) => {
         _filteredIngredients = [...categories];
       } else {
         _filteredIngredients = categories.filter((item) => {
-          return item.name.toLowerCase().includes(event.query.toLowerCase());
+          return item.productName.toLowerCase().includes(event.query.toLowerCase());
         });
       }
 
@@ -52,10 +64,10 @@ const IngredientsField = ({ value, setValue, isReset }) => {
   };
 
   useEffect(() => {
-    if (isReset.current) {
+    if (isReset.current && defaultCategories.current) {
       setHasMore([]);
       setResult(value);
-      setCategories(MOCK_DATA.categories);
+      setCategories(defaultCategories.current);
     }
   }, [isReset.current]);
 
@@ -65,7 +77,9 @@ const IngredientsField = ({ value, setValue, isReset }) => {
     if (actionType.current) {
       switch (actionType.current) {
         case action.add:
-          setCategories((prev) => prev.filter((x) => !result.some((v) => v.name.id === x.id)));
+          setCategories((prev) =>
+            prev.filter((x) => !result.some((v) => v.name.productId === x.productId))
+          );
           break;
         case action.remove:
           setCategories((prev) => _.sortBy([...prev, currentItem.current.name], ['name']));
@@ -74,8 +88,24 @@ const IngredientsField = ({ value, setValue, isReset }) => {
     }
   }, [result]);
 
+  const fetchData = async () => {
+    try {
+      const { code, message, data } = await axios.get(API_PATH.products.getList, {
+        params: { _order, _by },
+      });
+      if (+code === API_CODE.success) {
+        setCategories(data);
+        defaultCategories.current = data;
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   useEffect(() => {
-    setCategories(MOCK_DATA.categories);
+    fetchData();
   }, []);
 
   const handleChange = (idx, event, field = 'name') => {
@@ -136,7 +166,7 @@ const IngredientsField = ({ value, setValue, isReset }) => {
             completeMethod={searchIngredients}
             itemTemplate={optionTemplate}
             dropdown
-            field="name"
+            field="productName"
             forceSelection
             onChange={(e) => handleChange(idx, e)}
             onBlur={() => {
@@ -155,42 +185,73 @@ const IngredientsField = ({ value, setValue, isReset }) => {
           hasArrow
           textAlign="center"
         >
-          <Input
-            value={item.value}
-            fontSize="1.6rem"
-            color={colorMode === COLOR_MODE_TYPE.light ? 'textColor.400' : 'darkTextColor.400'}
-            h="auto"
-            backgroundColor="rgba(22, 24, 35, 0.06)"
-            border="1px solid rgba(22, 24, 35, 0.12)"
-            lineHeight="100%"
-            placeholder="quantity"
-            borderColor={
-              hasError.some((v) => v.id === item.id) ? 'rgb(255, 76, 58)' : 'rgba(22, 24, 35, 0.12)'
-            }
-            focusBorderColor="none"
-            sx={{
-              caretColor: 'rgba(254, 44, 85, 1.0)',
-              '&[aria-invalid=true],&[data-invalid]': {
-                boxShadow: 'none',
-              },
-              '&[data-focus-visible], &:focus-visible': {
-                boxShadow: 'none',
-              },
-              '&[type=password]::-ms-reveal,&[type=password]::-ms-clear': {
-                display: 'none',
-              },
+          <Flex>
+            <Input
+              value={item.value}
+              fontSize="1.6rem"
+              color={colorMode === COLOR_MODE_TYPE.light ? 'textColor.400' : 'darkTextColor.400'}
+              h="auto"
+              flex={item?.name?.type?.toString() ? '0.8' : '1'}
+              backgroundColor="rgba(22, 24, 35, 0.06)"
+              border="1px solid rgba(22, 24, 35, 0.12)"
+              borderRight={item?.name?.type?.toString() && 'none'}
+              lineHeight="100%"
+              placeholder="quantity"
+              borderRadius={item?.name?.type?.toString() && '6px 0 0 6px'}
+              borderColor={
+                hasError.some((v) => v.id === item.id)
+                  ? 'rgb(255, 76, 58)'
+                  : 'rgba(22, 24, 35, 0.12)'
+              }
+              focusBorderColor="none"
+              sx={{
+                caretColor: 'rgba(254, 44, 85, 1.0)',
+                '&[aria-invalid=true],&[data-invalid]': {
+                  boxShadow: 'none',
+                },
+                '&[data-focus-visible], &:focus-visible': {
+                  boxShadow: 'none',
+                },
+                '&[type=password]::-ms-reveal,&[type=password]::-ms-clear': {
+                  display: 'none',
+                },
 
-              '&:focus-within + .ingredient-trash': {
-                opacity: 1,
-              },
-            }}
-            _hover={{}}
-            onChange={(e) => handleChange(idx, e, 'value')}
-            onBlur={() => {
-              actionType.current = action.add;
-              handleBlur(item);
-            }}
-          />
+                '&:focus-within + .ingredient-trash': {
+                  opacity: 1,
+                },
+              }}
+              _hover={{}}
+              onChange={(e) => handleChange(idx, e, 'value')}
+              onBlur={() => {
+                actionType.current = action.add;
+                handleBlur(item);
+              }}
+            />
+
+            {item?.name?.type?.toString() && (
+              <Text
+                h="100%"
+                bg="rgba(22, 24, 35, 0.06)"
+                flex="0.2"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                fontWeight="600"
+                borderRadius="0 6px 6px 0"
+                border="1px solid rgba(22, 24, 35, 0.12)"
+                borderColor={
+                  hasError.some((v) => v.id === item.id)
+                    ? 'rgb(255, 76, 58)'
+                    : 'rgba(22, 24, 35, 0.12)'
+                }
+                color={
+                  hasError.some((v) => v.id === item.id) ? 'rgb(255, 76, 58)' : 'textColor.200'
+                }
+              >
+                {INGREDIENTS_TYPE[item.name.type]}
+              </Text>
+            )}
+          </Flex>
         </Tooltip>
 
         {/* remove button */}
@@ -239,7 +300,7 @@ const IngredientsField = ({ value, setValue, isReset }) => {
       >
         <Flex direction="column">
           <Text as="h4" className="text">
-            {item.name.name}
+            {item.name.productName}
           </Text>
           <Text as="p" fontSize="1.2rem">
             {item.value}
@@ -320,10 +381,6 @@ const IngredientsField = ({ value, setValue, isReset }) => {
       </Flex>
     </Box>
   );
-};
-
-IngredientsField.defaultProps = {
-  setValue: () => {},
 };
 
 export default IngredientsField;

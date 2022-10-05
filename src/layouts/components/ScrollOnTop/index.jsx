@@ -1,5 +1,6 @@
 import { Circle, keyframes, usePrefersReducedMotion } from '@chakra-ui/react';
 import Tippy from '@tippyjs/react';
+import { motion } from 'framer-motion';
 import React from 'react';
 import { HiOutlineChevronDoubleUp } from 'react-icons/hi';
 import 'tippy.js/dist/tippy.css';
@@ -17,6 +18,10 @@ const ScrollOnTop = () => {
   return (
     <Tippy content="Scroll to top" delay={[0, 100]}>
       <Circle
+        as={motion.div}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         position="fixed"
         right="5rem"
         bottom="10rem"

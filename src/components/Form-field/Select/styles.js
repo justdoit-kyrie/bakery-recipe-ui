@@ -77,5 +77,11 @@ export const Wrapper = styled.div`
       border-color: rgba(22, 24, 35, 0.12);
     }
   }
+
+  .p-autocomplete-panel {
+    .p-autocomplete-item {
+      font-size: 1.4rem;
+    }
+  }
   //#endregion
 `;

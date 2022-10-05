@@ -1,136 +1,72 @@
 import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ROUTES_PATH } from '~/constants';
+import { default as axios } from '~/app/api';
+import { API_CODE, API_PATH, POST_MAX_LENGTH, ROUTES_PATH } from '~/constants';
 import CategoryPosts from './components/CategoryPosts';
 import PostItem from './components/PostItem';
 
 const MOCK_DATA = {
   margin: '3rem',
-  newests: [
-    {
-      id: 0,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'PADDI MACDONNELL' },
-    },
-    {
-      id: 1,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1662859009178-62afb0cff049?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'DANIEL SEGUN' },
-    },
-    {
-      id: 2,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'BEN MOSS' },
-    },
-    {
-      id: 3,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'CARRIE COUSINS' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-    {
-      id: 5,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'BEN MOSS' },
-      isContentAbsolute: true,
-      left: 0,
-      bottom: '3rem',
-      width: '80%',
-    },
-    {
-      id: 6,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'BEN MOSS' },
-      isContentAbsolute: true,
-      left: 0,
-      bottom: '3rem',
-      width: '80%',
-    },
-  ],
-  popular: [
-    {
-      id: 0,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'PADDI MACDONNELL' },
-    },
-    {
-      id: 1,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1662859009178-62afb0cff049?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'DANIEL SEGUN' },
-    },
-    {
-      id: 2,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'BEN MOSS' },
-    },
-    {
-      id: 3,
-      type: 'asian',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'CARRIE COUSINS' },
-    },
-    {
-      id: 4,
-      type: 'european',
-      title: 'Exciting New Tools for Designers, September 2022',
-      image:
-        'https://images.unsplash.com/photo-1663431512656-b1d9e811735b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-      author: { id: 123, name: 'NANCY YOUNG' },
-    },
-  ],
+  popular_size: 5,
 };
 
 const Home = () => {
-  const { newests, popular, margin } = MOCK_DATA;
+  const { margin, popular_size } = MOCK_DATA;
 
-  const [posts, setPosts] = useState(newests);
+  const [newestPosts, setNewestPosts] = useState([]);
+  const [popularPosts, setPopularPosts] = useState([]);
+
   const [firstPost, setFirstPost] = useState();
 
+  const _order = useRef(-1);
+  const popularTotalRecords = useRef();
+
+  const fetchData = async () => {
+    try {
+      const [
+        { code: newestCode, data: newestData },
+        { code: popularCode, data: popularData, totalRecords },
+      ] = await Promise.all([
+        axios.get(API_PATH.posts.getList, {
+          params: {
+            _by: 'createdDate',
+            _order: _order.current,
+            pageSize: 7,
+          },
+        }),
+        axios.get(API_PATH.posts.getList, {
+          params: {
+            _by: 'like',
+            _order: _order.current,
+            pageSize: 12,
+          },
+        }),
+      ]);
+
+      if (+newestCode === API_CODE.success) {
+        newestData[newestData.length - 1].isContentAbsolute = true;
+        newestData[newestData.length - 2].isContentAbsolute = true;
+        setFirstPost(newestData[0]);
+        setNewestPosts(newestData.slice(1));
+      }
+
+      if (+popularCode === API_CODE.success) {
+        popularData[popularData.length - 1].isContentAbsolute = true;
+        setPopularPosts(popularData);
+        popularTotalRecords.current = totalRecords;
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   useEffect(() => {
-    // call api
-    setFirstPost(newests[0]);
-    setPosts(newests.slice(1, newests.length));
+    fetchData();
   }, []);
 
-  const renderPopularPost = ({ image, type, title, id }, key) => (
+  const renderPopularPost = ({ image, categoryName, title, id }, key) => (
     <Flex
       key={key}
       as={motion.div}
@@ -146,7 +82,7 @@ const Home = () => {
       }}
     >
       <Box position="relative">
-        <Link to={ROUTES_PATH.postDetail.replace(':id', id)}>
+        <Link to={ROUTES_PATH.user.postDetail.replace(':id', id)}>
           <Box
             className="post-image"
             clipPath="polygon(30px 0,100% 0,calc(100% - 30px) 100%,0 100%)"
@@ -166,7 +102,7 @@ const Home = () => {
           bottom={0}
           transform="translateX(-50%) translateY(50%)"
         >
-          {type}
+          {categoryName}
         </Text>
       </Box>
 
@@ -189,11 +125,14 @@ const Home = () => {
           templateAreas={`"h1 h5" "h2 h5" "h3 h6" "h4 h6"`}
           gap={margin}
         >
-          {posts.map((item, idx) => (
-            <GridItem key={idx} area={`h${idx + 1}`}>
-              <PostItem {...item} />
-            </GridItem>
-          ))}
+          {newestPosts.map((item, idx) => {
+            delete item.categoryID;
+            return (
+              <GridItem key={idx} area={`h${idx + 1}`}>
+                <PostItem {...item} />
+              </GridItem>
+            );
+          })}
         </Grid>
       </Flex>
 
@@ -224,7 +163,7 @@ const Home = () => {
             },
           }}
         >
-          {popular.map((item, key) => renderPopularPost(item, key))}
+          {popularPosts.slice(0, popular_size).map((item, key) => renderPopularPost(item, key))}
         </Flex>
       </Box>
 
@@ -237,39 +176,44 @@ const Home = () => {
         templateAreas={`"h1 h5" "h2 h5" "h3 h6" "h4 h6"`}
         gap={margin}
       >
-        {posts.map((item, idx) => (
-          <GridItem key={idx} area={`h${idx + 1}`}>
-            <PostItem {...item} />
-          </GridItem>
-        ))}
+        {popularPosts.slice(popular_size).map((item, idx) => {
+          delete item.categoryID;
+          return (
+            <GridItem key={idx} area={`h${idx + 1}`}>
+              <PostItem {...item} />
+            </GridItem>
+          );
+        })}
       </Grid>
 
-      <Box
-        mt={margin}
-        backgroundImage="linear-gradient(180deg, rgb(255, 76, 58),rgb(255, 76, 58))"
-        backgroundPosition="4px 1.5rem"
-        backgroundRepeat="no-repeat"
-        backgroundSize="100% 20px"
-        display="inline-block"
-        position="relative"
-        left="50%"
-        transform="translateX(-50%)"
-        p="0 1rem"
-        _hover={{
-          transition: 'all 0.25s linear',
-          backgroundImage: 'linear-gradient(180deg,#ffc200,#ffc200)',
-          cursor: 'pointer',
-        }}
-      >
-        <Link to={ROUTES_PATH.collections.replace(':category', 'popular')}>
-          <Text fontSize="2rem" fontWeight="700">
-            View more
-          </Text>
-        </Link>
-      </Box>
+      {popularTotalRecords.current > POST_MAX_LENGTH && (
+        <Box
+          mt={margin}
+          backgroundImage="linear-gradient(180deg, rgb(255, 76, 58),rgb(255, 76, 58))"
+          backgroundPosition="4px 1.5rem"
+          backgroundRepeat="no-repeat"
+          backgroundSize="100% 20px"
+          display="inline-block"
+          position="relative"
+          left="50%"
+          transform="translateX(-50%)"
+          p="0 1rem"
+          _hover={{
+            transition: 'all 0.25s linear',
+            backgroundImage: 'linear-gradient(180deg,#ffc200,#ffc200)',
+            cursor: 'pointer',
+          }}
+        >
+          <Link to={ROUTES_PATH.user.collections.replace(':category', 'popular')}>
+            <Text fontSize="2rem" fontWeight="700">
+              View more
+            </Text>
+          </Link>
+        </Box>
+      )}
 
       {/* category */}
-      <CategoryPosts margin={margin} data={popular} />
+      <CategoryPosts margin={margin} />
     </Box>
   );
 };

@@ -6,7 +6,13 @@ import { EyesClose, EyesOpen } from '~/components/Icons';
 import { COLOR_MODE_TYPE, PASSWORD_REGEX_WITHOUT_LENGTH } from '~/constants';
 import InputField from '../Input';
 
-const PasswordField = ({ control, errors, watchPassword, name, placeholder }) => {
+const PasswordField = ({
+  control,
+  errors,
+  watchPassword,
+  name = 'password',
+  placeholder = 'Password',
+}) => {
   const { colorMode } = useColorMode();
 
   const [pwdType, setPwdType] = useState(true);
@@ -92,11 +98,6 @@ const PasswordField = ({ control, errors, watchPassword, name, placeholder }) =>
       )}
     </>
   );
-};
-
-PasswordField.defaultProps = {
-  name: 'password',
-  placeholder: 'Password',
 };
 
 export default PasswordField;

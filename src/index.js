@@ -25,9 +25,10 @@ root.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ChakraProvider resetCSS theme={theme}>
+          <Toast />
           <Router>
             <Suspense fallback={<Loading />}>
-              <Toast />
+              {/* <Toast /> */}
               <ColorModeScript initialColorMode={theme.config.initialColorMode} />
               <App />
             </Suspense>

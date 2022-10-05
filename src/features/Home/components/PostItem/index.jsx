@@ -6,12 +6,12 @@ import { ROUTES_PATH } from '~/constants';
 import PostContent from '../PostContent';
 
 const PostItem = ({
-  isContentAbsolute,
-  minH,
-  maxH,
+  isContentAbsolute = false,
+  minH = '19rem',
+  maxH = '70rem',
   itemWidth = '100%',
   image,
-  isAnimation,
+  isAnimation = true,
   direction = 'row',
   ...props
 }) => {
@@ -53,7 +53,7 @@ const PostItem = ({
         boxShadow="rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
       >
         <Link
-          to={ROUTES_PATH.postDetail.replace(':id', id)}
+          to={ROUTES_PATH.user.postDetail.replace(':id', id)}
           style={{
             width: '100%',
             height: '100%',
@@ -76,13 +76,6 @@ const PostItem = ({
       </Box>
     </Box>
   );
-};
-
-PostItem.defaultProps = {
-  isContentAbsolute: false,
-  minH: '19rem',
-  maxH: '70rem',
-  isAnimation: true,
 };
 
 export default PostItem;

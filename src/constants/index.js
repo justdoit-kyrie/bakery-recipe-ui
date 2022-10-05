@@ -5,12 +5,21 @@ export const ROUTES_TYPE = {
 };
 
 export const ROUTES_PATH = {
-  home: '/',
-  profile: '/profile/@:id',
-  postDetail: '/post',
-  upload: '/upload',
-  notFound: '*',
-  collections: '/collections/:category',
+  common: {
+    home: '/',
+    notFound: '*',
+  },
+  user: {
+    profile: '/profile/@:id',
+    postDetail: '/post/@:id',
+    upload: '/upload',
+    collections: '/collections/:category',
+  },
+  admin: {
+    statistic: '/statistic',
+    users: '/users',
+    reports: '/reports',
+  },
 };
 //#endregion
 
@@ -56,7 +65,7 @@ export const PASSWORD_REGEX_FULL =
 export const PASSWORD_REGEX_WITHOUT_LENGTH =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}(g|kg|ml|l|mg)$/;
+export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}$/;
 //#endregion
 
 export const DOB_DAY = [
@@ -117,17 +126,52 @@ export const MY_POST_DISPLAY = {
 
 export const API_PATH = {
   users: {
-    login: '/Users/login',
-    register: '/Users/register',
-    sendEmail: '/Users/email',
-    forgotPassword: '/Users/forgot',
+    login: '/users/login',
+    register: '/users/register',
+    sendEmail: '/users/email',
+    forgotPassword: '/users/forgot',
+    getProfile: '/users/getProfile',
+  },
+  products: {
+    getList: '/products',
+  },
+  categories: {
+    getList: '/categories',
+  },
+  posts: {
+    getList: '/posts',
+    upload: '/posts',
+    getDetail: '/posts/:id',
+    edit: '/posts/:id',
+    getByCategory: '/posts/category',
   },
 };
 
 export const API_CODE = {
   success: 200,
+  fail: 202,
   tokenExp: 500,
   tokenInvalid: 501,
   wrongPath: 403,
   exception: 400,
 };
+
+export const GENDER_ENUM = ['male', 'female'];
+
+export const ROLE = {
+  common: 'common',
+  user: 'user',
+  admin: 'admin',
+};
+
+export const UPLOAD_STATUS_ENUM = ['inActive', 'active', 'draft'];
+
+export const UPLOAD_STATUS = {
+  inActive: 'inActive',
+  active: 'active',
+  draft: 'draft',
+};
+
+export const POST_MAX_LENGTH = 10;
+
+export const INGREDIENTS_TYPE = ['KG', 'ML', 'UNIT'];

@@ -1,4 +1,5 @@
 import { Box, Flex, useColorMode } from '@chakra-ui/react';
+import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { Footer, Header } from '~/components';
 import { COLOR_MODE_TYPE } from '~/constants';
@@ -38,7 +39,7 @@ const DefaultLayout = ({ children }) => {
     <Box w="100vw" h="100vh" bg={colorMode === COLOR_MODE_TYPE.dark && 'gray.800'}>
       <Flex direction="column" className="wrapper" h="100%">
         {/* Scroll on Top button */}
-        {isShow && <ScrollOnTop />}
+        <AnimatePresence exitBeforeEnter>{isShow && <ScrollOnTop />}</AnimatePresence>
 
         {/* header */}
         <Box

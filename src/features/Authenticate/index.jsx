@@ -37,7 +37,7 @@ const MOCK_DATA = {
   ],
 };
 
-const AuthenticateModal = ({ isShow, isOpen, onClose, onCancel }) => {
+const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () => {} }) => {
   const { others_login } = MOCK_DATA;
   const { colorMode } = useColorMode();
 
@@ -304,10 +304,6 @@ const AuthenticateModal = ({ isShow, isOpen, onClose, onCancel }) => {
       </ModalContent>
     </Modal>
   );
-};
-
-AuthenticateModal.defaultProps = {
-  onClose: () => {},
 };
 
 export default AuthenticateModal;

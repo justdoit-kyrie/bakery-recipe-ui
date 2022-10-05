@@ -172,7 +172,7 @@ const Profile = () => {
     {
       label: 'Edit',
       icon: PrimeIcons.PENCIL,
-      command: () => navigate(`${ROUTES_PATH.upload}/@${selectedPost.id}`),
+      command: () => navigate(`${ROUTES_PATH.user.upload}/@${selectedPost.id}`),
     },
     {
       label: 'Delete',
@@ -207,7 +207,10 @@ const Profile = () => {
   const renderContextMenu = ({ id, data }) => {
     return (
       <ContextMenu id={id}>
-        <MenuItem data={data} onClick={(e, data) => navigate(`${ROUTES_PATH.upload}/@${data.id}`)}>
+        <MenuItem
+          data={data}
+          onClick={(e, data) => navigate(`${ROUTES_PATH.user.upload}/@${data.id}`)}
+        >
           <Flex
             align="center"
             p="1rem"
@@ -259,8 +262,8 @@ const Profile = () => {
                 onClick={() =>
                   navigate(
                     type === MY_POST_TYPE.recent
-                      ? `${ROUTES_PATH.postDetail.replace(':id', item.id)}`
-                      : `${ROUTES_PATH.upload}/@${item.id}`
+                      ? `${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`
+                      : `${ROUTES_PATH.user.upload}/@${item.id}`
                   )
                 }
               >
@@ -284,7 +287,9 @@ const Profile = () => {
                     _hover={{
                       textDecoration: 'underline',
                     }}
-                    onClick={() => navigate(`${ROUTES_PATH.postDetail.replace(':id', item.id)}`)}
+                    onClick={() =>
+                      navigate(`${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`)
+                    }
                   >
                     {item.title}
                   </Text>
@@ -311,8 +316,8 @@ const Profile = () => {
         onClick={() =>
           navigate(
             type === MY_POST_TYPE.recent
-              ? `${ROUTES_PATH.postDetail.replace(':id', rowData.id)}`
-              : `${ROUTES_PATH.upload}/@${rowData.id}`
+              ? `${ROUTES_PATH.user.postDetail.replace(':id', rowData.id)}`
+              : `${ROUTES_PATH.user.upload}/@${rowData.id}`
           )
         }
       >

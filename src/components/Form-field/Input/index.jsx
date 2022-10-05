@@ -32,18 +32,18 @@ const InputField = ({
   initialRef,
   name,
   label = name,
-  showLabel,
+  showLabel = true,
   control,
   placeholder,
   errors,
-  showError,
+  showError = true,
   errorBorderColor,
   formHelperText,
-  setIsFocus,
-  isFloating,
-  leftIcon: { icon: leftIcon, w: leftIconW, h: leftIconH, ...leftIconPassProps },
-  rightIcon: { icon: rightIcon, w: rightIconW, h: rightIconH, ...rightIconPassProps },
-  onBlur: onBlurCustom,
+  setIsFocus = () => {},
+  isFloating = false,
+  leftIcon: { icon: leftIcon, w: leftIconW, h: leftIconH, ...leftIconPassProps } = {},
+  rightIcon: { icon: rightIcon, w: rightIconW, h: rightIconH, ...rightIconPassProps } = {},
+  onBlur: onBlurCustom = () => {},
   ...passProps
 }) => {
   const { colorMode } = useColorMode();
@@ -254,16 +254,6 @@ const InputField = ({
       }}
     />
   );
-};
-
-InputField.defaultProps = {
-  leftIcon: {},
-  rightIcon: {},
-  onBlur: () => {},
-  setIsFocus: () => {},
-  showError: true,
-  showLabel: true,
-  isFloating: false,
 };
 
 export default InputField;

@@ -3,7 +3,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES_PATH } from '~/constants';
 
-const PostContent = ({ isContentAbsolute, id, type, title, author, time, ...props }) => {
+const PostContent = ({
+  isContentAbsolute,
+  id,
+  categoryName,
+  title,
+  authorID,
+  authorAvatar,
+  authorName,
+  time = 6,
+  ...props
+}) => {
   let passProps = {};
   if (isContentAbsolute) {
     passProps = {
@@ -42,15 +52,16 @@ const PostContent = ({ isContentAbsolute, id, type, title, author, time, ...prop
         cursor="pointer"
         _hover={{ textDecoration: 'underline' }}
       >
-        {type}
+        {categoryName}
       </Text>
-      <Link to={ROUTES_PATH.postDetail.replace(':id', id)}>
+      <Link to={ROUTES_PATH.user.postDetail.replace(':id', id)}>
         <Text
           as="h2"
           fontSize={isContentAbsolute ? '3.2rem' : '2.4rem'}
           lineHeight="1.2"
           fontWeight="700"
           cursor="pointer"
+          noOfLines={2}
           _hover={{ textDecoration: 'underline' }}
         >
           {title}
@@ -58,18 +69,14 @@ const PostContent = ({ isContentAbsolute, id, type, title, author, time, ...prop
       </Link>
 
       <Flex gap="1rem" align="center" textTransform="uppercase" fontSize="1.2rem" mt="1rem">
-        <Link to="/profile/@123">
-          <Avatar
-            src="https://images.unsplash.com/photo-1663431512960-eb3b4e71636d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
-            name="undefine"
-            boxSize="3.2rem"
-          />
+        <Link to={`/profile/@${authorID}`}>
+          <Avatar src={authorAvatar} name={authorName} boxSize="3.2rem" />
         </Link>
 
         <Flex as="span">
           by
-          {author && (
-            <Link to={ROUTES_PATH.profile.replace(':id', author.id)}>
+          {authorID && authorName && (
+            <Link to={ROUTES_PATH.user.profile.replace(':id', authorID)}>
               <Text
                 color="#2077d3"
                 ml="4px"
@@ -78,7 +85,7 @@ const PostContent = ({ isContentAbsolute, id, type, title, author, time, ...prop
                   textDecoration: 'underline',
                 }}
               >
-                {author.name}
+                {authorName}
               </Text>
             </Link>
           )}
@@ -106,12 +113,6 @@ const PostContent = ({ isContentAbsolute, id, type, title, author, time, ...prop
       </Flex>
     </Flex>
   );
-};
-
-PostContent.defaultProps = {
-  type: 'news',
-  title: 'Exciting New Tools for Designers, September 2022',
-  time: 6,
 };
 
 export default PostContent;
