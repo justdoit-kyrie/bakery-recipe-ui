@@ -7,7 +7,7 @@ export const ROUTES_TYPE = {
 export const ROUTES_PATH = {
   home: '/',
   profile: '/profile/@:id',
-  postDetail: '/post/@:id',
+  postDetail: '/post',
   upload: '/upload',
   notFound: '*',
 };
