@@ -39,7 +39,7 @@ const defaultValues = {
   code: '',
 };
 
-const FormForgotPassword = ({ initialRef, handleCloseModal, setLoading }) => {
+const FormForgotPassword = ({ initialRef, handleCloseModal = () => {}, setLoading = () => {} }) => {
   const {
     control,
     handleSubmit,
@@ -123,11 +123,6 @@ const FormForgotPassword = ({ initialRef, handleCloseModal, setLoading }) => {
       </Button>
     </form>
   );
-};
-
-FormForgotPassword.defaultProps = {
-  handleCloseModal: () => {},
-  setLoading: () => {},
 };
 
 export default FormForgotPassword;

@@ -1,23 +1,54 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAuth, setLoading } from '~/features/Authenticate/authSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axiosInstance from '~/app/api';
+import { ModalContext } from '~/app/context';
+import { API_CODE, API_PATH, ROUTES_PATH } from '~/constants';
+import { failed, selectAuth, setUserInfo } from '~/features/Authenticate/authSlice';
 import Loading from '../Loading';
 
 const PrivateRoute = ({ children }) => {
-  const { loading, userInfo, refreshToken } = useSelector(selectAuth);
+  const { loading, refreshToken } = useSelector(selectAuth);
+  const { onOpen } = useContext(ModalContext);
   const dispatch = useDispatch();
-
-  console.log({ refreshToken });
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    if (!userInfo) {
-      dispatch(setLoading());
-      // call api get profile
+    try {
+      if (!refreshToken && location.pathname === ROUTES_PATH.common.home) {
+        dispatch(failed());
+        return;
+      }
 
-      setTimeout(() => {
-        dispatch(setLoading(false));
-        // dispatch(login({ userInfo: { id: 1 } }));
-      }, 3000);
+      if (!refreshToken && location.pathname !== ROUTES_PATH.common.home) {
+        onOpen();
+        return navigate(ROUTES_PATH.common.home, {
+          state: { from: '/privateRoute', to: location.pathname },
+        });
+      }
+
+      (async () => {
+        const { code, message, data } = await axiosInstance.post(API_PATH.users.getProfile, {
+          refreshToken,
+        });
+
+        if (+code === API_CODE.success) {
+          dispatch(setUserInfo(data));
+          return;
+        } else {
+          toast.error(message);
+        }
+
+        onOpen();
+        dispatch(failed());
+        return navigate(ROUTES_PATH.common.home, {
+          state: { from: '/privateRoute', to: location.pathname },
+        });
+      })();
+    } catch (error) {
+      console.log({ error });
     }
   }, []);
 

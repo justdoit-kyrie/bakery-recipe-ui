@@ -35,7 +35,7 @@ const defaultValues = {
   code: '',
 };
 
-const FormRegister = ({ initialRef, setType, setLoading }) => {
+const FormRegister = ({ initialRef, setType = () => {}, setLoading = () => {} }) => {
   const {
     control,
     handleSubmit,
@@ -108,10 +108,6 @@ const FormRegister = ({ initialRef, setType, setLoading }) => {
       </Button>
     </form>
   );
-};
-
-FormRegister.defaultProps = {
-  setType: () => {},
 };
 
 export default FormRegister;

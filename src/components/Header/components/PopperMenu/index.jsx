@@ -42,7 +42,7 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate(ROUTES_PATH.home);
+    navigate(ROUTES_PATH.common.home);
   };
 
   const renderContent = () =>

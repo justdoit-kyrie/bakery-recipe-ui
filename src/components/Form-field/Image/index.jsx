@@ -6,10 +6,20 @@ import { MdUpload } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import firebase from '~/app/firebase';
 import Loading from '~/components/Loading';
-import { FIREBASE_ERR_CODE } from '~/constants';
+import { FIREBASE_ERR_CODE, FORM_TYPE } from '~/constants';
 import { firebaseImageName, imageValidatorHandler } from '~/utils';
 
-const ImageField = ({ name, label = name, imageUrl, setImageUrl, textHelper, isReset, isSave }) => {
+const ImageField = ({
+  name,
+  label = name,
+  imageUrl,
+  setImageUrl,
+  textHelper,
+  isReset,
+  isSave,
+  formType,
+  isResetManually,
+}) => {
   const [files, setFiles] = useState(imageUrl ? [imageUrl] : []);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,6 +39,7 @@ const ImageField = ({ name, label = name, imageUrl, setImageUrl, textHelper, isR
       // update again isReset for not delete object prev
       isReset.current = false;
       isSave.current = false;
+      isResetManually.current = false;
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -52,7 +63,7 @@ const ImageField = ({ name, label = name, imageUrl, setImageUrl, textHelper, isR
 
   const handleDelete = (defaultFiles = []) => {
     // handle comp unmount and edit image
-    if (files.length !== 0 && isUploaded.current) {
+    if (files.length !== 0 && isUploaded.current && !isResetManually.current) {
       setLoading(true);
       const storageRef = ref(firebase.getStorage(), files[0].firebaseName);
 
@@ -75,9 +86,10 @@ const ImageField = ({ name, label = name, imageUrl, setImageUrl, textHelper, isR
   };
 
   useEffect(() => {
-    if (isReset.current) handleDelete([imageUrl]);
+    if (isReset.current) formType === FORM_TYPE.edit ? handleDelete([imageUrl]) : handleDelete();
 
-    if (isReset.current && !isUploaded.current) setFiles([imageUrl]);
+    if (isReset.current && !isUploaded.current)
+      formType === FORM_TYPE.edit ? setFiles([imageUrl]) : setFiles([]);
   }, [isReset.current]);
 
   useEffect(() => {

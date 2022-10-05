@@ -9,7 +9,7 @@ import { IoLogOutOutline } from 'react-icons/io5';
 import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
 import { VscColorMode } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ModalContext } from '~/app/context';
 import i18n from '~/app/i18n';
 
@@ -19,7 +19,7 @@ import { selectUserInfo } from '~/features/Authenticate/authSlice';
 import { useCallbackPrompt } from '~/hooks';
 import { BellIcon, Logo } from '../Icons';
 import PopperMenu from './components/PopperMenu';
-import Search from './components/Search';
+import Search from '../Search';
 
 const MOCK_DATA = (t) => ({
   public: [
@@ -132,12 +132,14 @@ const MOCK_DATA = (t) => ({
 const Header = ({ t }) => {
   const { isOpen, onOpen, onClose } = useContext(ModalContext);
   const userInfo = useSelector(selectUserInfo);
+  const location = useLocation();
 
   const [isBellClicked, setIsBellClicked] = useState(false);
   const isTouched = useRef(false);
 
-  const { isShow, onConfirm, onCancel } = useCallbackPrompt(false);
-  // const { isShow, onConfirm, onCancel } = useCallbackPrompt(userInfo ? false : true);
+  const { isShow, onConfirm, onCancel } = useCallbackPrompt(
+    location.pathname === ROUTES_PATH.common.home ? (userInfo ? false : true) : false
+  );
 
   useEffect(() => {
     if (userInfo && !isTouched.current) onConfirm();
@@ -196,7 +198,7 @@ const Header = ({ t }) => {
         <AuthenticateModal isShow={isShow} isOpen={isOpen} onClose={onClose} onCancel={onCancel} />
       )}
       <Box display="flex" justifyContent="space-between" alignItems="center" p="0.5rem 0">
-        <Link to={ROUTES_PATH.home}>
+        <Link to={ROUTES_PATH.common.home}>
           <Logo width="11.8rem" height="5rem" />
         </Link>
 
@@ -205,7 +207,7 @@ const Header = ({ t }) => {
 
         {/* actions */}
         <Box display="flex" gap="1.6rem" alignItems="center">
-          <Link to={ROUTES_PATH.upload}>
+          <Link to={ROUTES_PATH.user.upload}>
             <Button
               leftIcon={<BsPlusLg />}
               variant="outline-default"

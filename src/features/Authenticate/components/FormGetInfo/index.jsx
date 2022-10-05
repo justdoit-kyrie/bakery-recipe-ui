@@ -20,7 +20,7 @@ const defaultValues = {
   username: '',
 };
 
-const FormGetInfo = ({ initialRef, handleCloseModal }) => {
+const FormGetInfo = ({ initialRef, handleCloseModal = () => {} }) => {
   const {
     control,
     handleSubmit,
@@ -94,10 +94,6 @@ const FormGetInfo = ({ initialRef, handleCloseModal }) => {
       </Button>
     </form>
   );
-};
-
-FormGetInfo.defaultProps = {
-  handleCloseModal: () => {},
 };
 
 export default FormGetInfo;

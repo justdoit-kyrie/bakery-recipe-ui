@@ -3,15 +3,25 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import axiosInstance from '~/app/api';
 import { EditorField, ImageField, InputField, SelectField } from '~/components/Form-field';
-import { CONTENT_POST_LENGTH, EDITOR_EMPTY_STRING, FORM_TYPE, SELECT_TYPE } from '~/constants';
+import {
+  API_CODE,
+  API_PATH,
+  CONTENT_POST_LENGTH,
+  EDITOR_EMPTY_STRING,
+  FORM_TYPE,
+  SELECT_TYPE,
+} from '~/constants';
 import { useCallbackPrompt, useDebounce } from '~/hooks';
 import { getBannerFromContent } from '~/utils';
 import DiscardModal from '../Discard';
 import IngredientsField from '../Ingredients';
 import PreviewModal from '../Preview';
 import SaveDraftModal from '../SaveDraft';
+import { optionTemplate } from './templates';
 
 const schema = yup
   .object({
@@ -23,14 +33,6 @@ const schema = yup
     type: yup.object().required('Type is a required field'),
   })
   .required();
-
-const MOCK_DATA = {
-  categories: [
-    { id: 0, name: 'category1' },
-    { id: 1, name: 'category2' },
-    { id: 2, name: 'category3' },
-  ],
-};
 
 const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubmit, formType }) => {
   const {
@@ -53,13 +55,16 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
   const title = useDebounce(watch('title'), 800);
   const type = useDebounce(watch('type'), 800);
 
-  const [banner, setBanner] = useState(defaultValues.banner);
+  const [banner, setBanner] = useState(defaultValues.image);
   const [ingredients, setIngredients] = useState(defaultValues.ingredients);
   const [categories, setCategories] = useState([]);
   const [isSaveDraft, setIsSaveDraft] = useState(false);
+  const [filteredValue, setFilteredValue] = useState(null);
+  const [_order] = useState(-1);
 
   const isReset = useRef(false);
   const isSave = useRef(false);
+  const isResetManually = useRef(false);
 
   const { isShow, onConfirm, onCancel } = useCallbackPrompt(
     formType === FORM_TYPE.edit ? false : isSaveDraft
@@ -75,7 +80,11 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
       _banner = getBannerFromContent(data.content);
     }
     // call api
-    _handleSubmit({ data: { ...data, banner: _banner, ingredients } });
+    _handleSubmit({ ...data, image: _banner, ingredients });
+    if (formType === FORM_TYPE.add) {
+      isResetManually.current = true;
+      handleResetForm();
+    }
   };
 
   const handleResetForm = () => {
@@ -93,9 +102,38 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
     handleUmountForm({ title, content, type, banner: _banner, ingredients });
   };
 
+  const searchIngredients = (event) => {
+    setTimeout(() => {
+      let _filteredIngredients;
+      if (!event.query.trim().length) {
+        _filteredIngredients = [...categories];
+      } else {
+        _filteredIngredients = categories.filter((item) => {
+          return item.categoryName.toLowerCase().includes(event.query.toLowerCase());
+        });
+      }
+
+      setFilteredValue(_filteredIngredients);
+    }, 250);
+  };
+
+  const fetchData = async () => {
+    try {
+      const { code, message, data } = await axiosInstance.get(API_PATH.categories.getList, {
+        params: { _order },
+      });
+      if (+code === API_CODE.success) {
+        setCategories(data);
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   useEffect(() => {
-    // call api get list categories
-    setCategories(MOCK_DATA.categories);
+    fetchData();
   }, []);
 
   // handle whether show save draft modal
@@ -175,7 +213,7 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
               <ImageField
                 name="image"
                 label="cover"
-                imageUrl={defaultValues.banner}
+                imageUrl={defaultValues.image}
                 setImageUrl={setBanner}
                 textHelper={[
                   'Accepted file types: jpeg, jpg, png, gif, tiff',
@@ -183,20 +221,24 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
                 ]}
                 isReset={isReset}
                 isSave={isSave}
+                isResetManually={isResetManually}
+                formType={formType}
               />
 
               <Box w="50%">
                 <SelectField
                   type={SELECT_TYPE.autoCompleted}
                   name="type"
-                  options={categories}
                   label="what's type do you make?"
                   placeholder="Select categories"
-                  dropdown
-                  field="name"
-                  forceSelection
+                  field="categoryName"
+                  suggestions={filteredValue}
+                  completeMethod={searchIngredients}
                   control={control}
                   errors={errors}
+                  itemTemplate={(option, selectedValue) =>
+                    optionTemplate(option, selectedValue, 'categoryName')
+                  }
                 />
               </Box>
 
