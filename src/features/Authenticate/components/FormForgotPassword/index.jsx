@@ -5,8 +5,15 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
+import { default as axios } from '~/app/api';
 import { CodeField, InputField, PasswordField } from '~/components/Form-field';
-import { CODE_GMAIL_LENGTH, EMAIL_REGEX, PASSWORD_REGEX_FULL } from '~/constants';
+import {
+  API_CODE,
+  API_PATH,
+  CODE_GMAIL_LENGTH,
+  EMAIL_REGEX,
+  PASSWORD_REGEX_FULL,
+} from '~/constants';
 import { login } from '../../authSlice';
 
 const schema = yup
@@ -52,15 +59,33 @@ const FormForgotPassword = ({ initialRef, handleCloseModal, setLoading }) => {
 
   const dispatch = useDispatch();
 
-  const onSubmit = (data) => {
-    // call api
-    setLoading(true);
-    console.log({ data });
-    setTimeout(() => {
-      dispatch(login({ userInfo: { ...data }, accessToken: 1, refreshToken: 2 }));
+  const onSubmit = async (data) => {
+    try {
+      setLoading(true);
+      const { code } = await axios.post(API_PATH.users.forgotPassword, {
+        email: data.email,
+        newPassword: data.password,
+        code: data.code,
+      });
+      // auto login with new password
+      if (+code === API_CODE.success) {
+        const { accessToken, refreshToken, user } = await axios.post(API_PATH.users.login, {
+          email: data.email,
+          password: data.password,
+        });
+
+        if (accessToken && refreshToken) {
+          dispatch(
+            login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
+          );
+          handleCloseModal();
+        }
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
       setLoading(false);
-      handleCloseModal();
-    }, 1000);
+    }
   };
 
   return (
@@ -80,7 +105,7 @@ const FormForgotPassword = ({ initialRef, handleCloseModal, setLoading }) => {
         control={control}
         errors={errors}
         getValues={getValues}
-        isValid={!!watchEmail}
+        isValid={EMAIL_REGEX.test(watchEmail)}
         setError={setError}
         clearErrors={clearErrors}
       />

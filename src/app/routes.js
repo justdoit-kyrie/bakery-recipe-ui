@@ -1,6 +1,6 @@
 import { NotFound as NotFoundPage } from '~/components';
 import { ROUTES_PATH, ROUTES_TYPE } from '~/constants';
-import { HomePage, PostDetailPage, ProfilePage, UploadPage } from '~/features';
+import { CollectionsPage, HomePage, PostDetailPage, ProfilePage, UploadPage } from '~/features';
 import { DefaultLayout, HeaderOnlyLayout } from '~/layouts';
 
 /**
@@ -23,6 +23,19 @@ const publicRoutes = [
     component: ProfilePage,
     layout: HeaderOnlyLayout,
   },
+
+  {
+    type: ROUTES_TYPE.public,
+    path: ROUTES_PATH.postDetail,
+    component: PostDetailPage,
+    layout: HeaderOnlyLayout,
+  },
+  {
+    type: ROUTES_TYPE.public,
+    path: ROUTES_PATH.notFound,
+    component: NotFoundPage,
+    layout: null,
+  },
   {
     type: ROUTES_TYPE.public,
     path: ROUTES_PATH.upload,
@@ -37,15 +50,8 @@ const publicRoutes = [
   },
   {
     type: ROUTES_TYPE.public,
-    path: ROUTES_PATH.postDetail,
-    component: PostDetailPage,
-    layout: HeaderOnlyLayout,
-  },
-  {
-    type: ROUTES_TYPE.public,
-    path: ROUTES_PATH.notFound,
-    component: NotFoundPage,
-    layout: null,
+    path: ROUTES_PATH.collections,
+    component: CollectionsPage,
   },
 ];
 

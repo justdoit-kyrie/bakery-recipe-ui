@@ -1,6 +1,8 @@
 import { Box, Center, Flex, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { HiChevronDown } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
+import { ROUTES_PATH } from '~/constants';
 import PostItem from '../PostItem';
 
 const MOCK_DATA = {
@@ -113,9 +115,11 @@ const CategoryPosts = ({ margin, data }) => {
           cursor: 'pointer',
         }}
       >
-        <Text fontSize="2rem" fontWeight="700">
-          View more
-        </Text>
+        <Link to={ROUTES_PATH.collections.replace(':category', type.toLowerCase())}>
+          <Text fontSize="2rem" fontWeight="700">
+            View more
+          </Text>
+        </Link>
       </Box>
     </Box>
   );

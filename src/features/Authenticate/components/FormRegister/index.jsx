@@ -3,16 +3,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
-import { CodeField, InputField, PasswordField, SelectField } from '~/components/Form-field';
+import { CodeField, InputField, PasswordField } from '~/components/Form-field';
 import {
+  API_CODE,
+  API_PATH,
   AUTHENTICATE_FORM_TYPE,
   CODE_GMAIL_LENGTH,
-  DOB_DAY,
   EMAIL_REGEX,
   PASSWORD_REGEX_FULL,
 } from '~/constants';
-import { optionTemplate, selectedValueTemplate } from './templates';
+import { register } from '../../authSlice';
+import { default as axios } from '~/app/api';
 
 const schema = yup
   .object({
@@ -21,19 +24,18 @@ const schema = yup
       .required('Email is a required field')
       .matches(EMAIL_REGEX, 'Enter a valid email address'),
     password: yup.string().required('Password is a required field').matches(PASSWORD_REGEX_FULL),
-    role: yup.string().required(),
     code: yup.string().length(CODE_GMAIL_LENGTH, 'Enter 6-digit code'),
   })
   .required();
 
 const defaultValues = {
+  userName: 'string',
   email: '',
   password: '',
-  role: null,
   code: '',
 };
 
-const FormRegister = ({ initialRef, setType }) => {
+const FormRegister = ({ initialRef, setType, setLoading }) => {
   const {
     control,
     handleSubmit,
@@ -47,11 +49,25 @@ const FormRegister = ({ initialRef, setType }) => {
   });
   const watchEmail = watch('email');
   const watchPassword = watch('password');
+  const dispatch = useDispatch();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // call api & set data to redux
-    console.log({ data });
-    typeof setType === 'function' && setType(AUTHENTICATE_FORM_TYPE.getInfo);
+    try {
+      setLoading(true);
+      const { code, user } = await axios.post(API_PATH.users.register, {
+        ...data,
+        userName: data.email.split('@')[0],
+      });
+      if (+code === API_CODE.success) {
+        dispatch(register({ userInfo: user }));
+        typeof setType === 'function' && setType(AUTHENTICATE_FORM_TYPE.getInfo);
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -61,19 +77,6 @@ const FormRegister = ({ initialRef, setType }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <SelectField
-        name="role"
-        options={DOB_DAY}
-        label="Who're you?"
-        placeholder="Select role"
-        control={control}
-        errors={errors}
-        valueTemplate={selectedValueTemplate}
-        itemTemplate={optionTemplate}
-        filter={false}
-        showClear={false}
-      />
-
       <InputField
         initialRef={initialRef}
         name="email"
@@ -84,7 +87,12 @@ const FormRegister = ({ initialRef, setType }) => {
 
       <PasswordField control={control} errors={errors} watchPassword={watchPassword} />
 
-      <CodeField control={control} errors={errors} isValid={!!watchEmail} getValues={getValues} />
+      <CodeField
+        control={control}
+        errors={errors}
+        isValid={EMAIL_REGEX.test(watchEmail)}
+        getValues={getValues}
+      />
 
       <Button
         as={motion.button}

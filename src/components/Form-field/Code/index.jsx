@@ -1,19 +1,29 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
+import { default as axios } from '~/app/api';
+import { API_CODE, API_PATH } from '~/constants';
 import InputField from '../Input';
 
 const CodeField = ({ control, errors, isValid, getValues }) => {
   const [loading, setLoading] = useState(false);
 
-  const handleSendCode = () => {
-    setLoading(true);
-    const email = getValues('email');
-    // call api send code gmail
-    setTimeout(() => {
-      console.log({ email });
+  const handleSendCode = async () => {
+    try {
+      setLoading(true);
+      const email = getValues('email');
+      const { code, message } = await axios.get(API_PATH.users.sendEmail, {
+        params: { email },
+      });
+      if (+code === API_CODE.success) {
+        toast.success(message);
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

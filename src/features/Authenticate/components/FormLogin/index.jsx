@@ -4,10 +4,19 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import { default as axios } from '~/app/api';
+
 import { InputField } from '~/components/Form-field';
 import { EyesClose, EyesOpen } from '~/components/Icons';
-import { AUTHENTICATE_FORM_TYPE, COLOR_MODE_TYPE, PASSWORD_REGEX_FULL } from '~/constants';
+import {
+  API_PATH,
+  AUTHENTICATE_FORM_TYPE,
+  COLOR_MODE_TYPE,
+  EMAIL_REGEX,
+  PASSWORD_REGEX_FULL,
+} from '~/constants';
 import { login } from '../../authSlice';
 
 const schema = yup
@@ -46,15 +55,32 @@ const FormLogin = ({ initialRef, handleCloseModal, setLoading, setHistoryForm, s
   const dispatch = useDispatch();
   const [pwdType, setPwdType] = useState(true);
 
-  const onSubmit = (data) => {
-    // call api
-    setLoading(true);
-    console.log({ data });
-    setTimeout(() => {
-      dispatch(login({ userInfo: { ...data }, accessToken: 1, refreshToken: 2 }));
-      handleCloseModal();
+  const onSubmit = async ({ username, password }) => {
+    // còn đang thiếu handle error
+    try {
+      setLoading(true);
+      const apiProps = EMAIL_REGEX.test(username)
+        ? {
+            email: username,
+            password,
+          }
+        : {
+            userName: username,
+            password,
+          };
+      const { accessToken, refreshToken, user } = await axios.post(API_PATH.users.login, apiProps);
+
+      if (accessToken && refreshToken) {
+        dispatch(
+          login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
+        );
+        handleCloseModal();
+      }
+    } catch (error) {
+      toast.error(error);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleTogglePwd = () => setPwdType(!pwdType);

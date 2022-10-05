@@ -15,7 +15,6 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { BsChevronLeft } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
-import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import firebase from '~/app/firebase';
 import { Loading } from '~/components';
@@ -38,12 +37,9 @@ const MOCK_DATA = {
   ],
 };
 
-const AuthenticateModal = ({ isOpen, onClose }) => {
+const AuthenticateModal = ({ isShow, isOpen, onClose, onCancel }) => {
   const { others_login } = MOCK_DATA;
   const { colorMode } = useColorMode();
-  const location = useLocation();
-
-  console.log({ home: location });
 
   const initialRef = useRef(null);
   const [historyForm, setHistoryForm] = useState([AUTHENTICATE_FORM_TYPE.login]);
@@ -69,7 +65,7 @@ const AuthenticateModal = ({ isOpen, onClose }) => {
           />
         );
       case AUTHENTICATE_FORM_TYPE.register:
-        return <FormRegister initialRef={initialRef} setType={setType} />;
+        return <FormRegister initialRef={initialRef} setType={setType} setLoading={setLoading} />;
       case AUTHENTICATE_FORM_TYPE.forgotPassword:
         return (
           <FormForgotPassword
@@ -182,8 +178,8 @@ const AuthenticateModal = ({ isOpen, onClose }) => {
     <Modal
       closeOnOverlayClick={false}
       initialFocusRef={initialRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isShow ? isShow : isOpen}
+      onClose={isShow ? onCancel : onClose}
       size="3xl"
       isCentered
     >

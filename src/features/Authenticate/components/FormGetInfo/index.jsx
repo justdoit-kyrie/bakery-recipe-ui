@@ -3,8 +3,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { InputField } from '~/components/Form-field';
+import { login, selectUserInfo } from '../../authSlice';
+import { default as axios } from '~/app/api';
+import { API_PATH } from '~/constants';
 
 const schema = yup
   .object({
@@ -27,16 +31,28 @@ const FormGetInfo = ({ initialRef, handleCloseModal }) => {
     resolver: yupResolver(schema),
   });
 
+  const userInfo = useSelector(selectUserInfo);
+  const dispatch = useDispatch();
+
   const onSubmit = (data) => {
-    // call API & set userInfo into redux
+    // call API update user userName & set userInfo into redux
     console.log({ data });
-    handleActions();
-    if (typeof handleCloseModal === 'function') handleCloseModal();
+
+    handleCloseModal();
   };
 
-  const handleActions = () => {
-    console.log('inside handle actions');
-    // set userInfo into redux
+  const handleActions = async () => {
+    const { accessToken, refreshToken, user } = await axios.post(API_PATH.users.login, {
+      email: userInfo.email,
+      password: userInfo.password,
+    });
+
+    if (accessToken && refreshToken) {
+      dispatch(
+        login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
+      );
+      handleCloseModal();
+    }
   };
 
   return (

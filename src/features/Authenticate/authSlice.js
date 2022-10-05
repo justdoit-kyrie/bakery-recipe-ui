@@ -11,8 +11,8 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setLoading: (state) => {
-      state.loading = true;
+    setLoading: (state, { payload = true }) => {
+      state.loading = payload;
     },
     login: (state, { payload: { userInfo, accessToken, refreshToken } }) => {
       state.loading = false;
@@ -23,11 +23,17 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.loading = false;
       state.userInfo = null;
+      state.accessToken = '';
+      state.refreshToken = '';
+    },
+    register: (state, { payload: { userInfo } }) => {
+      state.loading = false;
+      state.userInfo = userInfo;
     },
   },
 });
 
-export const { setLoading, login, logout } = authSlice.actions;
+export const { setLoading, login, logout, register } = authSlice.actions;
 
 export const selectAuth = (state) => state.auth;
 export const selectUserInfo = (state) => state.auth.userInfo;
