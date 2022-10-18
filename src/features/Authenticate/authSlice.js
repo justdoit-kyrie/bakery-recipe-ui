@@ -3,8 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   loading: true,
   userInfo: null,
-  accessToken: '',
-  refreshToken: '',
 };
 
 export const authSlice = createSlice({
@@ -15,21 +13,17 @@ export const authSlice = createSlice({
       state.loading = false;
       state.userInfo = payload;
     },
-    login: (state, { payload: { userInfo, accessToken, refreshToken } }) => {
+    login: (state, { payload }) => {
       state.loading = false;
-      state.userInfo = userInfo;
-      state.accessToken = accessToken;
-      state.refreshToken = refreshToken;
+      state.userInfo = payload;
     },
     logout: (state) => {
       state.loading = false;
       state.userInfo = null;
-      state.accessToken = '';
-      state.refreshToken = '';
     },
-    register: (state, { payload: { userInfo } }) => {
+    register: (state, { payload }) => {
       state.loading = false;
-      state.userInfo = userInfo;
+      state.userInfo = payload;
     },
     failed: (state) => {
       state.loading = false;

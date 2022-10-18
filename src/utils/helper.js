@@ -2,14 +2,6 @@ import moment from 'moment';
 import { AppRoutes } from '~/app/routes';
 import { IMAGE_TYPES } from '~/constants';
 
-export const getFullYear = (min, max) => {
-  const result = [];
-  for (let index = min; index <= max; index++) {
-    result.push(index);
-  }
-  return result;
-};
-
 export const imageValidatorHandler = (file) => {
   if (!IMAGE_TYPES.includes(file.type)) {
     return {
@@ -30,6 +22,14 @@ export const getBannerFromContent = (content) => {
   return content.substring(positionStart, positionEnd).replace('<img src="', '');
 };
 
+export const getSubDomain = () => {
+  const { host, hostName } = window.location;
+  return host
+    .split('.')
+    .slice(0, host.includes(hostName) ? -1 : -2)
+    .join('');
+};
+
 export const getAppRoutes = () => {
   const subDomain = getSubDomain();
 
@@ -40,13 +40,4 @@ export const getAppRoutes = () => {
   const app = AppRoutes.find((route) => route.subDomain === subDomain);
   if (!app) return main.router;
   return app.router;
-};
-
-export const getSubDomain = () => {
-  const host = window.location.host;
-  const hostName = window.location.hostname;
-  return host
-    .split('.')
-    .slice(0, host.includes(hostName) ? -1 : -2)
-    .join('');
 };

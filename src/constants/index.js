@@ -1,4 +1,4 @@
-//#region routes variables
+// #region routes variables
 export const ROUTES_TYPE = {
   public: 0,
   private: 1,
@@ -14,16 +14,14 @@ export const ROUTES_PATH = {
     postDetail: '/post/@:id',
     upload: '/upload',
     collections: '/collections/:category',
-  },
-  admin: {
-    statistic: '/statistic',
-    users: '/users',
-    reports: '/reports',
+    planning: '/planning',
+    reviewing: '/reviewing',
+    reviewingDetail: '/reviewing/:id',
   },
 };
-//#endregion
+// #endregion
 
-//#region variables
+// #region variables
 export const AUTHENTICATE_FORM_TYPE = {
   login: 'login',
   register: 'register',
@@ -39,54 +37,36 @@ export const OTHERS_LOGIN = {
 export const OTHERS_LOGIN_ERROR_CODE = {
   popup_close: 'auth/popup-closed-by-user',
 };
-//#endregion
+// #endregion
 
-//#region color mode variables
+// #region color mode variables
 export const COLOR_MODE_TYPE = {
   code: 'color',
   dark: 'dark',
   light: 'light',
 };
-//#endregion
+// #endregion
 
-//#region language variables
+// #region language variables
 export const LANGUAGES = {
   code: 'language',
   English: 'en',
   ['Tiếng Việt (Việt Nam)']: 'vi',
 };
-//#endregion
+// #endregion
 
 export const LOGOUT_TYPE = 'logoout';
 
-//#region regex
+// #region regex
 export const PASSWORD_REGEX_FULL =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 export const PASSWORD_REGEX_WITHOUT_LENGTH =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}$/;
-//#endregion
-
-export const DOB_DAY = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-  28, 29, 30, 31,
-];
-export const DOB_MONTH = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-export const DOB_YEAR = [1900, new Date().getFullYear() - 1];
+export const PHONE_REGEX =
+  /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{3,4})(?: *x(\d+))?\s*$/;
+// #endregion
 
 export const CODE_GMAIL_LENGTH = 6;
 
@@ -114,29 +94,22 @@ export const SELECT_TYPE = {
   autoCompleted: 'autoCompleted',
 };
 
-export const MY_POST_TYPE = {
-  recent: 'recent',
-  draft: 'draft',
-};
-
-export const MY_POST_DISPLAY = {
-  grid: 'grid',
-  list: 'list',
-};
-
 export const API_PATH = {
+  auth: {
+    login: '/auth/login',
+    register: '/auth/register',
+    forgotPassword: '/auth/forgot',
+    getProfile: '/auth/:id',
+  },
   users: {
-    login: '/users/login',
-    register: '/users/register',
     sendEmail: '/users/email',
-    forgotPassword: '/users/forgot',
     getProfile: '/users/getProfile',
   },
   products: {
     getList: '/products',
   },
   categories: {
-    getList: '/categories',
+    base: '/categories',
   },
   posts: {
     getList: '/posts',
@@ -148,11 +121,18 @@ export const API_PATH = {
     getSave: '/repost/:id',
     interactive: '/interactive',
     like: '/interactive/like',
-    report: '/reports'
+    report: '/reports',
   },
   comment: {
-    post: '/comment/cmt'
-  }
+    post: '/comment/cmt',
+  },
+  reviews: {
+    base: '/reviews',
+    byCategory: '/reviews/categories',
+  },
+  news: {
+    base: '/news',
+  },
 };
 
 export const API_CODE = {
@@ -169,7 +149,6 @@ export const GENDER_ENUM = ['male', 'female'];
 export const ROLE = {
   common: 'common',
   user: 'user',
-  admin: 'admin',
 };
 
 export const UPLOAD_STATUS_ENUM = ['inActive', 'active', 'draft'];
@@ -183,3 +162,20 @@ export const UPLOAD_STATUS = {
 export const POST_MAX_LENGTH = 10;
 
 export const INGREDIENTS_TYPE = ['KG', 'ML', 'UNIT'];
+
+export const HOME_FEATURES = {
+  news: 'news',
+  reviewing: 'reviewing',
+};
+
+export const NO_IMAGE_URL =
+  'https://media.istockphoto.com/vectors/default-image-icon-vector-missing-picture-page-for-website-design-or-vector-id1357365823?k=20&m=1357365823&s=612x612&w=0&h=ZH0MQpeUoSHM3G2AWzc8KkGYRg4uP_kuu0Za8GFxdFc=';
+
+/**
+ * list of public route in the system
+ * * if page is private, when you add it to this list will not working successfully
+ */
+export const ROUTES_NON_BLOCK = [
+  ROUTES_PATH.user.collections.replace(':category', ''),
+  ROUTES_PATH.user.reviewing,
+];

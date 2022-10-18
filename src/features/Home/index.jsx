@@ -1,219 +1,194 @@
-import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
+import { Box, Button, Circle, Flex, Image, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { default as axios } from '~/app/api';
-import { API_CODE, API_PATH, POST_MAX_LENGTH, ROUTES_PATH } from '~/constants';
-import CategoryPosts from './components/CategoryPosts';
-import PostItem from './components/PostItem';
+import { useNavigate } from 'react-router-dom';
+
+import ACTION1 from '~/assets/images/action-1.png';
+import BANNER from '~/assets/images/home-banner.png';
+import MANAGE2 from '~/assets/images/manage-2.jpg';
+import { HOME_FEATURES, ROUTES_PATH } from '~/constants';
+import { CategoryServices, NewsServices, ReviewServices } from '~/services';
+import Features from './components/Features';
 
 const MOCK_DATA = {
-  margin: '3rem',
-  popular_size: 5,
+  _marginTop: '80px',
 };
 
 const Home = () => {
-  const { margin, popular_size } = MOCK_DATA;
+  const { _marginTop } = MOCK_DATA;
+  const navigate = useNavigate();
 
-  const [newestPosts, setNewestPosts] = useState([]);
-  const [popularPosts, setPopularPosts] = useState([]);
-
-  const [firstPost, setFirstPost] = useState();
-
-  const _order = useRef(-1);
-  const popularTotalRecords = useRef();
+  const [categories, setCategories] = useState([]);
+  const [reviewList, setReviewList] = useState([]);
+  const [newsList, setNewsList] = useState([]);
+  const _pageSize = useRef(4);
 
   const fetchData = async () => {
-    try {
-      const [
-        { code: newestCode, data: newestData },
-        { code: popularCode, data: popularData, totalRecords },
-      ] = await Promise.all([
-        axios.get(API_PATH.posts.getList, {
-          params: {
-            _by: 'createdDate',
-            _order: _order.current,
-            pageSize: 7,
-          },
-        }),
-        axios.get(API_PATH.posts.getList, {
-          params: {
-            _by: 'like',
-            _order: _order.current,
-            pageSize: 12,
-          },
-        }),
-      ]);
-
-      if (+newestCode === API_CODE.success) {
-        newestData[newestData.length - 1].isContentAbsolute = true;
-        newestData[newestData.length - 2].isContentAbsolute = true;
-        setFirstPost(newestData[0]);
-        setNewestPosts(newestData.slice(1));
-      }
-
-      if (+popularCode === API_CODE.success) {
-        popularData[popularData.length - 1].isContentAbsolute = true;
-        setPopularPosts(popularData);
-        popularTotalRecords.current = totalRecords;
-      }
-    } catch (error) {
-      console.log({ error });
-    }
+    Promise.all([
+      ReviewServices.getList(
+        (data) => {
+          setReviewList(data);
+        },
+        {
+          PageSize: _pageSize.current,
+        }
+      ),
+      NewsServices.getList(
+        (data) => {
+          setNewsList(data);
+        },
+        {
+          PageSize: _pageSize.current,
+        }
+      ),
+      CategoryServices.getList((data) => {
+        setCategories(data.map((item) => ({ ...item, src: MANAGE2 })));
+      }),
+    ]);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const renderPopularPost = ({ image, categoryName, title, id }, key) => (
-    <Flex
-      key={key}
-      as={motion.div}
-      direction="column"
-      gap="2rem"
-      flex="1"
-      whileHover={{ scale: 1.05, transition: { type: 'spring' } }}
-      sx={{
-        '&:hover img': {
-          transition: 'all 1.5s linear 0.25s',
-          transform: 'scale(1.2)',
-        },
-      }}
-    >
-      <Box position="relative">
-        <Link to={ROUTES_PATH.user.postDetail.replace(':id', id)}>
-          <Box
-            className="post-image"
-            clipPath="polygon(30px 0,100% 0,calc(100% - 30px) 100%,0 100%)"
-            cursor="pointer"
-          >
-            <Image maxH="28rem" w="100%" src={image} alt="popular-post" />
-          </Box>
-        </Link>
-        <Text
-          p="4px 8px"
-          textTransform="uppercase"
-          fontWeight="600"
-          bg="red.400"
-          display="inline-block"
-          position="absolute"
-          left="50%"
-          bottom={0}
-          transform="translateX(-50%) translateY(50%)"
-        >
-          {categoryName}
-        </Text>
-      </Box>
-
-      <Text p="2rem" pr="2.5rem" fontSize="1.8rem" textAlign="center" ml="-30px">
-        {title}
-      </Text>
-    </Flex>
-  );
-
   return (
-    <Box h="100%" pt="9rem" pb="5rem">
-      {/* newsest */}
-      <Flex id="newest" direction="column" gap={margin} mb={margin} className="container">
-        <PostItem isContentAbsolute minH="70rem" isAnimation={false} {...firstPost} />
+    <Box>
+      <Box className="container">
+        <Image src={BANNER} />
 
-        <Grid
-          templateColumns="repeat(2, 1fr)"
-          templateRows="repeat(4, 19rem)"
-          // eslint-disable-next-line quotes
-          templateAreas={`"h1 h5" "h2 h5" "h3 h6" "h4 h6"`}
-          gap={margin}
-        >
-          {newestPosts.map((item, idx) => {
-            delete item.categoryID;
-            return (
-              <GridItem key={idx} area={`h${idx + 1}`}>
-                <PostItem {...item} />
-              </GridItem>
-            );
-          })}
-        </Grid>
-      </Flex>
-
-      {/* popular */}
-      <Box bg="textColor.400" className="lg-container" color="white" position="relative">
-        <Text
-          textTransform="uppercase"
-          p="4px 1rem"
-          fontSize="2.6rem"
-          fontWeight={700}
-          bg="red.400"
-          display="inline-block"
-          position="absolute"
-          left="50%"
-          transform="translateX(-50%)"
-        >
-          popular posts
-        </Text>
+        {/* content */}
         <Flex
-          px="1.5rem"
-          pt="8rem"
-          sx={{
-            '& > :first-of-type .post-image': {
-              clipPath: 'polygon(0px 0,100% 0,calc(100% - 30px) 100%,0 100% )',
-            },
-            '& > :last-child .post-image': {
-              clipPath: 'polygon(30px 0,100% 0,calc(100% - 0px) 100%,0 100% )',
-            },
-          }}
+          direction="column"
+          position="absolute"
+          zIndex="1"
+          top="50%"
+          left="50%"
+          transform="translate(-50%,-50%)"
+          color="white"
+          justify="center"
+          align="center"
+          maxW="639px"
         >
-          {popularPosts.slice(0, popular_size).map((item, key) => renderPopularPost(item, key))}
+          <Text
+            as="h2"
+            fontWeight={600}
+            fontSize="40px"
+            lineHeight="53px"
+            textAlign="center"
+            maxW="610px"
+          >
+            Lên Kế Hoạch Cho Chuyến Đi Sắp Tới
+          </Text>
+          <Text as="h1" fontWeight={600} fontSize="85px" lineHeight="106px">
+            NGAY NÀO!!!
+          </Text>
+          <Text as="p" fontWeight="400" fontSize="20px" lineHeight="23px" mt="14px">
+            Thiết lập một lộ trình hoàn hảo dành riêng cho bạn cùng với Tarebo
+          </Text>
+          <Button
+            mt="26px"
+            bg="green.500"
+            borderRadius="100rem"
+            onClick={() => navigate(ROUTES_PATH.user.planning)}
+          >
+            Kế hoạch
+          </Button>
         </Flex>
       </Box>
 
-      <Grid
-        mt={margin}
-        className="container"
-        templateColumns="repeat(2, 1fr)"
-        templateRows="repeat(4, 19rem)"
-        // eslint-disable-next-line quotes
-        templateAreas={`"h1 h5" "h2 h5" "h3 h6" "h4 h6"`}
-        gap={margin}
-      >
-        {popularPosts.slice(popular_size).map((item, idx) => {
-          delete item.categoryID;
-          return (
-            <GridItem key={idx} area={`h${idx + 1}`}>
-              <PostItem {...item} />
-            </GridItem>
-          );
-        })}
-      </Grid>
+      <Features
+        title="Hôm nay có gì nào?"
+        desc="Cùng Tarebo tìm hiểu những thông tin du lịch mới nhất!"
+        data={newsList}
+        route={ROUTES_PATH.user.collections.replace(':category', HOME_FEATURES.news)}
+        mt={_marginTop}
+        type={HOME_FEATURES.news}
+      />
 
-      {popularTotalRecords.current > POST_MAX_LENGTH && (
-        <Box
-          mt={margin}
-          backgroundImage="linear-gradient(180deg, rgb(255, 76, 58),rgb(255, 76, 58))"
-          backgroundPosition="4px 1.5rem"
-          backgroundRepeat="no-repeat"
-          backgroundSize="100% 20px"
-          display="inline-block"
-          position="relative"
-          left="50%"
-          transform="translateX(-50%)"
-          p="0 1rem"
-          _hover={{
-            transition: 'all 0.25s linear',
-            backgroundImage: 'linear-gradient(180deg,#ffc200,#ffc200)',
-            cursor: 'pointer',
-          }}
-        >
-          <Link to={ROUTES_PATH.user.collections.replace(':category', 'popular')}>
-            <Text fontSize="2rem" fontWeight="700">
-              View more
+      <Features
+        isCentered
+        title="Cảm nhận cá nhân/Đánh giá"
+        desc="Nơi bạn có thể tìm thấy nnhững bài viết, bình luận đánh giá về các địa điểm, địa danh, chất lượng dịch vụ v..v... của mọi người."
+        data={reviewList}
+        route={ROUTES_PATH.user.collections.replace(':category', HOME_FEATURES.reviewing)}
+        mt={_marginTop}
+      />
+
+      {/* future plan */}
+      <Flex className="container" maxW="50%" m={`${_marginTop} auto 0`} justify="space-between">
+        {categories.map((item, idx) => (
+          <Flex
+            key={idx}
+            justify="center"
+            align="center"
+            direction="column"
+            gap="20px"
+            maxW="181px"
+          >
+            <Circle
+              bg="rgba(253, 228, 208, 1)"
+              w="120px"
+              h="120px"
+              cursor="pointer"
+              onClick={() =>
+                navigate(ROUTES_PATH.user.collections.replace(':category', item.name.toLowerCase()))
+              }
+            >
+              <Flex w="60%" h="60%" justify="center" align="center">
+                <Image src={item.src} />
+              </Flex>
+            </Circle>
+            <Text
+              fontWeight="700"
+              fontSize="32px"
+              lineHeight="37px"
+              textAlign="center"
+              color="green.500"
+              cursor="pointer"
+              _hover={{ textDecoration: 'underline' }}
+              onClick={() =>
+                navigate(ROUTES_PATH.user.collections.replace(':category', item.name.toLowerCase()))
+              }
+            >
+              {item.name}
             </Text>
-          </Link>
-        </Box>
-      )}
+          </Flex>
+        ))}
+      </Flex>
 
-      {/* category */}
-      <CategoryPosts margin={margin} />
+      <Flex className="container" mt={_marginTop} paddingX="50px">
+        <Box position="relative" flex="1">
+          <Image src={ACTION1} borderRadius="17px" w="100%" h="100%" />
+          <Image
+            src={ACTION1}
+            w="289px"
+            h="259px"
+            borderRadius="17px"
+            position="absolute"
+            top="50%"
+            right="0"
+            transform="translateX(50%) translateY(-50%)"
+          />
+        </Box>
+        <Flex justify="flex-end" flex="1" color="green.500" pl="100px">
+          <Box maxW="468px">
+            <Text fontWeight="700" fontSize="64px" lineHeight="74px">
+              Bạn Cảm Thấy Thế Nào?
+            </Text>
+            <Text fontWeight="400" fontSize="20px" lineHeight="23px" my="30px">
+              Hãy chia sẻ những trải nghiệm cũng như đánh giá của bạn về những nơi bạn đã đến trong
+              chuyến đi tại đây nhé!
+            </Text>
+            <Button
+              variant="outline-default"
+              borderColor="#00C0A6"
+              borderRadius="100px"
+              onClick={() => navigate(ROUTES_PATH.user.upload)}
+            >
+              Đăng Bài
+            </Button>
+          </Box>
+        </Flex>
+      </Flex>
     </Box>
   );
 };

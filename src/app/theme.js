@@ -31,6 +31,7 @@ export const theme = extendTheme({
     },
     green: {
       400: 'rgb(11, 224, 155)',
+      500: '#32A071',
     },
     yellow: {
       400: 'rgba(245,206,90, 1)',

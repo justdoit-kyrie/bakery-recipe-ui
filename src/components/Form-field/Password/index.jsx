@@ -64,7 +64,7 @@ const PasswordField = ({
               color={
                 watchPassword.length >= 8 && watchPassword.length <= 20
                   ? 'green.400'
-                  : `${errors['password'] ? 'red.300' : 'textColor.200'}`
+                  : `${errors.password ? 'red.300' : 'textColor.200'}`
               }
               lineHeight="1"
               fontSize="1.2rem"
@@ -85,7 +85,7 @@ const PasswordField = ({
               color={
                 watchPassword.match(PASSWORD_REGEX_WITHOUT_LENGTH)
                   ? 'green.400'
-                  : `${errors['password'] ? 'red.300' : 'textColor.200'}`
+                  : `${errors.password ? 'red.300' : 'textColor.200'}`
               }
               lineHeight="1"
               fontSize="1.2rem"

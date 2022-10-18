@@ -3,7 +3,7 @@ import { API_CODE, API_PATH } from '~/constants';
 
 export const getList = async (callback, params) => {
   try {
-    const { code, data, ...pagination } = await axios.get(API_PATH.categories.base, {
+    const { code, data, ...pagination } = await axios.get(API_PATH.news.base, {
       params,
     });
     if (+code === API_CODE.success) {

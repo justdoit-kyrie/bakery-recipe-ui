@@ -1,4 +1,5 @@
 import { useContext, useEffect } from 'react';
+// eslint-disable-next-line camelcase
 import { UNSAFE_NavigationContext } from 'react-router-dom';
 
 export default function useBlocker(blocker, when = true) {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import { default as axios } from '~/app/api';
 import { Loading } from '~/components';
 import { API_CODE, API_PATH, FORM_TYPE, UPLOAD_STATUS, UPLOAD_STATUS_ENUM } from '~/constants';
@@ -17,15 +18,6 @@ const defaultValues = {
   ingredients: [],
 };
 
-// eslint-disable-next-line no-unused-vars
-const data = {
-  type: {
-    categoryId: 1,
-    categoryName: 'Mon Au',
-    post: null,
-  },
-};
-
 const UploadPage = () => {
   const { id } = useParams();
   const userInfo = useSelector(selectUserInfo);
@@ -34,6 +26,24 @@ const UploadPage = () => {
   const [isEdit, setIsEdit] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // type not already loaded from api
+      const { code, data } = await axios.get(API_PATH.posts.getDetail.replace(':id', id));
+      if (+code === API_CODE.success) {
+        setInitialValues({
+          ...data,
+          ingredients: data.postProducts.map((item) => ({ name: item, value: item.quantity })),
+        });
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUmountForm = async (data) => {
     const { title, content, image, type, ingredients } = data;
@@ -108,24 +118,6 @@ const UploadPage = () => {
     } finally {
       setLoading(false);
       if (isEdit) fetchData();
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      // type not already loaded from api
-      const { code, data } = await axios.get(API_PATH.posts.getDetail.replace(':id', id));
-      if (+code === API_CODE.success) {
-        setInitialValues({
-          ...data,
-          ingredients: data.postProducts.map((item) => ({ name: item, value: item.quantity })),
-        });
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setLoading(false);
     }
   };
 

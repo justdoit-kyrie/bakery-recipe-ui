@@ -31,25 +31,56 @@ import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 
 const MOCK_DATA = {
-  others_login: [
+  _othersLogin: [
     { icon: FcGoogle, label: 'Continue with Google', provider: OTHERS_LOGIN.google },
     { icon: FacebookLogo, label: 'Continue with Facebook', provider: OTHERS_LOGIN.facebook },
   ],
 };
 
-const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () => {} }) => {
-  const { others_login } = MOCK_DATA;
+const AuthenticateModal = ({
+  isShow,
+  isOpen,
+  onClose = () => {},
+  onCancel = () => {},
+  defaultType = AUTHENTICATE_FORM_TYPE.login,
+}) => {
+  const { _othersLogin } = MOCK_DATA;
   const { colorMode } = useColorMode();
 
   const initialRef = useRef(null);
   const [historyForm, setHistoryForm] = useState([AUTHENTICATE_FORM_TYPE.login]);
   const [isLevel, setIsLevel] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState(AUTHENTICATE_FORM_TYPE.login);
+  const [type, setType] = useState(defaultType);
 
   useEffect(() => {
     if (isLevel) setType(historyForm[historyForm.length - 1]);
   }, [historyForm]);
+
+  const handleOthersLogin = (provider) => {
+    let AuthProvider = GoogleAuthProvider;
+    if (provider === OTHERS_LOGIN.facebook) AuthProvider = FacebookAuthProvider;
+
+    setLoading(true);
+    signInWithPopup(firebase.getAuth(), new AuthProvider())
+      .then((result) => {
+        const userInfo = result.user;
+        // call API to handle register this userInfo and get token
+        console.log({ userInfo });
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        if (error.code === OTHERS_LOGIN_ERROR_CODE.popup_close) {
+          toast.error('Pop up close during processing !');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+        onClose();
+      });
+  };
+
+  const handleBackForm = () => setHistoryForm((prev) => prev.slice(0, prev.length - 1));
 
   const renderForm = () => {
     switch (type) {
@@ -102,7 +133,7 @@ const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () =
   };
 
   const renderOthersLogin = () =>
-    others_login.map((item, idx) => {
+    _othersLogin.map((item, idx) => {
       const Icon = item.icon;
       return (
         <Box
@@ -142,37 +173,6 @@ const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () =
         </Box>
       );
     });
-
-  const handleOthersLogin = (provider) => {
-    let AuthProvider = GoogleAuthProvider;
-    switch (provider) {
-      case OTHERS_LOGIN.facebook:
-        AuthProvider = FacebookAuthProvider;
-        break;
-    }
-    setLoading(true);
-    signInWithPopup(firebase.getAuth(), new AuthProvider())
-      .then((result) => {
-        const userInfo = result.user;
-        // call API to handle register this userInfo and get token
-        console.log({ userInfo });
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        switch (error.code) {
-          case OTHERS_LOGIN_ERROR_CODE.popup_close: {
-            toast.error('Pop up close during processing !');
-            break;
-          }
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-        onClose();
-      });
-  };
-
-  const handleBackForm = () => setHistoryForm((prev) => prev.slice(0, prev.length - 1));
 
   return (
     <Modal
@@ -257,7 +257,7 @@ const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () =
                     }
                     position="absolute"
                     zIndex={-1}
-                  ></Text>
+                  />
                 </Box>
 
                 {renderOthersLogin()}

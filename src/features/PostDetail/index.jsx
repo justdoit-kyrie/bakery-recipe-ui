@@ -19,19 +19,19 @@ import {
   RadioGroup,
   Text,
 } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
 import Moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
+import { Loading } from '~/components';
 import { API_CODE, API_PATH } from '~/constants';
 import { CategoryServices } from '~/services';
 import { selectUserInfo } from '../Authenticate/authSlice';
 import Comment from './components/Comment';
-import { Loading } from '~/components';
 
 const author = {
   firstName: 'Marco',
@@ -93,7 +93,7 @@ const PostDetail = () => {
   }, []);
 
   useEffect(() => {
-    //call api save post
+    // call api save post
     (async () => {
       if (postDetail) {
         try {
@@ -147,19 +147,19 @@ const PostDetail = () => {
     })();
   }, [report]);
 
-  const handleLike = async (like) => {
+  const handleLike = async (_like) => {
     try {
       setLoading(true);
       const { code, message } = await axiosInstance.post(API_PATH.posts.like, {
         PostId: id,
-        IsLike: like,
+        IsLike: _like,
         UserId: userInfo.id,
       });
 
       if (like) {
         setPostDetail((prev) => {
           const _prev = { ...prev };
-          setLike(like);
+          setLike(_like);
           _prev.like += 1;
 
           return _prev;
@@ -167,7 +167,7 @@ const PostDetail = () => {
       } else {
         setPostDetail((prev) => {
           const _prev = { ...prev };
-          setLike(like);
+          setLike(_like);
           _prev.like -= 1;
 
           return _prev;
@@ -236,13 +236,11 @@ const PostDetail = () => {
             <Box color="20232E" fontSize="20PX" fontWeight="650PX">
               INGREDIENTS:
             </Box>
-            {postDetail?.postProducts?.map((product, idx) => {
-              return (
-                <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
-                  - {product.productName}
-                </Box>
-              );
-            })}
+            {postDetail?.postProducts?.map((product, idx) => (
+              <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
+                - {product.productName}
+              </Box>
+            ))}
             <Box fontSize="15px" color="#7A7A7A" m="25px 0px" p="25px 0px">
               {postDetail?.content}
             </Box>
@@ -318,13 +316,11 @@ const PostDetail = () => {
             >
               CATEGORY
             </Box>
-            {category?.map((cate, idx) => {
-              return (
-                <Box key={idx} color="20232E" fontSize="20px" fontWeight="650" mb="15px">
-                  <Link>- {cate.categoryName}</Link>
-                </Box>
-              );
-            })}
+            {category?.map((cate, idx) => (
+              <Box key={idx} color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+                <Link to="/"> - {cate.categoryName}</Link>
+              </Box>
+            ))}
           </Box>
           <Box mt="20px" p="10px" align="center">
             <Box

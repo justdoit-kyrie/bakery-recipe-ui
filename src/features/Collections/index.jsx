@@ -1,8 +1,8 @@
 import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ROUTES_PATH } from '~/constants';
-import { CategoryServices, PostServices } from '~/services';
+import { HOME_FEATURES, NO_IMAGE_URL, ROUTES_PATH } from '~/constants';
+import { CategoryServices, NewsServices, ReviewServices } from '~/services';
 
 const CollectionsPage = () => {
   const { category } = useParams();
@@ -16,35 +16,51 @@ const CollectionsPage = () => {
   const _currentPage = useRef(1);
 
   const fetchData = async () => {
-    if (category === 'popular') {
-      PostServices.getList(
-        (data, pagination) => {
-          setLists(data);
-          setPagination(pagination);
-        },
-        {
-          pageSize: _pageSize.current,
-          _order: -1,
-          _by: 'createdDate',
-        }
-      );
-      return;
-    }
-    const data = await CategoryServices.getList({ _order: -1 });
-    PostServices.getListByCategory(
-      (data, pagination) => {
-        setLists(data);
-        setPagination(pagination);
-      },
-      {
-        pageSize: _pageSize.current,
-        _order: -1,
-        _by: 'createdDate',
-        categoryID: data.find((item) => item.categoryName.toLowerCase() === category.toLowerCase())
-          .categoryId,
+    switch (category) {
+      case HOME_FEATURES.news: {
+        NewsServices.getList(
+          (_data, _pagination) => {
+            setLists(_data);
+            setPagination(_pagination);
+          },
+          {
+            pageSize: _pageSize.current,
+            _order: -1,
+          }
+        );
+        break;
       }
-    );
-    setCategories(data);
+      case HOME_FEATURES.reviewing: {
+        ReviewServices.getList(
+          (_data, _pagination) => {
+            setLists(_data);
+            setPagination(_pagination);
+          },
+          {
+            pageSize: _pageSize.current,
+            _order: -1,
+          }
+        );
+        break;
+      }
+      default: {
+        const { data } = await CategoryServices.getList();
+        ReviewServices.getListByCategory(
+          (_data, _pagination) => {
+            setLists(_data);
+            setPagination(_pagination);
+          },
+          {
+            pageSize: _pageSize.current,
+            _order: -1,
+            categoriesID: data.find((item) => item.name.toLowerCase() === category.toLowerCase())
+              .id,
+          }
+        );
+        setCategories(data);
+        break;
+      }
+    }
   };
 
   useEffect(() => {
@@ -52,47 +68,37 @@ const CollectionsPage = () => {
   }, []);
 
   const fetchMoreData = () => {
-    try {
-      if (category === 'popular') {
-        PostServices.getList(
-          (data, pagination) => {
-            setLists((prev) => [...prev, ...data]);
-            setPagination(pagination);
+    switch (category) {
+      case HOME_FEATURES.news: {
+        break;
+      }
+      case HOME_FEATURES.reviewing: {
+        break;
+      }
+      default: {
+        ReviewServices.getListByCategory(
+          (_data, _pagination) => {
+            setLists((prev) => [...prev, ..._data]);
+            setPagination(_pagination);
           },
           {
             pageNumber: _currentPage.current + 1,
             pageSize: _pageSize.current,
             _order: -1,
-            _by: 'createdDate',
+            categoryID: categories.find(
+              (item) => item.name.toLowerCase() === category.toLowerCase()
+            ).id,
           }
         );
-        return;
+        break;
       }
-
-      PostServices.getListByCategory(
-        (data, pagination) => {
-          setLists((prev) => [...prev, ...data]);
-          setPagination(pagination);
-        },
-        {
-          pageNumber: _currentPage.current + 1,
-          pageSize: _pageSize.current,
-          _order: -1,
-          _by: 'createdDate',
-          categoryID: categories.find(
-            (item) => item.categoryName.toLowerCase() === category.toLowerCase()
-          ).categoryId,
-        }
-      );
-    } catch (error) {
-      console.log({ error });
     }
   };
 
   const renderCategories = () =>
     categories.map((item, idx) => {
       const passProps =
-        item.categoryName.toLowerCase() === category.toLowerCase()
+        item.name.toLowerCase() === category.toLowerCase()
           ? {
               backgroundImage: 'linear-gradient(180deg, #fff06b, #fff06b)',
               backgroundRepeat: 'no-repeat',
@@ -120,11 +126,9 @@ const CollectionsPage = () => {
             backgroundSize: '100% 10px',
           }}
           {...passProps}
-          onClick={() =>
-            navigate(ROUTES_PATH.user.collections.replace(':category', item.categoryName))
-          }
+          onClick={() => navigate(ROUTES_PATH.user.collections.replace(':category', item.name))}
         >
-          {item.categoryName}
+          {item.name}
         </Text>
       );
     });
@@ -133,7 +137,7 @@ const CollectionsPage = () => {
     lists.map((item, key) => (
       <GridItem key={key}>
         <Flex direction="column" h="100%">
-          <Image src={item.image} alt="post" w="100%" maxH="28rem" minH="28rem"></Image>
+          <Image src={item.image || NO_IMAGE_URL} alt="post" w="100%" maxH="28rem" minH="28rem" />
           <Flex direction="column" p="1rem" cursor="pointer" flex="1">
             <Text
               textTransform="uppercase"
@@ -166,7 +170,7 @@ const CollectionsPage = () => {
             </Text>
 
             <Text as="p" fontSize="1.2rem" color="textColor.200" mt="auto">
-              {item.authorName}
+              {`${item?.user?.firstName} ${item?.user?.lastName}`}
             </Text>
           </Flex>
         </Flex>
@@ -183,7 +187,7 @@ const CollectionsPage = () => {
           w="100%"
           h="100%"
           objectFit="cover"
-        ></Image>
+        />
         <Box
           position="absolute"
           top="50%"

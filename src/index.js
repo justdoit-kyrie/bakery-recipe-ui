@@ -1,7 +1,7 @@
+import 'normalize.css/normalize.css';
 import 'primeicons/primeicons.css';
-import 'primereact/resources/primereact.min.css'; //core css
-import 'primereact/resources/themes/lara-light-indigo/theme.css'; //theme
-import '../node_modules/normalize.css/normalize.css';
+import 'primereact/resources/primereact.min.css'; // core css
+import 'primereact/resources/themes/lara-light-indigo/theme.css'; // theme
 
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import React, { Suspense } from 'react';
@@ -25,9 +25,9 @@ root.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ChakraProvider resetCSS theme={theme}>
-          <Toast />
           <Router>
             <Suspense fallback={<Loading />}>
+              <Toast />
               {/* <Toast /> */}
               <ColorModeScript initialColorMode={theme.config.initialColorMode} />
               <App />
