@@ -172,3 +172,4 @@ const Comment = ({ postDetail, fetchData }) => {
 };
 
 export default Comment;
+``;

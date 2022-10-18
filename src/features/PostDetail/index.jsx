@@ -1,37 +1,26 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-key */
 import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Grid,
   GridItem,
   HStack,
   Image,
   Link,
-  // Link,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverTrigger,
-  Radio,
-  RadioGroup,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import Moment from 'moment';
-import { useSelector } from 'react-redux';
 
-import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
-import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import axiosInstance from '~/app/api';
-import { API_CODE, API_PATH } from '~/constants';
-import { CategoryServices } from '~/services';
-import { selectUserInfo } from '../Authenticate/authSlice';
-import Comment from './components/Comment';
-import { Loading } from '~/components';
+import User1 from '~/assets/images/comment-author-01.jpg';
+import Dislike from '~/assets/images/dislike.png';
+import Like from '~/assets/images/like.png';
+import Picture from '~/assets/images/reus.jpg';
+// import User2 from '~/assets/images/comment-author-02.jpg';
+// import User3 from '~/assets/images/comment-author-03.jpg';
 
 const author = {
   firstName: 'Marco',
@@ -42,159 +31,88 @@ const author = {
   dob: '01-01-2001',
 };
 
+const post = {
+  id: 0,
+  author: 'Marco Reus',
+  title: 'The prince with crystal legs of Dortmund',
+  type: 'European',
+  content:
+    "Borussia Dortmund skipper Marco Reus faces missing the upcoming Qatar World Cup with Germany after being stretchered off in Saturday's derby match against Schalke. Reus, 33, had to leave the pitch aided by Dortmund medical staff in the first half following a collision with Schalke’s Florian Flick. The Dortmund captain has been plagued by injuries in the build up to major international tournaments before with his latest injury creating further cause for concern. Reus unnaturally rolled his ankle as he and Flick both challenged for the ball and was left in tears as he lay on the turf receiving treatment. Eventually it was decided the German needed to leave the pitch via stretcher with four medical personnel taking him back down the tunnel on a stretcher. The yellow wall of the Signal Iduna Park rose to their feet to give their long-serving player a standing ovation as Reus exited the pitch to undergo more tests to determine the severity of his injury. With just over two months to go until the winter World Cup kicks off, Reus now faces the prospect of having to undergo a lengthy rehabilitation process. Reus was selected as part of national team coach Hansi Flick's upcoming Nations League squad for matches against Hungary and England at the end of September. Flick will now be left sweating on the fitness of the experienced winger who is one of the more experienced members of the youthful-looking Germany squad. Reus previously missed Germany’s World Cup win in 2014 with an ankle injury sustained in a warm-up game that ruled hi m out of the entire tournament before a groin injury ruled him out of the 2016 Euros. The German then played in his nations unsuccessful World Cup defence in Russia in 2018. He then opted to skip the next European Championship in England to recover from domestic football with his Bundesliga club.",
+  created_date: '17 September 2022',
+  like: 11,
+};
+const comments = [
+  {
+    id: 1,
+    username: 'Haaland',
+    content: 'Dưới đáy xã hội',
+    replyto: null,
+    created_date: '17 September 2022',
+  },
+  {
+    id: 2,
+    username: 'Ronaldo',
+    content: '???',
+    replyto: 1,
+    created_date: '17 September 2022',
+  },
+  {
+    id: 3,
+    username: 'Khoasian',
+    content: 'King Kai!!!',
+    replyto: null,
+    created_date: '17 September 2022',
+  },
+  {
+    id: 4,
+    username: 'Thịnh-sama',
+    content: 'boku no pico no1',
+    replyto: null,
+    created_date: '17 September 2022',
+  },
+  {
+    id: 5,
+    username: 'Pic0',
+    content: '(o･ω･o)',
+    replyto: 4,
+    created_date: '17 September 2022',
+  },
+];
+
 const PostDetail = () => {
-  const { id } = useParams();
-  const userInfo = useSelector(selectUserInfo);
+  useEffect(() => {
+    //call api load post-detail, load category, load author
+  });
 
-  const [save, setSave] = useState();
-  const [click, setClick] = useState(false);
-  const [like, setLike] = useState();
-  const [value, setValue] = useState(-1);
-  const [report, setReport] = useState(false);
-  const [postDetail, setPostDetail] = useState();
-  const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
 
-  const fetchData = async () => {
+  let handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      const [
-        data,
-        { code: postDetailCode, data: postDetailData },
-        { code: interactiveCode, data: interactiveData },
-      ] = await Promise.all([
-        CategoryServices.getList({ _all: true }),
-        axiosInstance.get(API_PATH.posts.getDetail.replace(':id', id)),
-        axiosInstance.get(API_PATH.posts.interactive, {
-          params: { userId: userInfo?.id, postID: id },
+      let res = await fetch('url', {
+        method: 'POST',
+        body: JSON.stringify({
+          content: content,
+          postid: 0,
+          replyto: null,
+          userid: null,
         }),
-      ]);
-
-      if (+postDetailCode === API_CODE.success) {
-        postDetailData.createdDate = Moment().format('MMM Do YY');
-        setPostDetail(postDetailData);
-      }
-      if (+interactiveCode === API_CODE.success) {
-        setSave(interactiveData.isSave);
-        setLike(interactiveData.isLike);
-      }
-      if (data) {
-        setCategory(data);
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    //call api save post
-    (async () => {
-      if (postDetail) {
-        try {
-          if (click) {
-            if (save) {
-              const { code, message } = await axiosInstance.post(API_PATH.posts.savePost, {
-                PostId: id,
-                UserId: userInfo.id,
-              });
-              if (+code === API_CODE.success) {
-                toast.success(message);
-              } else {
-                toast.error(message);
-              }
-            } else {
-              const { code, message } = await axiosInstance.delete(API_PATH.posts.savePost, {
-                data: { UserId: userInfo.id, RepostId: id },
-              });
-              if (+code === API_CODE.success) {
-                toast.success(message);
-              } else {
-                toast.error(message);
-              }
-            }
-          }
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    })();
-  }, [save]);
-
-  useEffect(() => {
-    (async () => {
-      if (value !== -1) {
-        try {
-          const { code, message } = await axiosInstance.post(API_PATH.posts.report, {
-            PostId: id,
-            RepostProblem: value,
-            UserId: userInfo.id,
-          });
-          if (+code === API_CODE.success) {
-            toast.success(message);
-          } else {
-            toast.error(message);
-          }
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    })();
-  }, [report]);
-
-  const handleLike = async (like) => {
-    try {
-      setLoading(true);
-      const { code, message } = await axiosInstance.post(API_PATH.posts.like, {
-        PostId: id,
-        IsLike: like,
-        UserId: userInfo.id,
       });
-
-      if (like) {
-        setPostDetail((prev) => {
-          const _prev = { ...prev };
-          setLike(like);
-          _prev.like += 1;
-
-          return _prev;
-        });
+      // let resJson = await res.json();
+      if (res.status === 200) {
+        // successfully
       } else {
-        setPostDetail((prev) => {
-          const _prev = { ...prev };
-          setLike(like);
-          _prev.like -= 1;
-
-          return _prev;
-        });
-      }
-      if (+code === API_CODE.success) {
-        toast.success(message);
-      } else {
-        toast.error(message);
+        // error
       }
     } catch (err) {
       console.log(err);
-    } finally {
-      setLoading(false);
     }
   };
-
-  // const renderCustomContent = () => {
-  //   return <div>123</div>;
-  // };
-
   return (
-    <Box h="100%" pt="9rem" pb="5rem" position="relative">
-      {loading && <Loading />}
+    <Box h="100%" pt="9rem" pb="5rem">
       <Grid templateColumns="repeat(3, 1fr)" gap="3rem" className="container">
         <GridItem colSpan={2}>
-          <Image maxH="30rem" w="100%" src={postDetail?.image} alt="reus" />
+          <Image maxH="30rem" w="100%" src={Picture} alt="reus" />
           <Box
             padding="40px"
             borderRight="1px"
@@ -209,7 +127,7 @@ const PostDetail = () => {
               fontWeight="900"
               color="#f48840"
             >
-              {postDetail?.categoryName}
+              {post.type}
             </Box>
             <Box
               fontSize="24px"
@@ -219,92 +137,144 @@ const PostDetail = () => {
               color="#20232e"
               m="10px 0px 12px 0px"
             >
-              {postDetail?.title}
+              {post.title}
             </Box>
             <HStack spacing="10px">
-              <Text fontSize="14px" color="#AAAAAA">
-                {postDetail?.authorName}
+              <Text fontSize="14px" color="#AAAAAA" ml="8px">
+                {post.author}
               </Text>
               <Text fontSize="14px" color="#AAAAAA">
                 {' '}
                 |{' '}
               </Text>
               <Text fontSize="14px" color="#AAAAAA" mr="8px">
-                {postDetail?.createdDate}
+                {post.created_date}
               </Text>
             </HStack>
-            <Box color="20232E" fontSize="20PX" fontWeight="650PX">
-              INGREDIENTS:
-            </Box>
-            {postDetail?.postProducts?.map((product, idx) => {
-              return (
-                <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
-                  - {product.productName}
-                </Box>
-              );
-            })}
             <Box fontSize="15px" color="#7A7A7A" m="25px 0px" p="25px 0px">
-              {postDetail?.content}
+              {post.content}
             </Box>
-            <Flex gap="50px" align="center">
-              {postDetail && (
-                <>
-                  <Box fontSize="20" fontWeight="bold">
-                    {postDetail?.like} Likes
-                  </Box>
-                  <Flex gap="40px" cursor="pointer">
-                    {like ? (
-                      <AiFillLike fontSize="4rem" onClick={() => handleLike(!like)} />
-                    ) : (
-                      <AiOutlineLike fontSize="4rem" onClick={() => handleLike(!like)} />
-                    )}
-                  </Flex>
-                </>
-              )}
-              <Button
-                onClick={() => {
-                  setSave(!save);
-                  setClick(true);
-                }}
-              >
-                {save ? 'Unsave' : 'Save'}
-              </Button>
-              {/* <PopperMenu trigger="click" renderCustomContent={renderCustomContent}>
-                <div>HELLO</div>
-              </PopperMenu> */}
-              <Popover>
-                <PopoverTrigger>
-                  <Button>Report</Button>
-                </PopoverTrigger>
-
-                <PopoverContent w="28rem">
-                  <PopoverArrow />
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <RadioGroup value={value} onChange={setValue}>
-                      <Flex direction="column" gap="2rem">
-                        <Flex fontWeight="800" direction="row" gap="2rem">
-                          <Radio w="4.5rem" value="0">
-                            <Text>Spam</Text>
-                          </Radio>
-                          <Radio w="8rem" value="1">
-                            <Text>Not Suitable Language</Text>
-                          </Radio>
-                          <Radio w="8rem" value="2">
-                            <Text>Not Suitable Type</Text>
-                          </Radio>
-                        </Flex>
-                        <Button onClick={() => setReport(!report)}>Submit</Button>
-                      </Flex>
-                    </RadioGroup>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
+            <Flex gap="50px">
+              <Image w="50px" h="50px" src={Like} /*onClick={handleLike} */ />
+              <Image w="50px" h="50px" src={Dislike} /*onClick={handleLike} */ />
             </Flex>
           </Box>
-          <Comment postDetail={postDetail} fetchData={fetchData} />
-        </GridItem>
+          <Box padding="40px" border="1px" borderColor="#eee">
+            <Box color="20232E" fontSize="18px" m="30px 0px 25px" p="0px 0px 15px" fontWeight="900">
+              {comments.length} COMMENTS
+            </Box>
+            {comments.map((item, idx) => {
+              var temp = item;
+              if (item.replyto == null) {
+                comments.map((item2) => {
+                  if (item2.replyto == item.id) {
+                    temp = item2;
+                  }
+                });
+                if (temp != item) {
+                  return (
+                    <Box key={idx}>
+                      <Grid templateRows="repeat(4, 1fr)" templateColumns="repeat(6, 1fr)">
+                        <GridItem rowSpan={4} colSpan={1}>
+                          <Image h="100px" w="100px" src={User1} />
+                        </GridItem>
+                        <GridItem colSpan={5} rowSpan={1}>
+                          <Flex gap="5">
+                            <Box fontSize="19" fontWeight="800">
+                              {item.username}
+                            </Box>
+                            <Box fontSize="14" color="#AAAAAA" mt="5px">
+                              {item.created_date}
+                            </Box>
+                          </Flex>
+                        </GridItem>
 
+                        <GridItem colSpan={5} rowSpan={3}>
+                          <Box fontSize="15" color="#7A7A7A">
+                            {item.content}
+                          </Box>
+                        </GridItem>
+                      </Grid>
+                      <Grid
+                        pl="80px"
+                        templateRows="repeat(4, 1fr)"
+                        templateColumns="repeat(6, 1fr)"
+                      >
+                        <GridItem rowSpan={4} colSpan={1}>
+                          <Image h="100px" w="100px" src={User1} />
+                        </GridItem>
+                        <GridItem colSpan={5} rowSpan={1} ml="17px">
+                          <Flex gap="5">
+                            <Box fontSize="19" fontWeight="800">
+                              {temp.username}
+                            </Box>
+                            <Box fontSize="14" color="#AAAAAA" mt="5px">
+                              {temp.created_date}
+                            </Box>
+                          </Flex>
+                        </GridItem>
+
+                        <GridItem colSpan={5} rowSpan={3} ml="20px">
+                          <Box fontSize="15" color="#7A7A7A">
+                            {temp.content}
+                          </Box>
+                        </GridItem>
+                      </Grid>
+                    </Box>
+                  );
+                }
+                return (
+                  <Grid templateRows="repeat(4, 1fr)" templateColumns="repeat(6, 1fr)">
+                    <GridItem rowSpan={4} colSpan={1}>
+                      <Image h="100px" w="100px" src={User1} />
+                    </GridItem>
+                    <GridItem colSpan={5} rowSpan={1}>
+                      <Flex gap="5">
+                        <Box fontSize="19" fontWeight="800">
+                          {item.username}
+                        </Box>
+                        <Box fontSize="14" color="#AAAAAA" mt="5px">
+                          {item.created_date}
+                        </Box>
+                      </Flex>
+                    </GridItem>
+
+                    <GridItem colSpan={5} rowSpan={3}>
+                      <Box fontSize="15" color="#7A7A7A">
+                        {item.content}
+                      </Box>
+                    </GridItem>
+                  </Grid>
+                );
+              }
+            })}
+          </Box>
+
+          <FormControl isRequired onSubmit={handleSubmit} mt="30px">
+            <FormLabel
+              color="20232E"
+              fontSize="18px"
+              m="30px 0px 0px"
+              p="0px 0px 15px"
+              fontWeight="900"
+            >
+              YOUR COMMENT
+            </FormLabel>
+            <Textarea
+              value={content}
+              h="150px"
+              overflow="auto"
+              ressize="vertical"
+              fontSize="13px"
+              mb="30px"
+              placeholder="Leave your comment here"
+              onChange={(e) => setContent(e.target.value)}
+            />
+            <Button type="submit" value="Submit">
+              Submit
+            </Button>
+          </FormControl>
+        </GridItem>
         <GridItem colSpan={1}>
           <Box border="4px" p="10px" borderColor="#eee">
             <Box
@@ -318,13 +288,21 @@ const PostDetail = () => {
             >
               CATEGORY
             </Box>
-            {category?.map((cate, idx) => {
-              return (
-                <Box key={idx} color="20232E" fontSize="20px" fontWeight="650" mb="15px">
-                  <Link>- {cate.categoryName}</Link>
-                </Box>
-              );
-            })}
+            <Box color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+              <Link>- Asian</Link>
+            </Box>
+            <Box color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+              <Link>- European</Link>
+            </Box>
+            <Box color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+              <Link>- Category 2</Link>
+            </Box>
+            <Box color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+              <Link>- Category 3</Link>
+            </Box>
+            <Box color="20232E" fontSize="20px" fontWeight="650" mb="15px">
+              <Link>- Category 4</Link>
+            </Box>
           </Box>
           <Box mt="20px" p="10px" align="center">
             <Box
@@ -338,21 +316,21 @@ const PostDetail = () => {
             >
               AUTHOR
             </Box>
-            <Image w="120px" h="100px" src={author.avatar} />
+            <Image w="120px" h="100px" src={User1} alt="reus" />
             <Box color="20232E" fontSize="20px" fontWeight="650">
-              {author?.firstName} {author?.lastName}
+              {author.firstName} {author.lastName}
             </Box>
             <Box fontSize="15px" color="7A7A7A">
-              {author?.email}
+              {author.email}
             </Box>
             <Box fontSize="15px" color="7A7A7A">
-              {author?.phone}
+              {author.phone}
             </Box>
             <Box fontSize="15px" color="7A7A7A">
-              {author?.gender}
+              {author.gender}
             </Box>
             <Box fontSize="15px" color="7A7A7A">
-              {author?.dob}
+              {author.dob}
             </Box>
           </Box>
         </GridItem>

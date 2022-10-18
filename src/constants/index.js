@@ -144,15 +144,7 @@ export const API_PATH = {
     getDetail: '/posts/:id',
     edit: '/posts/:id',
     getByCategory: '/posts/category',
-    savePost: '/repost',
-    getSave: '/repost/:id',
-    interactive: '/interactive',
-    like: '/interactive/like',
-    report: '/reports'
   },
-  comment: {
-    post: '/comment/cmt'
-  }
 };
 
 export const API_CODE = {
