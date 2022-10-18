@@ -42,7 +42,7 @@ const publicRoutes = {
       layout: HeaderOnlyLayout,
     },
     {
-      type: ROUTES_TYPE.public,
+      type: ROUTES_TYPE.private,
       path: ROUTES_PATH.user.postDetail,
       component: PostDetailPage,
       layout: HeaderOnlyLayout,
