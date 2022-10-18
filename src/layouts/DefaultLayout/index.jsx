@@ -31,9 +31,8 @@ const DefaultLayout = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (childrenElement.current && childrenElement.current.clientHeight > window.innerHeight) {
+    if (childrenElement.current && childrenElement.current.clientHeight > window.innerHeight)
       setPositionHeader('fixed');
-    }
   }, [childrenElement.current]);
 
   return (
@@ -62,7 +61,10 @@ const DefaultLayout = ({ children }) => {
           {children}
         </Box>
 
-        <Footer />
+        {/* footer */}
+        <Box bg="#fff" boxShadow="rgba(100, 100, 111, 0.2) 0px 7px 29px 0px">
+          <Footer />
+        </Box>
       </Flex>
     </Box>
   );

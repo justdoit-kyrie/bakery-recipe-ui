@@ -1,77 +1,117 @@
-import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import LOGO from '~/assets/images/footer-logo.png';
-import { ROUTES_PATH } from '~/constants';
-
-const MOCK_DATA = {
-  _categories: [
-    { to: ROUTES_PATH.common.home, label: 'Trang chủ' },
-    { to: ROUTES_PATH.user.planning, label: 'Kế hoạch' },
-    { to: ROUTES_PATH.user.reviewing, label: 'Review/ Booking' },
-    { to: ROUTES_PATH.common.home, label: 'Đánh giá' },
-  ],
-  _contact: [
-    { href: 'tel:+84905904964', label: '090 590 4964' },
-    { href: 'mailto:tareboapp@gmail.com', label: 'tareboapp@gmail.com' },
-  ],
-};
+import { Logo } from '../Icons';
 
 const Footer = () => {
-  const { _categories, _contact } = MOCK_DATA;
   return (
-    <Box py="70px" bg="green.500" mt="70px">
-      <Flex className="container" justify="space-between" align="flex-start">
-        <Image src={LOGO} />
+    <Box>
+      {/* Top */}
+      <Flex justify="space-between" align="center" p="5.6rem 0 4.8rem" className="container">
+        <Flex direction="column" maxW="36.8rem" gap="2rem">
+          <Logo width="11.8rem" height="5rem" />
+          <Text as="p" fontSize="22px" lineHeight="32px" fontWeight="500">
+            The online wholesale marketplace connecting independent retailers and brands around the
+            world.
+          </Text>
+        </Flex>
 
-        <Grid templateColumns="repeat(2, 1fr)" gap="30px">
-          <GridItem>
-            <Flex direction="column" color="#fff">
-              <Text as="h3" fontWeight="600" fontSize="28px" lineHeight="34px" mb="16px">
-                Danh mục
-              </Text>
-              <Flex direction="column" gap="15px">
-                {_categories.map((item, idx) => (
-                  <Link key={idx} to={item.to}>
-                    <Text
-                      fontWeight="500"
-                      fontSize="18px"
-                      lineHeight="18px"
-                      letterSpacing="0.105em"
-                      _hover={{ textDecoration: 'underline' }}
-                    >
-                      {item.label}
-                    </Text>
-                  </Link>
-                ))}
-              </Flex>
-            </Flex>
-          </GridItem>
+        <Flex
+          minW="39rem"
+          justify="space-between"
+          align="flex-start"
+          sx={{
+            '& > *': {
+              width: 'calc(calc(100% / 3) - 0.5rem)',
+            },
+          }}
+        >
+          <Flex
+            direction="column"
+            gap="0.5rem"
+            justify="flex-start"
+            align="flex-start"
+            sx={{
+              '& > *:not(:first-of-type)': {
+                cursor: 'pointer',
+              },
+            }}
+          >
+            <Text as="h2" className="text" mb="1rem">
+              Company
+            </Text>
+            <Text as="p">About Us</Text>
+            <Text as="p">Newsroom</Text>
+            <Text as="p">Careers</Text>
+            <Text as="p">Partnerships</Text>
+          </Flex>
 
-          <GridItem>
-            <Flex direction="column" color="#fff">
-              <Text as="h3" fontWeight="600" fontSize="28px" lineHeight="34px" mb="16px">
-                Liên hệ
-              </Text>
-              <Flex direction="column" gap="15px">
-                {_contact.map((item, idx) => (
-                  <a key={idx} href={item.href}>
-                    <Text
-                      fontWeight="500"
-                      fontSize="18px"
-                      lineHeight="18px"
-                      letterSpacing="0.105em"
-                      _hover={{ textDecoration: 'underline' }}
-                    >
-                      {item.label}
-                    </Text>
-                  </a>
-                ))}
-              </Flex>
-            </Flex>
-          </GridItem>
-        </Grid>
+          <Flex
+            direction="column"
+            gap="0.5rem"
+            justify="flex-start"
+            align="flex-start"
+            sx={{
+              '& > *:not(:first-of-type)': {
+                cursor: 'pointer',
+              },
+            }}
+          >
+            <Text as="h2" className="text" mb="1rem">
+              Support
+            </Text>
+            <Text as="p">Help Center</Text>
+            <Text as="p">Faire Markets</Text>
+            <Text as="p">Sell on Faire</Text>
+          </Flex>
+
+          <Flex
+            direction="column"
+            gap="0.5rem"
+            justify="flex-start"
+            align="flex-start"
+            sx={{
+              '& > *:not(:first-of-type)': {
+                cursor: 'pointer',
+              },
+            }}
+          >
+            <Text as="h2" className="text" mb="1rem">
+              Connect
+            </Text>
+            <Text as="p">Blog</Text>
+            <Text as="p">Instagram</Text>
+            <Text as="p">Facebook</Text>
+            <Text as="p">Twitter</Text>
+          </Flex>
+        </Flex>
       </Flex>
+
+      {/* bottom */}
+      <Box borderTop="1px solid rgb(0 0 0 / 12%)" p="2.4rem 0 3.2rem">
+        <Flex
+          className="lg-container"
+          gap="1.6rem"
+          align="center"
+          sx={{
+            '& > *': {
+              lineHeight: 1.2,
+              color: 'textColor.300',
+              cursor: 'pointer',
+            },
+            '& > *:not(:first-of-type)': {
+              pl: '1.6rem',
+              borderLeft: '1px solid black',
+            },
+          }}
+        >
+          <Text>©2022 Levain Bakery, Inc.</Text>
+          <Text>Terms of Service</Text>
+          <Text>Privacy Policy</Text>
+          <Text>Cookie Policy</Text>
+          <Text>IP Policy</Text>
+          <Text>Sitemap</Text>
+        </Flex>
+      </Box>
     </Box>
   );
 };

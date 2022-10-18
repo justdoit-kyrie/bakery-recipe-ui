@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { ROUTES_NON_BLOCK } from '~/constants';
 import useBlocker from './useBlocker';
 
 /**
@@ -44,26 +42,9 @@ export default function useCallbackPrompt(when) {
     if (confirmedNavigation && lastLocation) {
       navigate(lastLocation.location.pathname);
     }
-
-    // in if condition we are checking next location is inside list of non-authenticate route or not
-    if (
-      ROUTES_NON_BLOCK.some(
-        (v) =>
-          lastLocation?.location?.pathname?.includes(v) || lastLocation?.location?.pathname === v
-      )
-    ) {
-      navigate(lastLocation.location.pathname);
-    }
   }, [confirmedNavigation, lastLocation]);
 
-  useBlocker(
-    handleBlockedNavigation,
-    ROUTES_NON_BLOCK.some(
-      (v) => lastLocation?.location?.pathname?.includes(v) || lastLocation?.location?.pathname === v
-    )
-      ? false
-      : when
-  );
+  useBlocker(handleBlockedNavigation, when);
 
   return { isShow, onConfirm, onCancel };
 }

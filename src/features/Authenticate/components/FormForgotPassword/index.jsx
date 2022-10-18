@@ -4,12 +4,16 @@ import { motion } from 'framer-motion';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import * as yup from 'yup';
-
 import { default as axios } from '~/app/api';
-import { InputField, PasswordField } from '~/components/Form-field';
-import { API_CODE, API_PATH, EMAIL_REGEX, PASSWORD_REGEX_FULL } from '~/constants';
+import { CodeField, InputField, PasswordField } from '~/components/Form-field';
+import {
+  API_CODE,
+  API_PATH,
+  CODE_GMAIL_LENGTH,
+  EMAIL_REGEX,
+  PASSWORD_REGEX_FULL,
+} from '~/constants';
 import { login } from '../../authSlice';
 
 const schema = yup
@@ -25,18 +29,23 @@ const schema = yup
         PASSWORD_REGEX_FULL,
         'At least one lowercase, uppercase, numbers, and special characters'
       ),
+    code: yup.string().length(CODE_GMAIL_LENGTH, 'Enter 6-digit code'),
   })
   .required();
 
 const defaultValues = {
   email: '',
   password: '',
+  code: '',
 };
 
 const FormForgotPassword = ({ initialRef, handleCloseModal = () => {}, setLoading = () => {} }) => {
   const {
     control,
     handleSubmit,
+    getValues,
+    setError,
+    clearErrors,
     watch,
     formState: { errors, isValid },
   } = useForm({
@@ -45,6 +54,7 @@ const FormForgotPassword = ({ initialRef, handleCloseModal = () => {}, setLoadin
     resolver: yupResolver(schema),
   });
 
+  const watchEmail = watch('email');
   const watchPassword = watch('password');
 
   const dispatch = useDispatch();
@@ -52,14 +62,22 @@ const FormForgotPassword = ({ initialRef, handleCloseModal = () => {}, setLoadin
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      const { code, message } = await axios.post(API_PATH.auth.forgotPassword, data);
+      const { code } = await axios.post(API_PATH.users.forgotPassword, {
+        email: data.email,
+        newPassword: data.password,
+        code: data.code,
+      });
       // auto login with new password
       if (+code === API_CODE.success) {
-        toast.success(message);
-        const { code: _code, data: _data } = await axios.post(API_PATH.auth.login, data);
+        const { accessToken, refreshToken, user } = await axios.post(API_PATH.users.login, {
+          email: data.email,
+          password: data.password,
+        });
 
-        if (+_code === API_CODE.success) {
-          dispatch(login(_data));
+        if (accessToken && refreshToken) {
+          dispatch(
+            login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
+          );
           handleCloseModal();
         }
       }
@@ -83,6 +101,14 @@ const FormForgotPassword = ({ initialRef, handleCloseModal = () => {}, setLoadin
 
       <PasswordField control={control} errors={errors} watchPassword={watchPassword} />
 
+      <CodeField
+        control={control}
+        errors={errors}
+        getValues={getValues}
+        isValid={EMAIL_REGEX.test(watchEmail)}
+        setError={setError}
+        clearErrors={clearErrors}
+      />
       <Button
         as={motion.button}
         whileHover={{ scale: 1.03 }}

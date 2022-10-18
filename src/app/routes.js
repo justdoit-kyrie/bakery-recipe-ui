@@ -1,18 +1,21 @@
 import _ from 'lodash';
 import { Fragment, lazy } from 'react';
 import React, { Route, Routes } from 'react-router-dom';
-
-import { DefaultLayout, HeaderOnlyLayout } from '~/layouts';
 import { ROLE, ROUTES_PATH, ROUTES_TYPE } from '~/constants';
+
+const AdUsersPage = lazy(() => import('~/features/Admin/Users'));
+const AdStatisticPage = lazy(() => import('~/features/Admin/Statistics'));
 
 const NotFoundPage = lazy(() => import('~/components/NotFound'));
 const PrivateRoute = lazy(() => import('~/components/PrivateRoute'));
 
-const PlanningPage = lazy(() => import('~/features/Planning'));
 const UploadPage = lazy(() => import('~/features/Upload'));
+const ProfilePage = lazy(() => import('~/features/Profile'));
 const PostDetailPage = lazy(() => import('~/features/PostDetail'));
 const CollectionsPage = lazy(() => import('~/features/Collections'));
 const HomePage = lazy(() => import('~/features/Home'));
+
+import { DashboardLayout, DefaultLayout, HeaderOnlyLayout } from '~/layouts';
 
 /**
  * @param {string} type để phân loại public với private
@@ -25,12 +28,6 @@ const publicRoutes = {
   [ROLE.common]: [
     {
       type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.common.home,
-      component: HomePage,
-      layout: DefaultLayout,
-    },
-    {
-      type: ROUTES_TYPE.public,
       path: ROUTES_PATH.common.notFound,
       component: NotFoundPage,
       layout: HeaderOnlyLayout,
@@ -39,6 +36,12 @@ const publicRoutes = {
   [ROLE.user]: [
     {
       type: ROUTES_TYPE.public,
+      path: ROUTES_PATH.user.profile,
+      component: ProfilePage,
+      layout: HeaderOnlyLayout,
+    },
+    {
+      type: ROUTES_TYPE.private,
       path: ROUTES_PATH.user.postDetail,
       component: PostDetailPage,
       layout: HeaderOnlyLayout,
@@ -48,18 +51,30 @@ const publicRoutes = {
       path: ROUTES_PATH.user.collections,
       component: CollectionsPage,
     },
-
+  ],
+  [ROLE.admin]: [
     {
       type: ROUTES_TYPE.public,
-      path: `${ROUTES_PATH.user.upload}/@:id`,
-      component: UploadPage,
-      layout: HeaderOnlyLayout,
+      path: ROUTES_PATH.admin.statistic,
+      component: AdStatisticPage,
+    },
+    {
+      type: ROUTES_TYPE.public,
+      path: ROUTES_PATH.admin.dashboard,
+      component: AdUsersPage,
     },
   ],
 };
 
 const privateRoutes = {
-  [ROLE.common]: [],
+  [ROLE.common]: [
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.common.home,
+      component: HomePage,
+      layout: DefaultLayout,
+    },
+  ],
   [ROLE.user]: [
     {
       type: ROUTES_TYPE.private,
@@ -69,11 +84,12 @@ const privateRoutes = {
     },
     {
       type: ROUTES_TYPE.private,
-      path: ROUTES_PATH.user.planning,
-      component: PlanningPage,
-      layout: null,
+      path: `${ROUTES_PATH.user.upload}/@:id`,
+      component: UploadPage,
+      layout: HeaderOnlyLayout,
     },
   ],
+  [ROLE.admin]: [],
 };
 
 const ROUTES = _.mergeWith(publicRoutes, privateRoutes, (objValue, srcValue) => {
@@ -88,7 +104,7 @@ export const MainRouter = ({ ...passProps }) => (
       ({ component, layout, path, type }, idx) => {
         const Page = component;
         let Layout = DefaultLayout;
-        const WrapperComp = type === ROUTES_TYPE.private ? PrivateRoute : Fragment;
+        let WrapperComp = type === ROUTES_TYPE.private ? PrivateRoute : Fragment;
 
         if (layout === null) Layout = Fragment;
         else if (layout) Layout = layout;
@@ -116,8 +132,8 @@ export const AdminRouter = ({ ...passProps }) => (
     {[...ROUTES[ROLE.admin], ...ROUTES[ROLE.common]].map(
       ({ component, layout, path, type }, idx) => {
         const Page = component;
-        let Layout = DefaultLayout;
-        const WrapperComp = type === ROUTES_TYPE.private ? PrivateRoute : Fragment;
+        let Layout = DashboardLayout;
+        let WrapperComp = type === ROUTES_TYPE.private ? PrivateRoute : Fragment;
 
         if (layout === null) Layout = Fragment;
         else if (layout) Layout = layout;

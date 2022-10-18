@@ -10,9 +10,8 @@ const HeaderOnlyLayout = ({ children }) => {
   const childrenElement = useRef();
 
   useEffect(() => {
-    if (childrenElement.current && childrenElement.current.clientHeight > window.innerHeight) {
+    if (childrenElement.current && childrenElement.current.clientHeight > window.innerHeight)
       setPositionHeader('fixed');
-    }
   }, [childrenElement.current]);
 
   return (

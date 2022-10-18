@@ -5,22 +5,25 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import { default as axios } from '~/app/api';
 
 import { InputField } from '~/components/Form-field';
 import { EyesClose, EyesOpen } from '~/components/Icons';
 import {
+  API_CODE,
+  API_PATH,
   AUTHENTICATE_FORM_TYPE,
   COLOR_MODE_TYPE,
   EMAIL_REGEX,
   PASSWORD_REGEX_FULL,
 } from '~/constants';
-import { AuthServices } from '~/services';
 import { login } from '../../authSlice';
 
 const schema = yup
   .object({
-    email: yup.string().required('Enter email').matches(EMAIL_REGEX, 'Please enter valid email'),
+    username: yup.string().required('Enter user name or email'),
     password: yup
       .string()
       .required('Password is a required field')
@@ -32,7 +35,7 @@ const schema = yup
   .required();
 
 const defaultValues = {
-  email: '',
+  username: '',
   password: '',
 };
 
@@ -53,7 +56,7 @@ const FormLogin = ({
     resolver: yupResolver(schema),
   });
 
-  const watchEmail = watch('email');
+  const watchEmail = watch('username');
   const watchPassword = watch('password');
 
   const { colorMode } = useColorMode();
@@ -62,17 +65,41 @@ const FormLogin = ({
   const navigate = useNavigate();
   const [pwdType, setPwdType] = useState(true);
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    await AuthServices.login((_data) => {
-      dispatch(login(_data));
-      handleCloseModal();
+  const onSubmit = async ({ username, password }) => {
+    // còn đang thiếu handle error
+    try {
+      setLoading(true);
+      const apiProps = EMAIL_REGEX.test(username)
+        ? {
+            email: username,
+            password,
+          }
+        : {
+            userName: username,
+            password,
+          };
+      const { code, message, accessToken, refreshToken, user } = await axios.post(
+        API_PATH.users.login,
+        apiProps
+      );
 
-      if (location.state?.from === '/privateRoute' && location.state.to) {
-        return navigate(location.state.to);
+      if (+code === API_CODE.success) {
+        dispatch(
+          login({ userInfo: { ...user }, accessToken: accessToken, refreshToken: refreshToken })
+        );
+        handleCloseModal();
+
+        if (location.state?.from === '/privateRoute' && location.state.to) {
+          return navigate(location.state.to);
+        }
+      } else {
+        toast.error(message);
       }
-    }, data);
-    setLoading(false);
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTogglePwd = () => setPwdType(!pwdType);
@@ -88,9 +115,9 @@ const FormLogin = ({
     <form onSubmit={handleSubmit(onSubmit)}>
       <InputField
         initialRef={initialRef}
-        name="email"
-        label="Email"
-        placeholder="Email"
+        name="username"
+        label="Email or username"
+        placeholder="Email or Username"
         control={control}
         errors={errors}
       />

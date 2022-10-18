@@ -5,16 +5,17 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
-import { default as axios } from '~/app/api';
-import { InputField, PasswordField } from '~/components/Form-field';
+import { CodeField, InputField, PasswordField } from '~/components/Form-field';
 import {
   API_CODE,
   API_PATH,
   AUTHENTICATE_FORM_TYPE,
+  CODE_GMAIL_LENGTH,
   EMAIL_REGEX,
   PASSWORD_REGEX_FULL,
 } from '~/constants';
 import { register } from '../../authSlice';
+import { default as axios } from '~/app/api';
 
 const schema = yup
   .object({
@@ -23,18 +24,22 @@ const schema = yup
       .required('Email is a required field')
       .matches(EMAIL_REGEX, 'Enter a valid email address'),
     password: yup.string().required('Password is a required field').matches(PASSWORD_REGEX_FULL),
+    code: yup.string().length(CODE_GMAIL_LENGTH, 'Enter 6-digit code'),
   })
   .required();
 
 const defaultValues = {
+  userName: 'string',
   email: '',
   password: '',
+  code: '',
 };
 
 const FormRegister = ({ initialRef, setType = () => {}, setLoading = () => {} }) => {
   const {
     control,
     handleSubmit,
+    getValues,
     watch,
     formState: { errors, isValid },
   } = useForm({
@@ -42,6 +47,7 @@ const FormRegister = ({ initialRef, setType = () => {}, setLoading = () => {} })
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
+  const watchEmail = watch('email');
   const watchPassword = watch('password');
   const dispatch = useDispatch();
 
@@ -49,9 +55,12 @@ const FormRegister = ({ initialRef, setType = () => {}, setLoading = () => {} })
     // call api & set data to redux
     try {
       setLoading(true);
-      const { code, data: _data } = await axios.post(API_PATH.auth.register, data);
+      const { code, user } = await axios.post(API_PATH.users.register, {
+        ...data,
+        userName: data.email.split('@')[0],
+      });
       if (+code === API_CODE.success) {
-        dispatch(register(_data));
+        dispatch(register({ userInfo: user }));
         typeof setType === 'function' && setType(AUTHENTICATE_FORM_TYPE.getInfo);
       }
     } catch (error) {
@@ -77,6 +86,13 @@ const FormRegister = ({ initialRef, setType = () => {}, setLoading = () => {} })
       />
 
       <PasswordField control={control} errors={errors} watchPassword={watchPassword} />
+
+      <CodeField
+        control={control}
+        errors={errors}
+        isValid={EMAIL_REGEX.test(watchEmail)}
+        getValues={getValues}
+      />
 
       <Button
         as={motion.button}

@@ -9,5 +9,5 @@ const baseConfig = {
 export const authConfig = {
   ...baseConfig,
   key: 'auth',
-  whitelist: ['userInfo'],
+  whitelist: ['accessToken', 'refreshToken'],
 };

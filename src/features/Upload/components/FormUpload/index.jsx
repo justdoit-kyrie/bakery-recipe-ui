@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
@@ -67,20 +66,12 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
   const isSave = useRef(false);
   const isResetManually = useRef(false);
 
-  console.log('inside upload');
-
   const { isShow, onConfirm, onCancel } = useCallbackPrompt(
     formType === FORM_TYPE.edit ? false : isSaveDraft
   );
 
   // handle unblock button post
   const isCustomValid = useMemo(() => isValid && ingredients.length > 0, [ingredients, isValid]);
-
-  const handleResetForm = () => {
-    isReset.current = true;
-    reset(defaultValues);
-    setIsSaveDraft(false);
-  };
 
   const onSubmit = (data) => {
     // auto get first image in the content post
@@ -94,6 +85,12 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
       isResetManually.current = true;
       handleResetForm();
     }
+  };
+
+  const handleResetForm = () => {
+    isReset.current = true;
+    reset(defaultValues);
+    setIsSaveDraft(false);
   };
 
   const _handleUmountForm = () => {
@@ -111,9 +108,9 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
       if (!event.query.trim().length) {
         _filteredIngredients = [...categories];
       } else {
-        _filteredIngredients = categories.filter((item) =>
-          item.categoryName.toLowerCase().includes(event.query.toLowerCase())
-        );
+        _filteredIngredients = categories.filter((item) => {
+          return item.categoryName.toLowerCase().includes(event.query.toLowerCase());
+        });
       }
 
       setFilteredValue(_filteredIngredients);

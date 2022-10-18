@@ -34,14 +34,14 @@ const ImageField = ({
     validator: imageValidatorHandler,
     onDragEnter: () => setIsDragOver(true),
     onDragLeave: () => setIsDragOver(false),
-    onDrop: (_acceptedFiles) => {
+    onDrop: (acceptedFiles) => {
       isUploaded.current = false;
       // update again isReset for not delete object prev
       isReset.current = false;
       isSave.current = false;
       isResetManually.current = false;
       setFiles(
-        _acceptedFiles.map((file) =>
+        acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -86,13 +86,10 @@ const ImageField = ({
   };
 
   useEffect(() => {
-    if (isReset.current) {
-      formType === FORM_TYPE.edit ? handleDelete([imageUrl]) : handleDelete();
-    }
+    if (isReset.current) formType === FORM_TYPE.edit ? handleDelete([imageUrl]) : handleDelete();
 
-    if (isReset.current && !isUploaded.current) {
+    if (isReset.current && !isUploaded.current)
       formType === FORM_TYPE.edit ? setFiles([imageUrl]) : setFiles([]);
-    }
   }, [isReset.current]);
 
   useEffect(() => {
@@ -133,8 +130,8 @@ const ImageField = ({
         if (!isSave.current) {
           handleDelete();
         }
-      } else if (uploadTask.current) {
-        uploadTask.current.cancel();
+      } else {
+        if (uploadTask.current) uploadTask.current.cancel();
       }
     };
   }, [acceptedFiles]);

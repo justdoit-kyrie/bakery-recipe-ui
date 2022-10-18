@@ -1,13 +1,23 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-key */
-import { Avatar, Box, Button, Flex, FormControl, FormLabel, Textarea } from '@chakra-ui/react';
-import Moment from 'moment';
 import React, { useState } from 'react';
+import Moment from 'moment';
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Textarea,
+} from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { selectUserInfo } from '~/features/Authenticate/authSlice';
 import axiosInstance from '~/app/api';
 import { API_CODE, API_PATH } from '~/constants';
-import { selectUserInfo } from '~/features/Authenticate/authSlice';
+import { toast } from 'react-toastify';
 
 const Comment = ({ postDetail, fetchData }) => {
   const userInfo = useSelector(selectUserInfo);
@@ -16,7 +26,7 @@ const Comment = ({ postDetail, fetchData }) => {
   const [reply, setReply] = useState();
   const [name, setName] = useState();
 
-  const handleSubmit = async () => {
+  let handleSubmit = async () => {
     try {
       const { code, message, data } = await axiosInstance.post(API_PATH.comment.post, {
         Content: content,
@@ -38,13 +48,11 @@ const Comment = ({ postDetail, fetchData }) => {
     }
   };
 
-  let count = 0;
-  // eslint-disable-next-line array-callback-return
+  var count = 0;
   postDetail?.comments?.map((item) => {
-    count += 1;
+    count++;
     count += item.replyTo.length;
   });
-
   return (
     <Box>
       <Box padding="40px" border="1px" borderColor="#eee">
@@ -52,63 +60,66 @@ const Comment = ({ postDetail, fetchData }) => {
           {count} COMMENTS
         </Box>
 
-        {postDetail?.comments?.map((item, idx) => (
-          <Box key={idx}>
-            <Flex diretion="row" align="center" justify="flex-start" gap="2rem" mb="2rem">
-              <Avatar h="100px" w="100px" src={item.avatar} />
-              <Box>
-                <Flex gap="5" align="center" justify="center">
-                  <Box fontSize="19" fontWeight="800">
-                    {item.userName}
-                  </Box>
-                  <Box fontSize="14" color="#AAAAAA">
-                    {(item.createdDate = Moment().format('MMM Do YY'))}
-                  </Box>
-                  <Button
-                    onClick={() => {
-                      setReply(item.commentId);
-                      setName(item.userName);
-                    }}
-                    fontSize="16"
-                  >
-                    reply
-                  </Button>
-                </Flex>
-                <Box fontSize="15" color="#7A7A7A" mt="1rem">
-                  {item.content}
-                </Box>
-              </Box>
-            </Flex>
-
-            {item.replyTo?.map((item2, idx2) => (
-              <Flex
-                pl="80px"
-                diretion="row"
-                align="center"
-                justify="flex-left"
-                gap="2rem"
-                mb="2rem"
-                key={idx2}
-              >
-                <Avatar h="100px" w="100px" src={item2.avatar} />
-
-                <Box colSpan={5} rowSpan={1} ml="17px">
+        {postDetail?.comments?.map((item, idx) => {
+          return (
+            <Box key={idx}>
+              <Flex diretion="row" align="center" justify="flex-start" gap="2rem" mb="2rem">
+                <Avatar h="100px" w="100px" src={item.avatar} />
+                <Box>
                   <Flex gap="5" align="center" justify="center">
                     <Box fontSize="19" fontWeight="800">
-                      {item2.userName}
+                      {item.userName}
                     </Box>
-                    <Box fontSize="14" color="#AAAAAA" mt="5px">
-                      {(item2.createdDate = Moment().format('MMM Do YY'))}
+                    <Box fontSize="14" color="#AAAAAA">
+                      {item.createdDate = Moment().format("MMM Do YY")}
                     </Box>
+                    <Button
+                      onClick={() => {
+                        setReply(item.commentId);
+                        setName(item.userName);
+                      }}
+                      fontSize="16"
+                    >
+                      reply
+                    </Button>
                   </Flex>
                   <Box fontSize="15" color="#7A7A7A" mt="1rem">
-                    {item2.content}
+                    {item.content}
                   </Box>
                 </Box>
               </Flex>
-            ))}
-          </Box>
-        ))}
+
+              {item.replyTo?.map((item2, idx2) => {
+                return (
+                  <Flex
+                    pl="80px"
+                    diretion="row"
+                    align="center"
+                    justify="flex-left"
+                    gap="2rem"
+                    mb="2rem" key={idx2}
+                  >
+                    <Avatar h="100px" w="100px" src={item2.avatar} />
+
+                    <Box colSpan={5} rowSpan={1} ml="17px">
+                      <Flex gap="5" align="center" justify="center">
+                        <Box fontSize="19" fontWeight="800">
+                          {item2.userName}
+                        </Box>
+                        <Box fontSize="14" color="#AAAAAA" mt="5px">
+                          {item2.createdDate = Moment().format("MMM Do YY")}
+                        </Box>
+                      </Flex>
+                      <Box fontSize="15" color="#7A7A7A" mt="1rem">
+                        {item2.content}
+                      </Box>
+                    </Box>
+                  </Flex>
+                );
+              })}
+            </Box>
+          );
+        })}
       </Box>
 
       <FormControl isRequired mt="30px">
@@ -138,6 +149,7 @@ const Comment = ({ postDetail, fetchData }) => {
           </Flex>
         )}
         <Textarea
+
           value={content}
           h="150px"
           overflow="auto"

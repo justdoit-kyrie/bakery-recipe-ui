@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { CustomButton, PopperWrapper } from '~/components';
-import { COLOR_MODE_TYPE, LANGUAGES, ROUTES_PATH } from '~/constants';
+import { COLOR_MODE_TYPE, LANGUAGES, LOGOUT_TYPE, ROUTES_PATH } from '~/constants';
 import { logout } from '~/features/Authenticate/authSlice';
 
 /**
@@ -47,11 +47,11 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
 
   const renderContent = () =>
     currentMenu.data.map((item, idx) => {
-      const { label, type, icon, ...contentProps } = item;
+      const { label, type, icon, ...passProps } = item;
 
       return (
         <CustomButton
-          {...contentProps}
+          {...passProps}
           key={idx}
           label={label}
           leftIcon={{ icon, fontSize: '1.8rem' }}
@@ -79,10 +79,12 @@ const PopperMenu = ({ t, i18n, tReady, children, data, renderCustomContent, ...p
                 break;
               }
               case LANGUAGES.code:
-                i18n.changeLanguage(item.value);
-                window.location.reload();
+                {
+                  i18n.changeLanguage(item.value);
+                  window.location.reload();
+                }
                 break;
-              default: {
+              case LOGOUT_TYPE: {
                 handleLogout();
                 break;
               }

@@ -9,17 +9,23 @@ const axiosInstance = axios.create({
 
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
-  (config) => config,
-  (error) => Promise.reject(error)
+  function (config) {
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
 );
 
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
+  function (response) {
     if (response && response.data) return response.data;
     return response;
   },
-  (error) => Promise.reject(error)
+  function (error) {
+    return Promise.reject(error);
+  }
 );
 
 export default axiosInstance;

@@ -9,7 +9,7 @@ import { failed, selectAuth, setUserInfo } from '~/features/Authenticate/authSli
 import Loading from '../Loading';
 
 const PrivateRoute = ({ children }) => {
-  const { userInfo, loading } = useSelector(selectAuth);
+  const { loading, refreshToken } = useSelector(selectAuth);
   const { onOpen } = useContext(ModalContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,12 +17,12 @@ const PrivateRoute = ({ children }) => {
 
   useEffect(() => {
     try {
-      if (!userInfo && location.pathname === ROUTES_PATH.common.home) {
+      if (!refreshToken && location.pathname === ROUTES_PATH.common.home) {
         dispatch(failed());
         return;
       }
 
-      if (!userInfo && location.pathname !== ROUTES_PATH.common.home) {
+      if (!refreshToken && location.pathname !== ROUTES_PATH.common.home) {
         onOpen();
         return navigate(ROUTES_PATH.common.home, {
           state: { from: '/privateRoute', to: location.pathname },
@@ -30,16 +30,17 @@ const PrivateRoute = ({ children }) => {
       }
 
       (async () => {
-        const { code, message, data } = await axiosInstance.get(
-          API_PATH.auth.getProfile.replace(':id', userInfo.id)
-        );
+        const { code, message, data } = await axiosInstance.post(API_PATH.users.getProfile, {
+          refreshToken,
+        });
 
         if (+code === API_CODE.success) {
           dispatch(setUserInfo(data));
           return;
+        } else {
+          toast.error(message);
         }
 
-        toast.error(message);
         onOpen();
         dispatch(failed());
         return navigate(ROUTES_PATH.common.home, {
