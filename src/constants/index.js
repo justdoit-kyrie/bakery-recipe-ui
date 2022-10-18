@@ -14,6 +14,7 @@ export const ROUTES_PATH = {
     postDetail: '/post/@:id',
     upload: '/upload',
     collections: '/collections/:category',
+    chat: '/chat',
   },
   admin: {
     statistic: '/statistic',
@@ -131,6 +132,7 @@ export const API_PATH = {
     sendEmail: '/users/email',
     forgotPassword: '/users/forgot',
     getProfile: '/users/getProfile',
+    refresh: '/users/refresh',
   },
   products: {
     getList: '/products',
@@ -175,3 +177,7 @@ export const UPLOAD_STATUS = {
 export const POST_MAX_LENGTH = 10;
 
 export const INGREDIENTS_TYPE = ['KG', 'ML', 'UNIT'];
+
+export const LOCAL_STORAGE_KEY = {
+  accessToken: 'persist:auth',
+};

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_PATH, LOCAL_STORAGE_KEY } from '~/constants';
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
@@ -10,6 +11,16 @@ const axiosInstance = axios.create({
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   function (config) {
+    if (
+      config.url === API_PATH.users.login ||
+      config.url === API_PATH.users.register ||
+      config.url === API_PATH.users.refresh
+    )
+      return config;
+
+    const { accessToken } = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY.accessToken));
+
+    config.headers.Authorization = `Bearer ${accessToken.replaceAll('"', '')}`;
     return config;
   },
   function (error) {

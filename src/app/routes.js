@@ -9,6 +9,7 @@ const AdStatisticPage = lazy(() => import('~/features/Admin/Statistics'));
 const NotFoundPage = lazy(() => import('~/components/NotFound'));
 const PrivateRoute = lazy(() => import('~/components/PrivateRoute'));
 
+const ChatPage = lazy(() => import('~/features/Chat'));
 const UploadPage = lazy(() => import('~/features/Upload'));
 const ProfilePage = lazy(() => import('~/features/Profile'));
 const PostDetailPage = lazy(() => import('~/features/PostDetail'));
@@ -50,6 +51,12 @@ const publicRoutes = {
       type: ROUTES_TYPE.public,
       path: ROUTES_PATH.user.collections,
       component: CollectionsPage,
+    },
+    {
+      type: ROUTES_TYPE.public,
+      path: ROUTES_PATH.user.chat,
+      component: ChatPage,
+      layout: null,
     },
   ],
   [ROLE.admin]: [
