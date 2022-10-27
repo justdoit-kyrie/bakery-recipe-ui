@@ -21,7 +21,7 @@ import { BellIcon, Logo } from '../Icons';
 import PopperMenu from './components/PopperMenu';
 import Search from '../Search';
 
-const MOCK_DATA = (t) => ({
+const MOCK_DATA = (t, id) => ({
   public: [
     {
       icon: MdLanguage,
@@ -71,7 +71,7 @@ const MOCK_DATA = (t) => ({
   ],
   private: [
     {
-      to: '/profile/@123',
+      to: `/profile/@${id}`,
       icon: AiOutlineUser,
       label: 'View profile',
     },
@@ -244,7 +244,7 @@ const Header = ({ t }) => {
                   {isBellClicked ? <BsBellFill fontSize="2.2rem" /> : <BsBell fontSize="2.2rem" />}
                 </div>
               </PopperMenu>
-              <PopperMenu data={MOCK_DATA(t).private}>
+              <PopperMenu data={MOCK_DATA(t, userInfo?.id).private}>
                 <Avatar
                   w="32px"
                   h="32px"

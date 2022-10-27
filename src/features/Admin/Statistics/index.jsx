@@ -1,6 +1,5 @@
-import { Avatar, Box, CircularProgress, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
+import { Box, CircularProgress, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Search } from '~/components';
 import LineChart from './components/LineChart';
 
 const MOCK_DATA = {
@@ -87,32 +86,6 @@ const AdStatisticPage = () => {
 
   return (
     <Box w="100%" h="100%">
-      {/* heading */}
-      <Flex
-        justify="space-between"
-        p={`2.2rem ${paddingX}`}
-        borderBottom="1px solid rgba(22,24,35,0.12)"
-      >
-        <Text textTransform="capitalize" fontWeight={600} fontSize="2.6rem">
-          overview
-        </Text>
-        <Flex align="center" gap="2rem">
-          <Search />
-
-          <Flex align="center" gap="1.5rem">
-            <Box>
-              <Text textTransform="capitalize" className="text">
-                alex mora
-              </Text>
-              <Text textTransform="capitalize" fontSize="1.2rem" color="textColor.300">
-                Super Admin
-              </Text>
-            </Box>
-            <Avatar src="" name="alex mora" w="4rem" h="4rem" />
-          </Flex>
-        </Flex>
-      </Flex>
-
       <Box p={paddingX} h="calc(100% - 91px)">
         <Flex gap="2rem">{renderStatistics()}</Flex>
 

@@ -19,7 +19,8 @@ export const ROUTES_PATH = {
   admin: {
     statistic: '/statistic',
     users: '/users',
-    reports: '/reports',
+    posts: '/posts',
+    categories: '/categories',
   },
 };
 //#endregion
@@ -118,6 +119,7 @@ export const SELECT_TYPE = {
 export const MY_POST_TYPE = {
   recent: 'recent',
   draft: 'draft',
+  save: 'save',
 };
 
 export const MY_POST_DISPLAY = {
@@ -133,6 +135,7 @@ export const API_PATH = {
     forgotPassword: '/users/forgot',
     getProfile: '/users/getProfile',
     refresh: '/users/refresh',
+    getByID: '/users/:id',
   },
   products: {
     getList: '/products',
@@ -146,6 +149,7 @@ export const API_PATH = {
     getDetail: '/posts/:id',
     edit: '/posts/:id',
     getByCategory: '/posts/category',
+    getByStatus: '/posts/status',
     savePost: '/repost',
     getSave: '/repost/:id',
     interactive: '/interactive',
@@ -154,6 +158,12 @@ export const API_PATH = {
   },
   comment: {
     post: '/comment/cmt',
+  },
+  reports: {
+    getList: '/reports',
+  },
+  repost: {
+    getList: '/repost/:id',
   },
 };
 
@@ -189,3 +199,12 @@ export const INGREDIENTS_TYPE = ['KG', 'ML', 'UNIT'];
 export const LOCAL_STORAGE_KEY = {
   accessToken: 'persist:auth',
 };
+
+/**
+ * list of public route in the system
+ * * if page type is private, when you add it to this list will not working successfully
+ */
+export const ROUTES_NON_BLOCK = [
+  ROUTES_PATH.user.collections.replace(':category', ''),
+  ROUTES_PATH.user.postDetail.replace('@:id', ''),
+];

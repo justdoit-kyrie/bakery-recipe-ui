@@ -40,7 +40,7 @@ const Home = () => {
           params: {
             _by: 'like',
             _order: _order.current,
-            pageSize: 12,
+            pageSize: 11,
           },
         }),
       ]);
@@ -54,6 +54,7 @@ const Home = () => {
 
       if (+popularCode === API_CODE.success) {
         popularData[popularData.length - 1].isContentAbsolute = true;
+        popularData[popularData.length - 2].isContentAbsolute = true;
         setPopularPosts(popularData);
         popularTotalRecords.current = totalRecords;
       }

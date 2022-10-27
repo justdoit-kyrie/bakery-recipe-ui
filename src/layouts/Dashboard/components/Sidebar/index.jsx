@@ -6,22 +6,28 @@ import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { IoDocumentOutline } from 'react-icons/io5';
 import { NavLink } from 'react-router-dom';
 import { Logo } from '~/components/Icons';
+import { ROUTES_PATH } from '~/constants';
 
 const MOCK_DATA = [
   {
-    to: '/statistic',
+    to: ROUTES_PATH.admin.statistic,
     icon: BsGrid1X2,
     label: 'Overview',
   },
   {
-    to: '/users',
+    to: ROUTES_PATH.admin.users,
     icon: AiOutlineUser,
     label: 'Users',
   },
   {
-    to: '/reports',
+    to: ROUTES_PATH.admin.posts,
     icon: IoDocumentOutline,
-    label: 'Reports',
+    label: 'Posts',
+  },
+  {
+    to: ROUTES_PATH.admin.categories,
+    icon: IoDocumentOutline,
+    label: 'Categories',
   },
   {
     to: '/settings',

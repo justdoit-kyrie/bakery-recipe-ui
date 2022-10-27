@@ -11,23 +11,25 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import moment from 'moment';
+import { PrimeIcons } from 'primereact/api';
 import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
 import { ContextMenu as PrimeContextMenu } from 'primereact/contextmenu';
+import { DataTable } from 'primereact/datatable';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { PrimeIcons } from 'primereact/api';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
+import { AiOutlineClose, AiOutlineEdit } from 'react-icons/ai';
+import axiosInstance from '~/app/api';
 import { NewPostIcon } from '~/components/Icons';
-import { MY_POST_DISPLAY, MY_POST_TYPE, ROUTES_PATH } from '~/constants';
+import { API_CODE, API_PATH, MY_POST_DISPLAY, MY_POST_TYPE, ROUTES_PATH } from '~/constants';
 import EditProfileModal from './components/EditProfileModal';
 import LayoutButton from './components/LayoutButton';
 import Sort from './components/Sort';
-import { Wrapper } from './styles';
 import './Profile.scss';
-import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
-import { AiOutlineClose, AiOutlineEdit } from 'react-icons/ai';
+import { Wrapper } from './styles';
+import { Paginator } from 'primereact/paginator';
 
 const MOCK_DATA = {
   profile: {
@@ -152,9 +154,10 @@ const MOCK_DATA = {
 };
 
 const Profile = () => {
-  const { list, min_width, profile } = MOCK_DATA;
+  const { min_width } = MOCK_DATA;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const recentRef = useRef();
   const draftRef = useRef();
@@ -167,6 +170,9 @@ const Profile = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [page, setPage] = useState(0);
+  const [profile, setProfile] = useState();
+  const [list, setList] = useState([]);
+  const [pagination, setPagination] = useState();
 
   const menuModel = [
     {
@@ -181,26 +187,172 @@ const Profile = () => {
     },
   ];
 
-  useEffect(() => {
-    // call api get profile
-  }, []);
+  const handleMouseLeave = () => {
+    switch (type) {
+      case MY_POST_TYPE.recent:
+        setProgressLeft(0);
+        break;
+      case MY_POST_TYPE.draft:
+        setProgressLeft(recentRef.current.offsetLeft + recentRef.current.offsetWidth);
+        break;
+      default:
+        setProgressLeft(draftRef.current.offsetLeft + draftRef.current.offsetWidth);
+        break;
+    }
+  };
 
   useEffect(() => {
-    if (recentRef.current) {
+    try {
+      (async () => {
+        const { ...data } = await axiosInstance.get(API_PATH.users.getByID.replace(':id', id));
+        if (data) {
+          setProfile(data);
+        }
+      })();
+    } catch (error) {
+      console.log({ Error });
+    }
+  }, []);
+
+  const fetchData = async () => {
+    switch (type) {
+      case MY_POST_TYPE.recent:
+        (async () => {
+          try {
+            console.log('recent list');
+            const { code, data, ...pagination } = await axiosInstance.get(
+              API_PATH.posts.getByStatus,
+              {
+                params: {
+                  PageNumber: page,
+                  userID: id,
+                  status: 1,
+                },
+              }
+            );
+            if (+code === API_CODE.success) {
+              setList(data);
+              setPagination(pagination);
+            }
+          } catch (error) {
+            console.log({ error });
+          }
+        })();
+        setProgressLeft(0);
+        break;
+      case MY_POST_TYPE.draft:
+        (async () => {
+          try {
+            console.log('draft list');
+
+            const { code, data, ...pagination } = await axiosInstance.get(
+              API_PATH.posts.getByStatus,
+              {
+                params: {
+                  PageNumber: page,
+                  userID: id,
+                  status: 2,
+                },
+              }
+            );
+            if (+code === API_CODE.success) {
+              setList(data);
+              setPagination(pagination);
+            }
+          } catch (error) {
+            console.log({ error });
+          }
+        })();
+        setProgressLeft(recentRef.current.offsetWidth);
+        break;
+      default:
+        (async () => {
+          try {
+            console.log('save list');
+            const { code, data, ...pagination } = await axiosInstance.get(
+              API_PATH.repost.getList.replace(':id', id),
+              { params: { PageNumber: page } }
+            );
+            if (+code === API_CODE.success) {
+              setList(data);
+              setPagination(pagination);
+            }
+          } catch (error) {
+            console.log({ error });
+          }
+        })();
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (MY_POST_DISPLAY.grid) {
       switch (type) {
         case MY_POST_TYPE.recent:
+          (async () => {
+            try {
+              const { code, data, ...pagination } = await axiosInstance.get(
+                API_PATH.posts.getByStatus,
+                {
+                  params: {
+                    userID: id,
+                    status: 1,
+                  },
+                }
+              );
+              if (+code === API_CODE.success) {
+                setList(data);
+                setPagination(pagination);
+              }
+            } catch (error) {
+              console.log({ error });
+            }
+          })();
           setProgressLeft(0);
           break;
         case MY_POST_TYPE.draft:
+          (async () => {
+            try {
+              const { code, data, ...pagination } = await axiosInstance.get(
+                API_PATH.posts.getByStatus,
+                {
+                  params: {
+                    userID: id,
+                    status: 2,
+                  },
+                }
+              );
+              if (+code === API_CODE.success) {
+                setList(data);
+                setPagination(pagination);
+              }
+            } catch (error) {
+              console.log({ error });
+            }
+          })();
           setProgressLeft(recentRef.current.offsetWidth);
           break;
+        default:
+          (async () => {
+            try {
+              const { code, data, ...pagination } = await axiosInstance.get(
+                API_PATH.repost.getList.replace(':id', id)
+              );
+              if (+code === API_CODE.success) {
+                setList(data);
+                setPagination(pagination);
+              }
+            } catch (error) {
+              console.log({ error });
+            }
+          })();
+          break;
       }
+    } else {
+      console.log(123);
+      fetchData();
     }
-  }, [type]);
-
-  useEffect(() => {
-    // call api pagination
-  }, [rows, page]);
+  }, [type, displayType, page]);
 
   const handleDeletePost = (post) => console.log({ post });
 
@@ -356,6 +508,20 @@ const Profile = () => {
     </Flex>
   );
 
+  const footerTemplate = () => (
+    <Paginator
+      first={first}
+      rows={rows}
+      totalRecords={pagination?.totalRecords}
+      onPageChange={(e) => {
+        setFirst(e.first);
+        setRows(e.rows);
+        setPage(e.page + 1);
+      }}
+      rowsPerPageOptions={[10, 20, 50]}
+    />
+  );
+
   const renderListItems = () => (
     <Wrapper>
       <PrimeContextMenu
@@ -370,17 +536,7 @@ const Profile = () => {
         responsiveLayout="scroll"
         scrollable
         scrollHeight="flex"
-        paginator
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        paginatorDropdownAppendTo="self"
-        first={first}
-        rows={rows}
-        onPage={(e) => {
-          setFirst(e.first);
-          setRows(e.rows);
-          setPage(e.page);
-        }}
-        rowsPerPageOptions={[10, 20, 50]}
+        footer={footerTemplate}
         contextMenuSelection={selectedPost}
         onContextMenuSelectionChange={(e) => setSelectedPost(e.value)}
         selectionMode="single"
@@ -425,15 +581,15 @@ const Profile = () => {
       <Flex align="center" gap="2rem">
         <Avatar
           boxSize="11.6rem"
-          src={profile.avatar}
-          name={`${profile.firstName} ${profile.lastName}`}
+          src={profile?.avatar}
+          name={`${profile?.firstName} ${profile?.lastName}`}
         />
         <Flex direction="column">
           <Text as="h1" fontSize="3.2rem" lineHeight="38px" fontWeight={700}>
-            {profile.username}
+            {`${profile?.firstName} ${profile?.lastName}`}
           </Text>
           <Text as="h4" fontSize="1.8rem" lineHeight="25px" fontWeight={600}>
-            {profile.email}
+            {profile?.email}
           </Text>
           <Box>
             <Button leftIcon={<FaRegEdit />} variant="outline-default" mt="1.6rem" onClick={onOpen}>
@@ -441,37 +597,6 @@ const Profile = () => {
             </Button>
           </Box>
         </Flex>
-      </Flex>
-
-      <Flex mt="2.2rem" gap="2rem">
-        <Text>
-          <Text
-            as="span"
-            className="secondary-font"
-            fontSize="1.8rem"
-            lineHeight="25px"
-            fontWeight={600}
-          >
-            0
-          </Text>
-          <Text as="span" ml="6px" color="textColor.300" className="text" fontWeight="400">
-            Following
-          </Text>
-        </Text>
-        <Text>
-          <Text
-            as="span"
-            className="secondary-font"
-            fontSize="1.8rem"
-            lineHeight="25px"
-            fontWeight={600}
-          >
-            0
-          </Text>
-          <Text as="span" ml="6px" color="textColor.300" className="text" fontWeight="400">
-            Follower
-          </Text>
-        </Text>
       </Flex>
 
       <Flex justify="space-between" align="baseline" mb="1rem">
@@ -488,13 +613,12 @@ const Profile = () => {
             justify="center"
             align="center"
             cursor="pointer"
-            onClick={() => setType(MY_POST_TYPE.recent)}
-            onMouseEnter={type === MY_POST_TYPE.draft ? () => setProgressLeft(0) : () => {}}
-            onMouseLeave={
-              type === MY_POST_TYPE.draft
-                ? () => setProgressLeft(recentRef.current.offsetWidth || min_width)
-                : () => {}
-            }
+            onClick={() => {
+              setType(MY_POST_TYPE.recent);
+              setProgressLeft(0);
+            }}
+            onMouseEnter={() => setProgressLeft(0)}
+            onMouseLeave={handleMouseLeave}
           >
             <Text
               fontSize="1.8rem"
@@ -514,13 +638,17 @@ const Profile = () => {
             justify="center"
             align="center"
             cursor="pointer"
-            onClick={() => setType(MY_POST_TYPE.draft)}
+            onClick={() => {
+              setType(MY_POST_TYPE.draft);
+              setProgressLeft(recentRef.current.offsetLeft + recentRef.current.offsetWidth);
+            }}
             onMouseEnter={
-              type === MY_POST_TYPE.recent
-                ? () => setProgressLeft(draftRef.current.offsetWidth || min_width)
+              type !== MY_POST_TYPE.draft
+                ? () =>
+                    setProgressLeft(recentRef.current.offsetLeft + recentRef.current.offsetWidth)
                 : () => {}
             }
-            onMouseLeave={type === MY_POST_TYPE.recent ? () => setProgressLeft(0) : () => {}}
+            onMouseLeave={handleMouseLeave}
           >
             <Text
               fontSize="1.8rem"
@@ -530,6 +658,34 @@ const Profile = () => {
               color={type === MY_POST_TYPE.draft ? 'textColor.400' : 'textColor.200'}
             >
               Draft
+            </Text>
+          </Flex>
+
+          <Flex
+            minH="44px"
+            minW={`${min_width}px`}
+            justify="center"
+            align="center"
+            cursor="pointer"
+            onClick={() => {
+              setType(MY_POST_TYPE.save);
+              setProgressLeft(draftRef.current.offsetLeft + draftRef.current.offsetWidth);
+            }}
+            onMouseEnter={
+              type !== MY_POST_TYPE.save
+                ? () => setProgressLeft(draftRef.current.offsetLeft + draftRef.current.offsetWidth)
+                : () => {}
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            <Text
+              fontSize="1.8rem"
+              lineHeight="25px"
+              fontWeight="600"
+              className="secondary-font"
+              color={type === MY_POST_TYPE.save ? 'textColor.400' : 'textColor.200'}
+            >
+              Save
             </Text>
           </Flex>
 

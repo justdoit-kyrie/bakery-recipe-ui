@@ -17,15 +17,6 @@ const defaultValues = {
   ingredients: [],
 };
 
-// eslint-disable-next-line no-unused-vars
-const data = {
-  type: {
-    categoryId: 1,
-    categoryName: 'Mon Au',
-    post: null,
-  },
-};
-
 const UploadPage = () => {
   const { id } = useParams();
   const userInfo = useSelector(selectUserInfo);
