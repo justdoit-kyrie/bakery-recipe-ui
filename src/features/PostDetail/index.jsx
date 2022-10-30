@@ -239,7 +239,7 @@ const PostDetail = () => {
             {postDetail?.postProducts?.map((product, idx) => {
               return (
                 <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
-                  - {product.productName}
+                  - {product.productName + ' ' + product.quantity + product.type}
                 </Box>
               );
             })}
