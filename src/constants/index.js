@@ -21,6 +21,7 @@ export const ROUTES_PATH = {
     users: '/users',
     posts: '/posts',
     categories: '/categories',
+    ingredients: '/ingredients',
   },
 };
 //#endregion
@@ -68,6 +69,7 @@ export const PASSWORD_REGEX_WITHOUT_LENGTH =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}$/;
+export const GET_IMAGE_FROM_HTML_STRING = /<img([\w\W]+?)>/g;
 //#endregion
 
 export const DOB_DAY = [
@@ -207,4 +209,22 @@ export const LOCAL_STORAGE_KEY = {
 export const ROUTES_NON_BLOCK = [
   ROUTES_PATH.user.collections.replace(':category', ''),
   ROUTES_PATH.user.postDetail.replace('@:id', ''),
+];
+
+export const NO_IMAGE_URL =
+  'https://media.istockphoto.com/vectors/default-image-icon-vector-missing-picture-page-for-website-design-or-vector-id1357365823?k=20&m=1357365823&s=612x612&w=0&h=ZH0MQpeUoSHM3G2AWzc8KkGYRg4uP_kuu0Za8GFxdFc=';
+
+export const INGREDIENTS_UNIT_TYPE = [
+  {
+    name: 'kg',
+    value: 0,
+  },
+  {
+    name: 'ml',
+    value: 1,
+  },
+  {
+    name: 'unit',
+    value: 2,
+  },
 ];

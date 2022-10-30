@@ -1,18 +1,20 @@
 /* eslint-disable no-unused-vars */
 import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
+import { deleteObject, ref } from 'firebase/storage';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
+import firebase from '~/app/firebase';
 import { Search } from '~/components';
 import { API_CODE, API_PATH } from '~/constants';
-import FormCategoryModal from './components/FormCategory';
+import FormIngredientsModal from './components/FormIngredients';
 import { Wrapper } from './styles';
 
-const AdCategoriesPage = () => {
+const AdIngredientsPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [first, setFirst] = useState(0);
@@ -22,11 +24,9 @@ const AdCategoriesPage = () => {
   const [pagination, setPagination] = useState();
   const [initialValue, setInitialValue] = useState();
 
-  const listID = useMemo(() => list.map((v) => v.categoryId), [list]);
-
   const fetchData = async () => {
     try {
-      const { code, data, ...pagination } = await axiosInstance.get(API_PATH.categories.getList, {
+      const { code, data, ...pagination } = await axiosInstance.get(API_PATH.products.getList, {
         params: {},
       });
 
@@ -43,13 +43,19 @@ const AdCategoriesPage = () => {
     fetchData();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async ({ productId, productImage }) => {
     try {
-      const { code, message } = await axiosInstance.delete(`${API_PATH.categories.getList}/${id}`);
+      const { code, message } = await axiosInstance.delete(
+        `${API_PATH.products.getList}/${productId}`
+      );
 
       if (+code === API_CODE.success) {
         toast.success(message);
         fetchData();
+        if (productImage) {
+          const storageRef = ref(firebase.getStorage(), productImage);
+          deleteObject(storageRef);
+        }
       }
     } catch (error) {
       console.log({ error });
@@ -70,22 +76,6 @@ const AdCategoriesPage = () => {
     />
   );
 
-  const noBodyTemplate = (rowData) => {
-    return (
-      <Text
-        as="h4"
-        pr="1rem"
-        className="text"
-        fontWeight={500}
-        whiteSpace="nowrap"
-        textOverflow="ellipsis"
-        overflow="hidden"
-      >
-        {listID.indexOf(rowData.categoryId)}
-      </Text>
-    );
-  };
-
   const nameBodyTemplate = (rowData) => {
     return (
       <Text
@@ -100,7 +90,25 @@ const AdCategoriesPage = () => {
           textDecoration: 'underline',
         }}
       >
-        {rowData.categoryName}
+        {rowData.productName}
+      </Text>
+    );
+  };
+
+  const defaultBodyTemplate = (rowData, field) => {
+    const { field: name } = field;
+
+    return (
+      <Text
+        as="h4"
+        pr="1rem"
+        className="text"
+        fontWeight={500}
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+        overflow="hidden"
+      >
+        {name === 'no' ? field.rowIndex : rowData[name]}
       </Text>
     );
   };
@@ -114,7 +122,7 @@ const AdCategoriesPage = () => {
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
-          setInitialValue({ ...rowData });
+          setInitialValue({ ...rowData, unitType: rowData.type });
         }}
       >
         Edit
@@ -125,7 +133,7 @@ const AdCategoriesPage = () => {
         color="red.500"
         onClick={(e) => {
           e.stopPropagation();
-          handleDelete(rowData.categoryId);
+          handleDelete({ ...rowData });
         }}
       >
         Delete
@@ -136,7 +144,7 @@ const AdCategoriesPage = () => {
   return (
     <Flex direction="column" h="100%" w="100%">
       {isOpen && (
-        <FormCategoryModal
+        <FormIngredientsModal
           isOpen={isOpen}
           data={initialValue}
           onClose={onClose}
@@ -151,13 +159,13 @@ const AdCategoriesPage = () => {
             onOpen();
           }}
         >
-          Add Category
+          Add Ingredient
         </Button>
       </Flex>
 
       <Flex p="2rem" justify="space-between" align="center" borderRadius="6px" bg="#fff" mt="2rem">
         <Text fontSize="2rem" fontWeight={700}>
-          Categories List
+          Ingredients List
         </Text>
         <Search />
       </Flex>
@@ -174,29 +182,20 @@ const AdCategoriesPage = () => {
               footer={footerTemplate}
               selectionMode="single"
             >
+              <Column field="no" header="No" body={defaultBodyTemplate} sortable></Column>
+              <Column field="productName" header="Name" body={nameBodyTemplate} sortable></Column>
+              <Column field="price" header="Price" body={defaultBodyTemplate} sortable></Column>
               <Column
-                header="No"
-                body={noBodyTemplate}
+                field="unitInStock"
+                header="Unit in stock"
+                body={defaultBodyTemplate}
                 sortable
-                style={{
-                  flex: '0.2',
-                }}
-              ></Column>
-              <Column
-                field="name"
-                header="Name"
-                body={nameBodyTemplate}
-                sortable
-                style={{
-                  flex: '0.5',
-                }}
               ></Column>
               <Column
                 align="right"
                 header="Action"
                 body={actionBodyTemplate}
                 style={{
-                  flex: '0.3',
                   justifyContent: 'flex-end',
                 }}
               ></Column>
@@ -208,4 +207,4 @@ const AdCategoriesPage = () => {
   );
 };
 
-export default AdCategoriesPage;
+export default AdIngredientsPage;

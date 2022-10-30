@@ -14,6 +14,7 @@ const PostContent = ({
   time = 6,
   ...props
 }) => {
+  console.log({ authorName });
   let passProps = {};
   if (isContentAbsolute) {
     passProps = {

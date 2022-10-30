@@ -2,7 +2,7 @@ import { Box, Image } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ROUTES_PATH } from '~/constants';
+import { NO_IMAGE_URL, ROUTES_PATH } from '~/constants';
 import PostContent from '../PostContent';
 
 const PostItem = ({
@@ -63,11 +63,30 @@ const PostItem = ({
         >
           {isContentAbsolute ? (
             <Box position="absolute" inset="0" w="100%" h="100%" overflow="hidden">
-              <Image src={image} alt="post-item" h="100%" w="100%" className="image" />
+              <Image
+                src={image}
+                alt="post-item"
+                h="100%"
+                w="100%"
+                className="image"
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = NO_IMAGE_URL;
+                }}
+              />
             </Box>
           ) : (
             <Box h="100%" borderRight="4px solid black" className="image">
-              <Image src={image} alt="post-item" w="100%" h="100%" />
+              <Image
+                src={image}
+                alt="post-item"
+                w="100%"
+                h="100%"
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = NO_IMAGE_URL;
+                }}
+              />
             </Box>
           )}
         </Link>

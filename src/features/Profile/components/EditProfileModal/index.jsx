@@ -31,8 +31,8 @@ const EditProfileModal = ({ data, onClose }) => {
   const fileInputRef = useRef();
   const [avatar, setAvatar] = useState(data.avatar);
   const [imageLoading, setImageLoading] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [modalLoading, setModalLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
   const onSubmit = (data) => {

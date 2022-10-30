@@ -1,7 +1,7 @@
 import { Box, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ROUTES_PATH } from '~/constants';
+import { NO_IMAGE_URL, ROUTES_PATH } from '~/constants';
 import { CategoryServices, PostServices } from '~/services';
 
 const CollectionsPage = () => {
@@ -133,7 +133,17 @@ const CollectionsPage = () => {
     lists.map((item, key) => (
       <GridItem key={key}>
         <Flex direction="column" h="100%">
-          <Image src={item.image} alt="post" w="100%" maxH="28rem" minH="28rem"></Image>
+          <Image
+            src={item.image}
+            alt="post"
+            w="100%"
+            maxH="28rem"
+            minH="28rem"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = NO_IMAGE_URL;
+            }}
+          />
           <Flex direction="column" p="1rem" cursor="pointer" flex="1">
             <Text
               textTransform="uppercase"

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Avatar,
   Box,
@@ -23,7 +24,14 @@ import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { AiOutlineClose, AiOutlineEdit } from 'react-icons/ai';
 import axiosInstance from '~/app/api';
 import { NewPostIcon } from '~/components/Icons';
-import { API_CODE, API_PATH, MY_POST_DISPLAY, MY_POST_TYPE, ROUTES_PATH } from '~/constants';
+import {
+  API_CODE,
+  API_PATH,
+  MY_POST_DISPLAY,
+  MY_POST_TYPE,
+  NO_IMAGE_URL,
+  ROUTES_PATH,
+} from '~/constants';
 import EditProfileModal from './components/EditProfileModal';
 import LayoutButton from './components/LayoutButton';
 import Sort from './components/Sort';
@@ -268,7 +276,6 @@ const Profile = () => {
       default:
         (async () => {
           try {
-            console.log('save list');
             const { code, data, ...pagination } = await axiosInstance.get(
               API_PATH.repost.getList.replace(':id', id),
               { params: { PageNumber: page } }
@@ -395,68 +402,100 @@ const Profile = () => {
   };
 
   const renderGridItems = () =>
-    list.map((item, idx) => (
-      <GridItem key={idx}>
-        <Wrapper>
-          <ContextMenuTrigger id={`grid-item-${idx}`}>
-            <Flex
-              direction="column"
-              borderRadius="8px"
-              maxH="26rem"
-              overflow="hidden"
-              border="1px solid rgba(22, 24, 35, 0.12)"
-            >
-              <Box
-                flex="0.8"
-                w="100%"
-                h="100%"
-                cursor="pointer"
-                onClick={() =>
-                  navigate(
-                    type === MY_POST_TYPE.recent
-                      ? `${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`
-                      : `${ROUTES_PATH.user.upload}/@${item.id}`
-                  )
-                }
+    list.map((item, idx) => {
+      return (
+        <GridItem key={idx}>
+          <Wrapper>
+            <ContextMenuTrigger id={`grid-item-${idx}`}>
+              <Flex
+                direction="column"
+                borderRadius="8px"
+                maxH="26rem"
+                overflow="hidden"
+                border="1px solid rgba(22, 24, 35, 0.12)"
               >
-                <Image src={item.image} alt="my-posts" w="100%" h="100%" maxH="20rem" />
-              </Box>
-
-              {/* content */}
-              <Flex align="center" flex="0.2" p="1rem" gap="1rem" w="100%">
-                <Box>
-                  <NewPostIcon />
-                </Box>
-                <Box w="100%">
-                  <Text
-                    as="h4"
-                    className="text"
-                    whiteSpace="nowrap"
-                    textOverflow="ellipsis"
-                    overflow="hidden"
-                    maxW="calc(100% - 4.2rem)"
-                    cursor="pointer"
-                    _hover={{
-                      textDecoration: 'underline',
-                    }}
-                    onClick={() =>
-                      navigate(`${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`)
+                <Box
+                  flex="0.8"
+                  w="100%"
+                  h="100%"
+                  cursor="pointer"
+                  onClick={() =>
+                    navigate(
+                      type !== MY_POST_TYPE.draft
+                        ? `${ROUTES_PATH.user.postDetail.replace(
+                            ':id',
+                            type === MY_POST_TYPE.save
+                              ? Array.isArray(item?.post) && item?.post[0]?.id
+                              : item.id
+                          )}`
+                        : `${ROUTES_PATH.user.upload}/@${item.id}`
+                    )
+                  }
+                >
+                  <Image
+                    src={
+                      type === MY_POST_TYPE.save
+                        ? Array.isArray(item?.post) && item?.post[0]?.image
+                        : item?.image
                     }
-                  >
-                    {item.title}
-                  </Text>
-                  <Text as="p" color="textColor.200">
-                    {`Edited ${moment(item.created_date).fromNow()}`}
-                  </Text>
+                    alt="my-posts"
+                    w="100%"
+                    h="100%"
+                    minH="20rem"
+                    maxH="20rem"
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = NO_IMAGE_URL;
+                    }}
+                  />
                 </Box>
-              </Flex>
-            </Flex>
-          </ContextMenuTrigger>
 
-          {renderContextMenu({ id: `grid-item-${idx}`, data: item })}
-        </Wrapper>
-      </GridItem>
-    ));
+                {/* content */}
+                <Flex align="center" flex="0.2" p="1rem" gap="1rem" w="100%">
+                  <Box>
+                    <NewPostIcon />
+                  </Box>
+                  <Box w="100%">
+                    <Text
+                      as="h4"
+                      className="text"
+                      whiteSpace="nowrap"
+                      textOverflow="ellipsis"
+                      overflow="hidden"
+                      maxW="calc(100% - 4.2rem)"
+                      cursor="pointer"
+                      _hover={{
+                        textDecoration: 'underline',
+                      }}
+                      onClick={() =>
+                        navigate(`${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`)
+                      }
+                    >
+                      {type === MY_POST_TYPE.save
+                        ? Array.isArray(item?.post) && item?.post[0]?.title
+                        : item.title}
+                    </Text>
+                    <Text as="p" color="textColor.200">
+                      {`Edited ${moment(
+                        type === MY_POST_TYPE.save
+                          ? Array.isArray(item?.post) && item?.post[0]?.created_date
+                          : item.created_date
+                      ).fromNow()}`}
+                    </Text>
+                  </Box>
+                </Flex>
+              </Flex>
+            </ContextMenuTrigger>
+
+            {type !== MY_POST_TYPE.save &&
+              renderContextMenu({
+                id: `grid-item-${idx}`,
+                data: item,
+              })}
+          </Wrapper>
+        </GridItem>
+      );
+    });
 
   const nameBodyTemplate = (rowData) => {
     return (
@@ -474,7 +513,17 @@ const Profile = () => {
         }
       >
         <Square boxSize="3.2rem">
-          <Image src={rowData.image} alt="my-posts" w="100%" h="100%" maxH="20rem" />
+          <Image
+            src={rowData.image}
+            alt="my-posts"
+            w="100%"
+            h="100%"
+            maxH="20rem"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = NO_IMAGE_URL;
+            }}
+          />
         </Square>
         <Text
           as="h4"
@@ -532,7 +581,7 @@ const Profile = () => {
       />
       <DataTable
         className="hide-scroll"
-        value={list}
+        value={type === MY_POST_TYPE.save ? list.map((v) => v?.post[0]) : list}
         responsiveLayout="scroll"
         scrollable
         scrollHeight="flex"
@@ -542,7 +591,9 @@ const Profile = () => {
         selectionMode="single"
         selection={selectedPost}
         onSelectionChange={(e) => setSelectedPost(e.value)}
-        onContextMenu={(e) => cm.current.show(e.originalEvent)}
+        onContextMenu={
+          type === MY_POST_TYPE.save ? () => {} : (e) => cm.current.show(e.originalEvent)
+        }
       >
         <Column
           field="title"

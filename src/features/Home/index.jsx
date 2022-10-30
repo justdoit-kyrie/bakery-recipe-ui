@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { default as axios } from '~/app/api';
-import { API_CODE, API_PATH, POST_MAX_LENGTH, ROUTES_PATH } from '~/constants';
+import { API_CODE, API_PATH, NO_IMAGE_URL, POST_MAX_LENGTH, ROUTES_PATH } from '~/constants';
 import CategoryPosts from './components/CategoryPosts';
 import PostItem from './components/PostItem';
 
@@ -89,7 +89,17 @@ const Home = () => {
             clipPath="polygon(30px 0,100% 0,calc(100% - 30px) 100%,0 100%)"
             cursor="pointer"
           >
-            <Image maxH="28rem" w="100%" src={image} alt="popular-post" />
+            <Image
+              maxH="28rem"
+              minH="24.6rem"
+              w="100%"
+              src={image}
+              alt="popular-post"
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = NO_IMAGE_URL;
+              }}
+            />
           </Box>
         </Link>
         <Text
@@ -128,6 +138,7 @@ const Home = () => {
         >
           {newestPosts.map((item, idx) => {
             delete item.categoryID;
+            console.log({ item });
             return (
               <GridItem key={idx} area={`h${idx + 1}`}>
                 <PostItem {...item} />

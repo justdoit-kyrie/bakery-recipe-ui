@@ -7,6 +7,7 @@ const AdUsersPage = lazy(() => import('~/features/Admin/Users'));
 const AdStatisticPage = lazy(() => import('~/features/Admin/Statistics'));
 const AdPostsPage = lazy(() => import('~/features/Admin/Posts'));
 const AdCategoriesPage = lazy(() => import('~/features/Admin/Categories'));
+const AdIngredientsPage = lazy(() => import('~/features/Admin/Ingredients'));
 
 const NotFoundPage = lazy(() => import('~/components/NotFound'));
 const PrivateRoute = lazy(() => import('~/components/PrivateRoute'));
@@ -37,19 +38,6 @@ const publicRoutes = {
     },
   ],
   [ROLE.user]: [
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.user.postDetail,
-      component: PostDetailPage,
-      layout: HeaderOnlyLayout,
-    },
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.user.profile,
-      component: ProfilePage,
-      layout: HeaderOnlyLayout,
-    },
-
     {
       type: ROUTES_TYPE.public,
       path: ROUTES_PATH.user.collections,
@@ -83,6 +71,11 @@ const publicRoutes = {
       path: ROUTES_PATH.admin.categories,
       component: AdCategoriesPage,
     },
+    {
+      type: ROUTES_TYPE.public,
+      path: ROUTES_PATH.admin.ingredients,
+      component: AdIngredientsPage,
+    },
   ],
 };
 
@@ -96,6 +89,18 @@ const privateRoutes = {
     },
   ],
   [ROLE.user]: [
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.user.profile,
+      component: ProfilePage,
+      layout: HeaderOnlyLayout,
+    },
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.user.postDetail,
+      component: PostDetailPage,
+      layout: HeaderOnlyLayout,
+    },
     {
       type: ROUTES_TYPE.private,
       path: ROUTES_PATH.user.upload,

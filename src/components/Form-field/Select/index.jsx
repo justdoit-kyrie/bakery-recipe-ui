@@ -49,7 +49,7 @@ const SelectField = ({
       name={name}
       control={control}
       render={({ field }) => (
-        <Flex direction="column">
+        <Flex direction="column" mt="8px">
           {label && showLabel && (
             <Text className="text" mb="4px">
               {label}

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {
+  Avatar,
   Box,
   Button,
   Flex,
@@ -28,7 +29,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
 import { Loading } from '~/components';
-import { API_CODE, API_PATH } from '~/constants';
+import { API_CODE, API_PATH, NO_IMAGE_URL } from '~/constants';
 import { CategoryServices } from '~/services';
 import { selectUserInfo } from '../Authenticate/authSlice';
 import Comment from './components/Comment';
@@ -185,16 +186,20 @@ const PostDetail = () => {
     }
   };
 
-  // const renderCustomContent = () => {
-  //   return <div>123</div>;
-  // };
-
   return (
-    <Box h="100%" pt="9rem" pb="5rem" position="relative">
+    <Box h="100%" pt="2rem" pb="5rem" position="relative">
       {loading && <Loading />}
       <Grid templateColumns="repeat(3, 1fr)" gap="3rem" className="container">
         <GridItem colSpan={2}>
-          <Image maxH="30rem" w="100%" src={postDetail?.image} alt="reus" />
+          <Image
+            maxH="30rem"
+            w="100%"
+            src={postDetail?.image}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = NO_IMAGE_URL;
+            }}
+          />
           <Box
             padding="40px"
             borderRight="1px"
@@ -243,9 +248,13 @@ const PostDetail = () => {
                 </Box>
               );
             })}
-            <Box fontSize="15px" color="#7A7A7A" m="25px 0px" p="25px 0px">
-              {postDetail?.content}
-            </Box>
+            <Box
+              fontSize="15px"
+              color="#7A7A7A"
+              m="25px 0px"
+              p="25px 0px"
+              dangerouslySetInnerHTML={{ __html: postDetail?.content }}
+            />
             <Flex gap="50px" align="center">
               {postDetail && (
                 <>
@@ -338,7 +347,12 @@ const PostDetail = () => {
             >
               AUTHOR
             </Box>
-            <Image w="120px" h="100px" src={author.avatar} />
+            <Avatar
+              name={`${author?.firstName} ${author?.lastName}`}
+              w="120px"
+              h="120px"
+              src={author.avatar}
+            />
             <Box color="20232E" fontSize="20px" fontWeight="650">
               {author?.firstName} {author?.lastName}
             </Box>

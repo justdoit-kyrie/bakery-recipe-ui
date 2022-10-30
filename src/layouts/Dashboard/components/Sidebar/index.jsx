@@ -25,6 +25,11 @@ const MOCK_DATA = [
     label: 'Posts',
   },
   {
+    to: ROUTES_PATH.admin.ingredients,
+    icon: IoDocumentOutline,
+    label: 'Ingredients',
+  },
+  {
     to: ROUTES_PATH.admin.categories,
     icon: IoDocumentOutline,
     label: 'Categories',

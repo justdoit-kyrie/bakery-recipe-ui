@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { AppRoutes } from '~/app/routes';
-import { IMAGE_TYPES } from '~/constants';
+import { GET_IMAGE_FROM_HTML_STRING, IMAGE_TYPES } from '~/constants';
 
 export const getFullYear = (min, max) => {
   const result = [];
@@ -25,9 +25,9 @@ export const firebaseImageName = (file, userId = 'user1') =>
   `${userId}/${moment(new Date()).toDate().toISOString()}_${file.name}`;
 
 export const getBannerFromContent = (content) => {
-  const positionStart = content.indexOf('<img src="');
-  const positionEnd = content.indexOf('">');
-  return content.substring(positionStart, positionEnd).replace('<img src="', '');
+  const imageList = content.match(GET_IMAGE_FROM_HTML_STRING);
+
+  return Array.isArray(imageList) ? imageList[0].replace('<img src="', '').replace('">', '') : '';
 };
 
 export const getAppRoutes = () => {
@@ -47,6 +47,6 @@ export const getSubDomain = () => {
   const hostName = window.location.hostname;
   return host
     .split('.')
-    .slice(0, host.includes(hostName) ? -1 : -2)
+    .slice(0, host.includes(hostName) ? -2 : -1)
     .join('');
 };
