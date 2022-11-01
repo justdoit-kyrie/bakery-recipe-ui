@@ -9,17 +9,25 @@ import { IoLogOutOutline } from 'react-icons/io5';
 import { MdDarkMode, MdLanguage, MdLightMode } from 'react-icons/md';
 import { VscColorMode } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ModalContext } from '~/app/context';
 import i18n from '~/app/i18n';
 
-import { COLOR_MODE_TYPE, LANGUAGES, LOGOUT_TYPE, ROUTES_PATH } from '~/constants';
+import {
+  COLOR_MODE_TYPE,
+  LANGUAGES,
+  LOGOUT_TYPE,
+  ROLE_ENUM,
+  ROUTES_PATH,
+  SUB_DOMAIN,
+} from '~/constants';
 import { AuthenticateModal } from '~/features';
 import { selectUserInfo } from '~/features/Authenticate/authSlice';
 import { useCallbackPrompt } from '~/hooks';
+import { getSubDomain } from '~/utils';
 import { BellIcon, Logo } from '../Icons';
-import PopperMenu from './components/PopperMenu';
 import Search from '../Search';
+import PopperMenu from './components/PopperMenu';
 
 const MOCK_DATA = (t, id) => ({
   public: [
@@ -133,6 +141,7 @@ const Header = ({ t }) => {
   const { isOpen, onOpen, onClose } = useContext(ModalContext);
   const userInfo = useSelector(selectUserInfo);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isBellClicked, setIsBellClicked] = useState(false);
   const isTouched = useRef(false);
@@ -143,7 +152,21 @@ const Header = ({ t }) => {
 
   useEffect(() => {
     if (userInfo && !isTouched.current) onConfirm();
+
+    if (
+      isTouched.current &&
+      userInfo?.roleId === ROLE_ENUM.admin &&
+      getSubDomain() === SUB_DOMAIN.admin
+    ) {
+      navigate(ROUTES_PATH.admin.users);
+    }
   }, [userInfo]);
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', (e) => {
+      e.stopImmediatePropagation();
+    });
+  }, []);
 
   const renderCustomContent = () => (
     <Flex direction="column" minH="40rem" maxH="64rem" minW="37.6rem">

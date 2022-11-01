@@ -14,7 +14,6 @@ const PostContent = ({
   time = 6,
   ...props
 }) => {
-  console.log({ authorName });
   let passProps = {};
   if (isContentAbsolute) {
     passProps = {
@@ -26,6 +25,7 @@ const PostContent = ({
       w: '60%',
       ...props,
     };
+    delete passProps?.categoryID;
   }
 
   return (

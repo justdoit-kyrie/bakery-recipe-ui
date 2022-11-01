@@ -27,7 +27,10 @@ const AdIngredientsPage = () => {
   const fetchData = async () => {
     try {
       const { code, data, ...pagination } = await axiosInstance.get(API_PATH.products.getList, {
-        params: {},
+        params: {
+          PageNumber: page,
+          PageSize: rows,
+        },
       });
 
       if (+code === API_CODE.success) {
@@ -41,7 +44,7 @@ const AdIngredientsPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page]);
 
   const handleDelete = async ({ productId, productImage }) => {
     try {
@@ -108,7 +111,7 @@ const AdIngredientsPage = () => {
         textOverflow="ellipsis"
         overflow="hidden"
       >
-        {name === 'no' ? field.rowIndex : rowData[name]}
+        {name === 'no' ? field.rowIndex + 1 : rowData[name]}
       </Text>
     );
   };
@@ -182,7 +185,7 @@ const AdIngredientsPage = () => {
               footer={footerTemplate}
               selectionMode="single"
             >
-              <Column field="no" header="No" body={defaultBodyTemplate} sortable></Column>
+              <Column field="no" header="No" body={defaultBodyTemplate}></Column>
               <Column field="productName" header="Name" body={nameBodyTemplate} sortable></Column>
               <Column field="price" header="Price" body={defaultBodyTemplate} sortable></Column>
               <Column

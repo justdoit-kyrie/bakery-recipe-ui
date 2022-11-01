@@ -138,7 +138,6 @@ const Home = () => {
         >
           {newestPosts.map((item, idx) => {
             delete item.categoryID;
-            console.log({ item });
             return (
               <GridItem key={idx} area={`h${idx + 1}`}>
                 <PostItem {...item} />

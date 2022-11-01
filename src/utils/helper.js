@@ -47,6 +47,6 @@ export const getSubDomain = () => {
   const hostName = window.location.hostname;
   return host
     .split('.')
-    .slice(0, host.includes(hostName) ? -2 : -1)
+    .slice(0, host.includes(hostName) ? -1 : -2)
     .join('');
 };

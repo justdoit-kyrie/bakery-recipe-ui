@@ -1,19 +1,16 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React, { Fragment } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
-import { BsGrid1X2 } from 'react-icons/bs';
+import { FaRegListAlt } from 'react-icons/fa';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
+import { GoReport } from 'react-icons/go';
 import { IoDocumentOutline } from 'react-icons/io5';
+import { MdFastfood } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 import { Logo } from '~/components/Icons';
 import { ROUTES_PATH } from '~/constants';
 
 const MOCK_DATA = [
-  {
-    to: ROUTES_PATH.admin.statistic,
-    icon: BsGrid1X2,
-    label: 'Overview',
-  },
   {
     to: ROUTES_PATH.admin.users,
     icon: AiOutlineUser,
@@ -25,13 +22,18 @@ const MOCK_DATA = [
     label: 'Posts',
   },
   {
+    to: ROUTES_PATH.admin.reports,
+    icon: GoReport,
+    label: 'Reports',
+  },
+  {
     to: ROUTES_PATH.admin.ingredients,
-    icon: IoDocumentOutline,
+    icon: MdFastfood,
     label: 'Ingredients',
   },
   {
     to: ROUTES_PATH.admin.categories,
-    icon: IoDocumentOutline,
+    icon: FaRegListAlt,
     label: 'Categories',
   },
   {

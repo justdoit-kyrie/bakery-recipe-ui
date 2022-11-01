@@ -34,7 +34,7 @@ const FormGetInfo = ({ initialRef, handleCloseModal = () => {} }) => {
   const userInfo = useSelector(selectUserInfo);
   const dispatch = useDispatch();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // call API update user userName & set userInfo into redux
     console.log({ data });
 

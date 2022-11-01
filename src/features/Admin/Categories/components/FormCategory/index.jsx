@@ -22,8 +22,6 @@ const FormCategoryModal = ({ data, onClose, isOpen, callback }) => {
   const submitBtnRef = useRef(null);
   const [isValid, setIsValid] = useState(false);
 
-  console.log({ data });
-
   const onSubmit = async (data) => {
     try {
       if (data?.categoryId) {

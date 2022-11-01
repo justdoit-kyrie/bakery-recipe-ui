@@ -40,125 +40,7 @@ import { Wrapper } from './styles';
 import { Paginator } from 'primereact/paginator';
 
 const MOCK_DATA = {
-  profile: {
-    username: 'duc.nguyendm',
-    email: 'duc.nguyendm@gmail.com',
-    firstName: '',
-    lastName: '',
-    avatar: undefined,
-    gender: undefined,
-    address: '',
-    phone: '',
-  },
   min_width: 230,
-  list: [
-    {
-      id: 0,
-      title:
-        'Argon Dashboard Chakra - Free Version (Community) Argon Dashboard Chakra - Free Version (Community)',
-      created_date: moment().subtract(1, 'days').toDate(),
-      image:
-        'https://images.unsplash.com/photo-1664136709608-32f4a7b56ba8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxOXx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 1,
-      title: 'Online Learning Landing Page (Community)',
-      created_date: moment().subtract(4, 'months').toDate(),
-      image:
-        'https://images.unsplash.com/photo-1664171122063-4685b3511c6b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxNXx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 2,
-      title: 'Infra',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1664155942208-a4792a4be4a9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 3,
-      title: 'FoodDelivery',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1664155942208-a4792a4be4a9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 4,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1664141052237-7d83731b4ae6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxM3x8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 5,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1661956600654-edac218fea67?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 6,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1664165131680-1b334b932295?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 7,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1664154325041-426de2329ddf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 8,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 9,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 10,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 11,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 12,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 13,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-      id: 14,
-      title: 'Heling _ Interior Website',
-      created_date: '',
-      image:
-        'https://images.unsplash.com/photo-1564419434663-c49967363849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',
-    },
-  ],
 };
 
 const Profile = () => {
@@ -227,12 +109,12 @@ const Profile = () => {
       case MY_POST_TYPE.recent:
         (async () => {
           try {
-            console.log('recent list');
             const { code, data, ...pagination } = await axiosInstance.get(
               API_PATH.posts.getByStatus,
               {
                 params: {
                   PageNumber: page,
+                  PageSize: rows,
                   userID: id,
                   status: 1,
                 },
@@ -251,13 +133,12 @@ const Profile = () => {
       case MY_POST_TYPE.draft:
         (async () => {
           try {
-            console.log('draft list');
-
             const { code, data, ...pagination } = await axiosInstance.get(
               API_PATH.posts.getByStatus,
               {
                 params: {
                   PageNumber: page,
+                  PageSize: rows,
                   userID: id,
                   status: 2,
                 },
@@ -293,7 +174,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (MY_POST_DISPLAY.grid) {
+    if (displayType === MY_POST_DISPLAY.grid) {
       switch (type) {
         case MY_POST_TYPE.recent:
           (async () => {
@@ -304,6 +185,7 @@ const Profile = () => {
                   params: {
                     userID: id,
                     status: 1,
+                    _all: true,
                   },
                 }
               );
@@ -356,10 +238,9 @@ const Profile = () => {
           break;
       }
     } else {
-      console.log(123);
       fetchData();
     }
-  }, [type, displayType, page]);
+  }, [type, displayType, page, rows]);
 
   const handleDeletePost = (post) => console.log({ post });
 
@@ -667,6 +548,8 @@ const Profile = () => {
             onClick={() => {
               setType(MY_POST_TYPE.recent);
               setProgressLeft(0);
+              setPage(1);
+              setRows(10);
             }}
             onMouseEnter={() => setProgressLeft(0)}
             onMouseLeave={handleMouseLeave}
@@ -692,6 +575,8 @@ const Profile = () => {
             onClick={() => {
               setType(MY_POST_TYPE.draft);
               setProgressLeft(recentRef.current.offsetLeft + recentRef.current.offsetWidth);
+              setPage(1);
+              setRows(10);
             }}
             onMouseEnter={
               type !== MY_POST_TYPE.draft
@@ -721,6 +606,8 @@ const Profile = () => {
             onClick={() => {
               setType(MY_POST_TYPE.save);
               setProgressLeft(draftRef.current.offsetLeft + draftRef.current.offsetWidth);
+              setPage(1);
+              setRows(10);
             }}
             onMouseEnter={
               type !== MY_POST_TYPE.save

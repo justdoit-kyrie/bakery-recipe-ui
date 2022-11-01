@@ -23,7 +23,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
 import firebase from '~/app/firebase';
 import { Loading } from '~/components';
-import { API_CODE, API_PATH, NO_IMAGE_URL } from '~/constants';
+import { API_CODE, API_PATH } from '~/constants';
 
 import FormAddEdit from '../FormAddEdit';
 
@@ -154,12 +154,9 @@ const FormIngredientsModal = ({ data, onClose, isOpen, callback }) => {
                 w="100%"
                 h="100%"
                 src={image}
+                name={`${data?.productName}`}
                 cursor="pointer"
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null;
-                  currentTarget.src = NO_IMAGE_URL;
-                }}
               />
               <Circle
                 size="3.2rem"

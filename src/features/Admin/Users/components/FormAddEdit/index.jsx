@@ -69,6 +69,7 @@ const FormAddEdit = ({ initialRef, submitBtnRef, initialValue, onSubmit, setIsVa
         errors={errors}
       />
       <InputField
+        initialRef={initialRef}
         name="price"
         label="Price"
         errorBorderColor="rgba(22, 24, 35, 0.12)"
@@ -77,6 +78,7 @@ const FormAddEdit = ({ initialRef, submitBtnRef, initialValue, onSubmit, setIsVa
         errors={errors}
       />
       <InputField
+        initialRef={initialRef}
         name="unitInStock"
         label="Unit in stock"
         errorBorderColor="rgba(22, 24, 35, 0.12)"

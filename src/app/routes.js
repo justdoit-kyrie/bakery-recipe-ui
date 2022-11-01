@@ -4,10 +4,10 @@ import React, { Route, Routes } from 'react-router-dom';
 import { ROLE, ROUTES_PATH, ROUTES_TYPE } from '~/constants';
 
 const AdUsersPage = lazy(() => import('~/features/Admin/Users'));
-const AdStatisticPage = lazy(() => import('~/features/Admin/Statistics'));
 const AdPostsPage = lazy(() => import('~/features/Admin/Posts'));
 const AdCategoriesPage = lazy(() => import('~/features/Admin/Categories'));
 const AdIngredientsPage = lazy(() => import('~/features/Admin/Ingredients'));
+const AdReportsPage = lazy(() => import('~/features/Admin/Reports'));
 
 const NotFoundPage = lazy(() => import('~/components/NotFound'));
 const PrivateRoute = lazy(() => import('~/components/PrivateRoute'));
@@ -50,33 +50,7 @@ const publicRoutes = {
       layout: null,
     },
   ],
-  [ROLE.admin]: [
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.admin.statistic,
-      component: AdStatisticPage,
-    },
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.admin.users,
-      component: AdUsersPage,
-    },
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.admin.posts,
-      component: AdPostsPage,
-    },
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.admin.categories,
-      component: AdCategoriesPage,
-    },
-    {
-      type: ROUTES_TYPE.public,
-      path: ROUTES_PATH.admin.ingredients,
-      component: AdIngredientsPage,
-    },
-  ],
+  [ROLE.admin]: [],
 };
 
 const privateRoutes = {
@@ -114,7 +88,33 @@ const privateRoutes = {
       layout: HeaderOnlyLayout,
     },
   ],
-  [ROLE.admin]: [],
+  [ROLE.admin]: [
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.admin.users,
+      component: AdUsersPage,
+    },
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.admin.posts,
+      component: AdPostsPage,
+    },
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.admin.reports,
+      component: AdReportsPage,
+    },
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.admin.categories,
+      component: AdCategoriesPage,
+    },
+    {
+      type: ROUTES_TYPE.private,
+      path: ROUTES_PATH.admin.ingredients,
+      component: AdIngredientsPage,
+    },
+  ],
 };
 
 const ROUTES = _.mergeWith(publicRoutes, privateRoutes, (objValue, srcValue) => {

@@ -20,6 +20,7 @@ export const ROUTES_PATH = {
     statistic: '/statistic',
     users: '/users',
     posts: '/posts',
+    reports: '/reports',
     categories: '/categories',
     ingredients: '/ingredients',
   },
@@ -187,6 +188,7 @@ export const ROLE = {
 };
 
 export const UPLOAD_STATUS_ENUM = ['inActive', 'active', 'draft'];
+export const REPORT_PROBLEM_ENUM = ['SPAM', 'NOT_SUITABLE_LANGUAGE', 'NOT_SUITABLE_TYPE'];
 
 export const UPLOAD_STATUS = {
   inActive: 'inActive',
@@ -228,3 +230,13 @@ export const INGREDIENTS_UNIT_TYPE = [
     value: 2,
   },
 ];
+
+export const ROLE_ENUM = {
+  admin: 0,
+  user: 1,
+};
+
+export const SUB_DOMAIN = {
+  admin: 'admin',
+  user: '',
+};
