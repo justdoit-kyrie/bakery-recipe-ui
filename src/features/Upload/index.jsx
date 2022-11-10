@@ -23,6 +23,9 @@ const UploadPage = () => {
 
   const [initialValues, setInitialValues] = useState(defaultValues);
   const [isEdit, setIsEdit] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  console.log({ categories });
 
   const [loading, setLoading] = useState(false);
 
@@ -106,11 +109,24 @@ const UploadPage = () => {
     try {
       setLoading(true);
       // type not already loaded from api
+      const {
+        code: _code,
+        message,
+        data: _data,
+      } = await axios.get(API_PATH.categories.getList, {
+        params: { _order: -1 },
+      });
+      if (+_code === API_CODE.success) {
+        setCategories(_data);
+      } else {
+        toast.error(message);
+      }
       const { code, data } = await axios.get(API_PATH.posts.getDetail.replace(':id', id));
       if (+code === API_CODE.success) {
         setInitialValues({
           ...data,
           ingredients: data.postProducts.map((item) => ({ name: item, value: item.quantity })),
+          type: _data.find((v) => data.categoryID === v.categoryId),
         });
       }
     } catch (error) {

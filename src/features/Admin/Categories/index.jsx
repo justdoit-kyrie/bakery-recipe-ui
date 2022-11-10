@@ -70,7 +70,9 @@ const AdCategoriesPage = () => {
     />
   );
 
-  const noBodyTemplate = (rowData) => {
+  const defaultBodyTemplate = (rowData, field) => {
+    const { field: name } = field;
+
     return (
       <Text
         as="h4"
@@ -81,7 +83,7 @@ const AdCategoriesPage = () => {
         textOverflow="ellipsis"
         overflow="hidden"
       >
-        {listID.indexOf(rowData.categoryId)}
+        {name === 'no' ? field.rowIndex + 1 : rowData[name]}
       </Text>
     );
   };
@@ -159,7 +161,6 @@ const AdCategoriesPage = () => {
         <Text fontSize="2rem" fontWeight={700}>
           Categories List
         </Text>
-        <Search />
       </Flex>
 
       <Box flex="1" position="relative">
@@ -175,15 +176,15 @@ const AdCategoriesPage = () => {
               selectionMode="single"
             >
               <Column
+                field="no"
                 header="No"
-                body={noBodyTemplate}
-                sortable
+                body={defaultBodyTemplate}
                 style={{
                   flex: '0.2',
                 }}
               ></Column>
               <Column
-                field="name"
+                field="categoryName"
                 header="Name"
                 body={nameBodyTemplate}
                 sortable

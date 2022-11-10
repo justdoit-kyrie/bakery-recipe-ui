@@ -49,6 +49,8 @@ const PrivateRoute = ({ children }) => {
       })();
     } catch (error) {
       console.log({ error });
+    } finally {
+      dispatch(failed());
     }
   }, []);
 

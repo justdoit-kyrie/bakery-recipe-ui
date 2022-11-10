@@ -26,7 +26,6 @@ import { selectUserInfo } from '~/features/Authenticate/authSlice';
 import { useCallbackPrompt } from '~/hooks';
 import { getSubDomain } from '~/utils';
 import { BellIcon, Logo } from '../Icons';
-import Search from '../Search';
 import PopperMenu from './components/PopperMenu';
 
 const MOCK_DATA = (t, id) => ({
@@ -155,7 +154,7 @@ const Header = ({ t }) => {
 
     if (
       isTouched.current &&
-      userInfo?.roleId === ROLE_ENUM.admin &&
+      userInfo?.role === ROLE_ENUM.admin &&
       getSubDomain() === SUB_DOMAIN.admin
     ) {
       navigate(ROUTES_PATH.admin.users);
@@ -224,9 +223,6 @@ const Header = ({ t }) => {
         <Link to={ROUTES_PATH.common.home}>
           <Logo width="11.8rem" height="5rem" />
         </Link>
-
-        {/* search */}
-        <Search />
 
         {/* actions */}
         <Box display="flex" gap="1.6rem" alignItems="center">

@@ -48,6 +48,8 @@ const FormUpload = ({ defaultValues, handleUmountForm, handleSubmit: _handleSubm
     resolver: yupResolver(schema),
   });
 
+  console.log({ defaultValues });
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDiscardOpen, onOpen: onDiscardOpen, onClose: onDiscardClose } = useDisclosure();
 

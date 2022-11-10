@@ -170,7 +170,6 @@ const AdIngredientsPage = () => {
         <Text fontSize="2rem" fontWeight={700}>
           Ingredients List
         </Text>
-        <Search />
       </Flex>
 
       <Box flex="1" position="relative">

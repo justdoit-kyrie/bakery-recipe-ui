@@ -29,7 +29,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
 import { Loading } from '~/components';
-import { API_CODE, API_PATH, NO_IMAGE_URL } from '~/constants';
+import { API_CODE, API_PATH, INGREDIENTS_UNIT_TYPE, NO_IMAGE_URL } from '~/constants';
 import { CategoryServices } from '~/services';
 import { selectUserInfo } from '../Authenticate/authSlice';
 import Comment from './components/Comment';
@@ -244,7 +244,9 @@ const PostDetail = () => {
             {postDetail?.postProducts?.map((product, idx) => {
               return (
                 <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
-                  - {product.productName + ' ' + product.quantity + product.type}
+                  {`- ${product.productName} ${product.quantity}${
+                    INGREDIENTS_UNIT_TYPE[product.type]?.name
+                  }`}
                 </Box>
               );
             })}
@@ -348,25 +350,13 @@ const PostDetail = () => {
               AUTHOR
             </Box>
             <Avatar
-              name={`${author?.firstName} ${author?.lastName}`}
+              name={postDetail?.authorName}
               w="120px"
               h="120px"
-              src={author.avatar}
+              src={postDetail?.authorAvatar}
             />
             <Box color="20232E" fontSize="20px" fontWeight="650">
-              {author?.firstName} {author?.lastName}
-            </Box>
-            <Box fontSize="15px" color="7A7A7A">
-              {author?.email}
-            </Box>
-            <Box fontSize="15px" color="7A7A7A">
-              {author?.phone}
-            </Box>
-            <Box fontSize="15px" color="7A7A7A">
-              {author?.gender}
-            </Box>
-            <Box fontSize="15px" color="7A7A7A">
-              {author?.dob}
+              {postDetail?.authorName}
             </Box>
           </Box>
         </GridItem>

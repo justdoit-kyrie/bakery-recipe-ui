@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   Avatar,
   Box,
@@ -20,6 +19,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Paginator } from 'primereact/paginator';
 import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { AiOutlineClose, AiOutlineEdit } from 'react-icons/ai';
 import axiosInstance from '~/app/api';
@@ -27,6 +27,7 @@ import { NewPostIcon } from '~/components/Icons';
 import {
   API_CODE,
   API_PATH,
+  GENDER_ENUM,
   MY_POST_DISPLAY,
   MY_POST_TYPE,
   NO_IMAGE_URL,
@@ -37,7 +38,6 @@ import LayoutButton from './components/LayoutButton';
 import Sort from './components/Sort';
 import './Profile.scss';
 import { Wrapper } from './styles';
-import { Paginator } from 'primereact/paginator';
 
 const MOCK_DATA = {
   min_width: 230,
@@ -349,7 +349,16 @@ const Profile = () => {
                         textDecoration: 'underline',
                       }}
                       onClick={() =>
-                        navigate(`${ROUTES_PATH.user.postDetail.replace(':id', item.id)}`)
+                        navigate(
+                          type !== MY_POST_TYPE.draft
+                            ? `${ROUTES_PATH.user.postDetail.replace(
+                                ':id',
+                                type === MY_POST_TYPE.save
+                                  ? Array.isArray(item?.post) && item?.post[0]?.id
+                                  : item.id
+                              )}`
+                            : `${ROUTES_PATH.user.upload}/@${item.id}`
+                        )
                       }
                     >
                       {type === MY_POST_TYPE.save
@@ -508,7 +517,13 @@ const Profile = () => {
 
   return (
     <Flex direction="column" h="100%" className="container" p="3.2rem 0 1rem">
-      {isOpen && <EditProfileModal onClose={onClose} data={profile} />}
+      {isOpen && (
+        <EditProfileModal
+          onClose={onClose}
+          data={{ ...profile, gender: GENDER_ENUM[profile.gender] }}
+          callback={setProfile}
+        />
+      )}
 
       <Flex align="center" gap="2rem">
         <Avatar

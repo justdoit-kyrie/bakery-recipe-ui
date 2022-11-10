@@ -1,3 +1,5 @@
+import { createBrowserHistory } from 'history';
+
 //#region routes variables
 export const ROUTES_TYPE = {
   public: 0,
@@ -139,6 +141,7 @@ export const API_PATH = {
     getProfile: '/users/getProfile',
     refresh: '/users/refresh',
     getByID: '/users/:id',
+    getList: '/users/getall',
   },
   products: {
     getList: '/products',
@@ -173,8 +176,8 @@ export const API_PATH = {
 export const API_CODE = {
   success: 200,
   fail: 202,
-  tokenExp: 500,
-  tokenInvalid: 501,
+  tokenExp: 901,
+  tokenInvalid: 900,
   wrongPath: 403,
   exception: 400,
 };
@@ -188,7 +191,7 @@ export const ROLE = {
 };
 
 export const UPLOAD_STATUS_ENUM = ['inActive', 'active', 'draft'];
-export const REPORT_PROBLEM_ENUM = ['SPAM', 'NOT_SUITABLE_LANGUAGE', 'NOT_SUITABLE_TYPE'];
+export const REPORT_PROBLEM_ENUM = ['SPAM', 'NOT SUITABLE LANGUAGE', 'NOT SUITABLE TYPE'];
 
 export const UPLOAD_STATUS = {
   inActive: 'inActive',
@@ -198,7 +201,7 @@ export const UPLOAD_STATUS = {
 
 export const POST_MAX_LENGTH = 10;
 
-export const INGREDIENTS_TYPE = ['KG', 'ML', 'UNIT'];
+export const INGREDIENTS_TYPE = ['G', 'ML', 'UNIT'];
 
 export const LOCAL_STORAGE_KEY = {
   accessToken: 'persist:auth',
@@ -218,7 +221,7 @@ export const NO_IMAGE_URL =
 
 export const INGREDIENTS_UNIT_TYPE = [
   {
-    name: 'kg',
+    name: 'g',
     value: 0,
   },
   {
@@ -232,11 +235,13 @@ export const INGREDIENTS_UNIT_TYPE = [
 ];
 
 export const ROLE_ENUM = {
-  admin: 0,
-  user: 1,
+  admin: 'Admin',
+  user: 'User',
 };
 
 export const SUB_DOMAIN = {
   admin: 'admin',
   user: '',
 };
+
+export const history = createBrowserHistory();

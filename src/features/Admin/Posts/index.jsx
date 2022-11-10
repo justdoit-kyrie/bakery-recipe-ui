@@ -6,7 +6,7 @@ import { Paginator } from 'primereact/paginator';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
-import { Search } from '~/components';
+import { Loading, Search } from '~/components';
 import { API_CODE, API_PATH, NO_IMAGE_URL } from '~/constants';
 import ModalDetail from './components/ModalDetail';
 import { Wrapper } from './styles';
@@ -19,24 +19,28 @@ const AdPostsPage = () => {
   const [page, setPage] = useState(0);
   const [list, setList] = useState([]);
   const [reportList, setReportList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [pagination, setPagination] = useState();
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const [{ code, data, ...pagination }, { code: reportCode, data: reportData }] =
         await Promise.all([
           axiosInstance.get(API_PATH.posts.getList, {
             params: {
               PageSize: rows,
-              PageNumber: page,
+              PageNumber: page === 0 ? 1 : page,
             },
           }),
           axiosInstance.get(API_PATH.reports.getList, {
             params: { _all: true },
           }),
         ]);
+
+      console.log({ data });
 
       if (+code === API_CODE.success && +reportCode === API_CODE.success) {
         setList(data);
@@ -45,6 +49,8 @@ const AdPostsPage = () => {
       }
     } catch (error) {
       console.log({ error });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,11 +165,12 @@ const AdPostsPage = () => {
         />
       )}
 
+      {loading && <Loading />}
+
       <Flex p="2rem" justify="space-between" align="center" borderRadius="6px" bg="#fff" mt="2rem">
         <Text fontSize="2rem" fontWeight={700}>
           Posts List
         </Text>
-        <Search />
       </Flex>
 
       <Box flex="1" position="relative">

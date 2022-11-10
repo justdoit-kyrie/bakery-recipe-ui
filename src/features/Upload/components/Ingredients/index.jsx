@@ -15,6 +15,7 @@ import {
   COLOR_MODE_TYPE,
   INGREDIENTS_REGEX,
   INGREDIENTS_TYPE,
+  INGREDIENTS_UNIT_TYPE,
 } from '~/constants';
 import { optionTemplate } from '../FormUpload/templates';
 import { Wrapper } from './style';
@@ -303,7 +304,7 @@ const IngredientsField = ({ value, setValue = () => {}, isReset }) => {
             {item.name.productName}
           </Text>
           <Text as="p" fontSize="1.2rem">
-            {item.value}
+            {`${item.value} ${INGREDIENTS_UNIT_TYPE[item.name.type]?.name}`}
           </Text>
         </Flex>
 

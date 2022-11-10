@@ -56,7 +56,7 @@ const SelectField = ({
             </Text>
           )}
 
-          <Wrapper isError={isError}>{renderSelectField(field)}</Wrapper>
+          <Wrapper isError={showError && isError}>{renderSelectField(field)}</Wrapper>
 
           {isError && showError && (
             <Text mt="4px" fontSize="1.2rem" lineHeight="15px" color="rgb(255, 76, 58)">

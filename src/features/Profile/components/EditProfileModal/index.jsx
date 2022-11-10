@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Avatar,
   Box,
@@ -19,12 +20,14 @@ import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { toast } from 'react-toastify';
+import axiosInstance from '~/app/api';
 
 import firebase from '~/app/firebase';
 import { Loading } from '~/components';
+import { API_CODE, API_PATH, GENDER_ENUM, ROUTES_PATH } from '~/constants';
 import FormEdit from '../FormEdit';
 
-const EditProfileModal = ({ data, onClose }) => {
+const EditProfileModal = ({ data, onClose, callback }) => {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const submitBtnRef = useRef(null);
@@ -35,8 +38,29 @@ const EditProfileModal = ({ data, onClose }) => {
   const [modalLoading, setModalLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
-  const onSubmit = (data) => {
-    console.log({ data: { ...data, avatar } });
+  const onSubmit = async (data) => {
+    try {
+      const {
+        code,
+        message,
+        data: _data,
+      } = await axiosInstance.put(API_PATH.users.getByID.replace(':id', data?.id), {
+        ...data,
+        image: avatar,
+        gender: GENDER_ENUM.indexOf(data?.gender),
+      });
+
+      if (+code === API_CODE.success) {
+        toast.success(message);
+        callback({ ..._data });
+        return;
+      }
+      toast.error(message);
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      onClose();
+    }
   };
 
   const handleFile = async (e) => {
@@ -84,6 +108,7 @@ const EditProfileModal = ({ data, onClose }) => {
 
   return (
     <Modal
+      closeOnOverlayClick={false}
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
       isOpen={true}
@@ -92,7 +117,7 @@ const EditProfileModal = ({ data, onClose }) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent minH="70rem" minW="70rem" borderRadius="8px">
+      <ModalContent minH="55rem" minW="70rem" borderRadius="8px">
         {modalLoading && <Loading label="Delete image processing ..." />}
         <ModalHeader
           fontSize="2.4rem"

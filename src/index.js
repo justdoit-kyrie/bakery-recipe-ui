@@ -7,7 +7,7 @@ import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { persistor, store } from '~/app/store';
@@ -16,6 +16,7 @@ import { Loading, Toast } from '~/components';
 import App from './app';
 import './app/i18n';
 import './index.css';
+import { history } from './constants';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -26,13 +27,13 @@ root.render(
       <PersistGate loading={null} persistor={persistor}>
         <ChakraProvider resetCSS theme={theme}>
           <Toast />
-          <Router>
+          <HistoryRouter history={history}>
             <Suspense fallback={<Loading />}>
               {/* <Toast /> */}
               <ColorModeScript initialColorMode={theme.config.initialColorMode} />
               <App />
             </Suspense>
-          </Router>
+          </HistoryRouter>
         </ChakraProvider>
       </PersistGate>
     </Provider>

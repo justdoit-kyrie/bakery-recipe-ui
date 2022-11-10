@@ -6,6 +6,7 @@ import { ROUTES_PATH } from '~/constants';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
+
   return (
     <Center
       h="100%"

@@ -6,7 +6,6 @@ import { Paginator } from 'primereact/paginator';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
-import { Search } from '~/components';
 import { API_CODE, API_PATH, NO_IMAGE_URL } from '~/constants';
 import { Wrapper } from './styles';
 
@@ -157,7 +156,6 @@ const AdReportsPage = () => {
         <Text fontSize="2rem" fontWeight={700}>
           Reports List
         </Text>
-        <Search />
       </Flex>
 
       <Box flex="1" position="relative">

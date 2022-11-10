@@ -2,13 +2,15 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import React, { Fragment } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FaRegListAlt } from 'react-icons/fa';
-import { FiLogOut, FiSettings } from 'react-icons/fi';
+import { FiLogOut } from 'react-icons/fi';
 import { GoReport } from 'react-icons/go';
 import { IoDocumentOutline } from 'react-icons/io5';
 import { MdFastfood } from 'react-icons/md';
-import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Logo } from '~/components/Icons';
 import { ROUTES_PATH } from '~/constants';
+import { logout } from '~/features/Authenticate/authSlice';
 
 const MOCK_DATA = [
   {
@@ -37,19 +39,21 @@ const MOCK_DATA = [
     label: 'Categories',
   },
   {
-    to: '/settings',
-    icon: FiSettings,
-    label: 'Settings',
-  },
-  {
     to: '',
     icon: FiLogOut,
     label: 'Logout',
-    onClick: () => {},
+    onClick:
+      ({ dispatch, navigate }) =>
+      () => {
+        dispatch(logout());
+        navigate(ROUTES_PATH.common.home);
+      },
   },
 ];
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return (
     <Box w="100%" h="100%">
       <Box borderBottom="1px solid rgb(22,24,35,0.12)" p="2rem 5rem">
@@ -57,7 +61,7 @@ const Sidebar = () => {
       </Box>
       <Flex direction="column" w="100%" h="calc(100% - 91px)" p="3rem" justify="space-between">
         <Flex direction="column">
-          {MOCK_DATA.slice(0, MOCK_DATA.length - 2).map((item, idx) => (
+          {MOCK_DATA.slice(0, MOCK_DATA.length - 1).map((item, idx) => (
             <NavLink
               to={item.to}
               key={idx}
@@ -76,13 +80,12 @@ const Sidebar = () => {
         </Flex>
 
         <Flex direction="column">
-          {MOCK_DATA.slice(MOCK_DATA.length - 2).map((item, idx) => {
+          {MOCK_DATA.slice(MOCK_DATA.length - 1).map((item, idx) => {
             let Comp = NavLink;
             let passProps =
               typeof item.onClick !== 'function'
                 ? {
                     to: item.to,
-
                     style: ({ isActive }) =>
                       isActive
                         ? {
@@ -96,7 +99,18 @@ const Sidebar = () => {
             if (typeof item.onClick === 'function') Comp = Fragment;
             return (
               <Comp key={idx} {...passProps}>
-                <Flex align="center" gap="1rem" p="1.3rem 2rem" fontSize="1.6rem" cursor="pointer">
+                <Flex
+                  align="center"
+                  gap="1rem"
+                  p="1.3rem 2rem"
+                  fontSize="1.6rem"
+                  cursor="pointer"
+                  onClick={
+                    typeof item.onClick === 'function'
+                      ? () => item.onClick({ dispatch, navigate })()
+                      : () => {}
+                  }
+                >
                   <item.icon />
                   <Text fontWeight={500}>{item.label}</Text>
                 </Flex>

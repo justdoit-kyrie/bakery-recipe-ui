@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars */
 import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import { deleteObject, ref } from 'firebase/storage';
+import moment from 'moment';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import React, { useEffect, useState } from 'react';
-import { IoMdAdd } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import axiosInstance from '~/app/api';
 import firebase from '~/app/firebase';
 import { Search } from '~/components';
-import { API_CODE, API_PATH } from '~/constants';
+import { API_CODE, API_PATH, UPLOAD_STATUS_ENUM } from '~/constants';
 import FormIngredientsModal from './components/FormIngredients';
 import { Wrapper } from './styles';
 
@@ -26,8 +26,10 @@ const AdUsersPage = () => {
 
   const fetchData = async () => {
     try {
-      const { code, data, ...pagination } = await axiosInstance.get(API_PATH.products.getList, {
-        params: {},
+      const { code, data, pagination } = await axiosInstance.get(API_PATH.users.getList, {
+        params: {
+          _by: 'id',
+        },
       });
 
       if (+code === API_CODE.success) {
@@ -43,25 +45,6 @@ const AdUsersPage = () => {
     fetchData();
   }, []);
 
-  const handleDelete = async ({ productId, productImage }) => {
-    try {
-      const { code, message } = await axiosInstance.delete(
-        `${API_PATH.products.getList}/${productId}`
-      );
-
-      if (+code === API_CODE.success) {
-        toast.success(message);
-        fetchData();
-        if (productImage) {
-          const storageRef = ref(firebase.getStorage(), productImage);
-          deleteObject(storageRef);
-        }
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
   const footerTemplate = () => (
     <Paginator
       first={first}
@@ -76,7 +59,7 @@ const AdUsersPage = () => {
     />
   );
 
-  const nameBodyTemplate = (rowData) => {
+  const profileBodyTemplate = (rowData) => {
     return (
       <Text
         as="h4"
@@ -86,11 +69,40 @@ const AdUsersPage = () => {
         whiteSpace="nowrap"
         textOverflow="ellipsis"
         overflow="hidden"
-        _hover={{
-          textDecoration: 'underline',
-        }}
       >
-        {rowData.productName}
+        {`${rowData.firstName} ${rowData.lastName}`}
+      </Text>
+    );
+  };
+
+  const DOBBodyTemplate = (rowData) => {
+    return (
+      <Text
+        as="h4"
+        pr="1rem"
+        className="text"
+        fontWeight={500}
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+        overflow="hidden"
+      >
+        {moment(rowData.dob).format('MM-DD-YYYY')}
+      </Text>
+    );
+  };
+
+  const statusBodyTemplate = (rowData) => {
+    return (
+      <Text
+        as="h4"
+        pr="1rem"
+        className="text"
+        fontWeight={500}
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+        overflow="hidden"
+      >
+        {UPLOAD_STATUS_ENUM[rowData.status]}
       </Text>
     );
   };
@@ -108,24 +120,10 @@ const AdUsersPage = () => {
         textOverflow="ellipsis"
         overflow="hidden"
       >
-        {name === 'no' ? field.rowIndex : rowData[name]}
+        {name === 'no' ? field.rowIndex + 1 : rowData[name]}
       </Text>
     );
   };
-
-  const actionBodyTemplate = (rowData) => (
-    <Button
-      variant="outline-default"
-      borderColor="red.500"
-      color="red.500"
-      onClick={(e) => {
-        e.stopPropagation();
-        handleDelete({ ...rowData });
-      }}
-    >
-      Delete
-    </Button>
-  );
 
   return (
     <Flex direction="column" h="100%" w="100%">
@@ -142,7 +140,6 @@ const AdUsersPage = () => {
         <Text fontSize="2rem" fontWeight={700}>
           Users List
         </Text>
-        <Search />
       </Flex>
 
       <Box flex="1" position="relative">
@@ -158,15 +155,16 @@ const AdUsersPage = () => {
               selectionMode="single"
             >
               <Column field="no" header="No" body={defaultBodyTemplate} sortable></Column>
-              <Column field="productName" header="Name" body={nameBodyTemplate} sortable></Column>
-              <Column field="price" header="Price" body={defaultBodyTemplate} sortable></Column>
               <Column
-                field="unitInStock"
-                header="Unit in stock"
-                body={defaultBodyTemplate}
+                field="firstName"
+                header="Profile"
+                body={profileBodyTemplate}
                 sortable
               ></Column>
-              <Column header="Action" body={actionBodyTemplate}></Column>
+              <Column field="email" header="Email" body={defaultBodyTemplate} sortable></Column>
+              <Column field="dob" header="Birth Day" body={DOBBodyTemplate} sortable></Column>
+              <Column field="role" header="Role" body={defaultBodyTemplate} sortable></Column>
+              <Column field="status" header="Status" body={statusBodyTemplate} sortable></Column>
             </DataTable>
           </Wrapper>
         </Box>
