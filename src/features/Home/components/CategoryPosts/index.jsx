@@ -8,7 +8,7 @@ import PostItem from '../PostItem';
 
 const CategoryPosts = ({ margin }) => {
   const [posts, setPosts] = useState([]);
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(true);
   const [categories, setCategories] = useState([]);
   const [type, setType] = useState();
 
@@ -97,6 +97,7 @@ const CategoryPosts = ({ margin }) => {
                 w="calc(20% - 2rem)"
                 textAlign="center"
                 textTransform="capitalize"
+                color={type?.categoryId === item?.categoryId && 'red.400'}
                 _hover={{ color: 'red.400', cursor: 'pointer' }}
                 onClick={() => setType(item)}
               >

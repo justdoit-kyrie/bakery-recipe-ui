@@ -117,7 +117,14 @@ const Home = () => {
         </Text>
       </Box>
 
-      <Text p="2rem" pr="2.5rem" fontSize="1.8rem" textAlign="center" ml="-30px">
+      <Text
+        p="2rem"
+        pr="2.5rem"
+        fontSize="1.8rem"
+        textAlign="center"
+        ml="-30px"
+        textTransform="uppercase"
+      >
         {title}
       </Text>
     </Flex>

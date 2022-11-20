@@ -73,6 +73,7 @@ export const PASSWORD_REGEX_WITHOUT_LENGTH =
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const INGREDIENTS_REGEX = /^[0-9]+\s{0,1}$/;
 export const GET_IMAGE_FROM_HTML_STRING = /<img([\w\W]+?)>/g;
+export const IMAGE_REGEX = /^(https?:\/\/.*\.(?:png|jpg))$/g;
 //#endregion
 
 export const DOB_DAY = [

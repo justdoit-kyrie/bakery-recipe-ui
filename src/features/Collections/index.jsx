@@ -171,6 +171,7 @@ const CollectionsPage = () => {
               _hover={{
                 textDecoration: 'underline',
               }}
+              onClick={() => navigate(ROUTES_PATH.user.postDetail.replace(':id', item.id))}
             >
               {item.title}
             </Text>
@@ -202,6 +203,7 @@ const CollectionsPage = () => {
           bg="#fff"
           opacity="0.8"
           p="0 2rem"
+          borderRadius="10px"
         >
           <Text
             fontSize="4rem"

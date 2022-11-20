@@ -218,11 +218,11 @@ const PostDetail = () => {
             </Box>
             <Box
               fontSize="24px"
-              textTransform="capitalize"
               letterSpacing="0.5px"
               fontWeight="900"
               color="#20232e"
               m="10px 0px 12px 0px"
+              textTransform="uppercase"
             >
               {postDetail?.title}
             </Box>
@@ -238,12 +238,12 @@ const PostDetail = () => {
                 {postDetail?.createdDate}
               </Text>
             </HStack>
-            <Box color="20232E" fontSize="20PX" fontWeight="650PX">
+            <Box color="20232E" fontSize="20PX" fontWeight="700">
               INGREDIENTS:
             </Box>
             {postDetail?.postProducts?.map((product, idx) => {
               return (
-                <Box key={idx} color="20232E" fontSize="14px" fontWeight="500" mb="10px">
+                <Box key={idx} color="20232E" fontSize="18px" fontWeight="600" mb="10px">
                   {`- ${product.productName} ${product.quantity}${
                     INGREDIENTS_UNIT_TYPE[product.type]?.name
                   }`}
@@ -251,68 +251,76 @@ const PostDetail = () => {
               );
             })}
             <Box
-              fontSize="15px"
+              sx={{ img: { w: '100%' }, h1: { fontSize: '2em' }, h2: { fontSize: '1em' } }}
+              fontSize="20px"
               color="#7A7A7A"
               m="25px 0px"
               p="25px 0px"
               dangerouslySetInnerHTML={{ __html: postDetail?.content }}
             />
-            <Flex gap="50px" align="center">
-              {postDetail && (
-                <>
-                  <Box fontSize="20" fontWeight="bold">
-                    {postDetail?.like} Likes
-                  </Box>
-                  <Flex gap="40px" cursor="pointer">
-                    {like ? (
-                      <AiFillLike fontSize="4rem" onClick={() => handleLike(!like)} />
-                    ) : (
-                      <AiOutlineLike fontSize="4rem" onClick={() => handleLike(!like)} />
-                    )}
-                  </Flex>
-                </>
-              )}
-              <Button
-                onClick={() => {
-                  setSave(!save);
-                  setClick(true);
-                }}
-              >
-                {save ? 'Unsave' : 'Save'}
-              </Button>
-              {/* <PopperMenu trigger="click" renderCustomContent={renderCustomContent}>
+          </Box>
+          <Flex
+            gap="50px"
+            align="center"
+            p="3rem 4rem"
+            borderRight="1px"
+            borderLeft="1px"
+            borderColor="#eee"
+          >
+            {postDetail && (
+              <>
+                <Box fontSize="20" fontWeight="bold">
+                  {postDetail?.like} Likes
+                </Box>
+                <Flex gap="40px" cursor="pointer">
+                  {like ? (
+                    <AiFillLike fontSize="4rem" onClick={() => handleLike(!like)} />
+                  ) : (
+                    <AiOutlineLike fontSize="4rem" onClick={() => handleLike(!like)} />
+                  )}
+                </Flex>
+              </>
+            )}
+            <Button
+              onClick={() => {
+                setSave(!save);
+                setClick(true);
+              }}
+            >
+              {save ? 'Unsave' : 'Save'}
+            </Button>
+            {/* <PopperMenu trigger="click" renderCustomContent={renderCustomContent}>
                 <div>HELLO</div>
               </PopperMenu> */}
-              <Popover>
-                <PopoverTrigger>
-                  <Button>Report</Button>
-                </PopoverTrigger>
+            <Popover>
+              <PopoverTrigger>
+                <Button>Report</Button>
+              </PopoverTrigger>
 
-                <PopoverContent w="28rem">
-                  <PopoverArrow />
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <RadioGroup value={value} onChange={setValue}>
-                      <Flex direction="column" gap="2rem">
-                        <Flex fontWeight="800" direction="row" gap="2rem">
-                          <Radio w="4.5rem" value="0">
-                            <Text>Spam</Text>
-                          </Radio>
-                          <Radio w="8rem" value="1">
-                            <Text>Not Suitable Language</Text>
-                          </Radio>
-                          <Radio w="8rem" value="2">
-                            <Text>Not Suitable Type</Text>
-                          </Radio>
-                        </Flex>
-                        <Button onClick={() => setReport(!report)}>Submit</Button>
+              <PopoverContent w="28rem">
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverBody>
+                  <RadioGroup value={value} onChange={setValue}>
+                    <Flex direction="column" gap="2rem">
+                      <Flex fontWeight="800" direction="row" gap="2rem">
+                        <Radio w="4.5rem" value="0">
+                          <Text>Spam</Text>
+                        </Radio>
+                        <Radio w="8rem" value="1">
+                          <Text>Not Suitable Language</Text>
+                        </Radio>
+                        <Radio w="8rem" value="2">
+                          <Text>Not Suitable Type</Text>
+                        </Radio>
                       </Flex>
-                    </RadioGroup>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            </Flex>
-          </Box>
+                      <Button onClick={() => setReport(!report)}>Submit</Button>
+                    </Flex>
+                  </RadioGroup>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </Flex>
           <Comment postDetail={postDetail} fetchData={fetchData} />
         </GridItem>
 

@@ -64,6 +64,7 @@ const PostContent = ({
           cursor="pointer"
           noOfLines={2}
           _hover={{ textDecoration: 'underline' }}
+          textTransform="uppercase"
         >
           {title}
         </Text>

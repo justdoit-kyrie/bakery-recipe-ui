@@ -8,39 +8,17 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorMode,
 } from '@chakra-ui/react';
-import { FacebookAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { BsChevronLeft } from 'react-icons/bs';
-import { FcGoogle } from 'react-icons/fc';
-import { toast } from 'react-toastify';
-import firebase from '~/app/firebase';
 import { Loading } from '~/components';
-import { FacebookLogo } from '~/components/Icons';
-import {
-  AUTHENTICATE_FORM_TYPE,
-  COLOR_MODE_TYPE,
-  OTHERS_LOGIN,
-  OTHERS_LOGIN_ERROR_CODE,
-} from '~/constants';
+import { AUTHENTICATE_FORM_TYPE } from '~/constants';
 import FormForgotPassword from './components/FormForgotPassword';
 import FormGetInfo from './components/FormGetInfo';
 import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 
-const MOCK_DATA = {
-  others_login: [
-    { icon: FcGoogle, label: 'Continue with Google', provider: OTHERS_LOGIN.google },
-    { icon: FacebookLogo, label: 'Continue with Facebook', provider: OTHERS_LOGIN.facebook },
-  ],
-};
-
 const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () => {} }) => {
-  const { others_login } = MOCK_DATA;
-  const { colorMode } = useColorMode();
-
   const initialRef = useRef(null);
   const [historyForm, setHistoryForm] = useState([AUTHENTICATE_FORM_TYPE.login]);
   const [isLevel, setIsLevel] = useState(false);
@@ -101,77 +79,6 @@ const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () =
     }
   };
 
-  const renderOthersLogin = () =>
-    others_login.map((item, idx) => {
-      const Icon = item.icon;
-      return (
-        <Box
-          as={motion.div}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.95 }}
-          className="others-item"
-          key={idx}
-          bg="transparent"
-          minH="4.4rem"
-          p="0 1.2rem"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          border={`1px solid ${
-            colorMode === COLOR_MODE_TYPE.light
-              ? 'rgba(22, 24, 35, 0.12)'
-              : 'rgba(233, 234,216, 0.5)'
-          }`}
-          cursor="pointer"
-          position="relative"
-          fontSize="1.5rem"
-          fontWeight="600"
-          sx={{
-            '& + &': {
-              mt: '1.6rem',
-            },
-          }}
-          onClick={() => handleOthersLogin(item.provider)}
-        >
-          <Text position="absolute" top="50%" transform="translateY(-50%)" left="1.2rem">
-            <Icon fontSize="2rem" width="2rem" height="2rem" />
-          </Text>
-          <Text as="span" lineHeight="1">
-            {item.label}
-          </Text>
-        </Box>
-      );
-    });
-
-  const handleOthersLogin = (provider) => {
-    let AuthProvider = GoogleAuthProvider;
-    switch (provider) {
-      case OTHERS_LOGIN.facebook:
-        AuthProvider = FacebookAuthProvider;
-        break;
-    }
-    setLoading(true);
-    signInWithPopup(firebase.getAuth(), new AuthProvider())
-      .then((result) => {
-        const userInfo = result.user;
-        // call API to handle register this userInfo and get token
-        console.log({ userInfo });
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        switch (error.code) {
-          case OTHERS_LOGIN_ERROR_CODE.popup_close: {
-            toast.error('Pop up close during processing !');
-            break;
-          }
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-        onClose();
-      });
-  };
-
   const handleBackForm = () => setHistoryForm((prev) => prev.slice(0, prev.length - 1));
 
   return (
@@ -224,45 +131,6 @@ const AuthenticateModal = ({ isShow, isOpen, onClose = () => {}, onCancel = () =
             }}
           >
             {renderForm()}
-
-            {/* others Login */}
-            {type !== AUTHENTICATE_FORM_TYPE.getInfo && (
-              <>
-                <Box
-                  w="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  m="2rem 0"
-                  position="relative"
-                >
-                  <Text
-                    as="span"
-                    textTransform="uppercase"
-                    lineHeight="1"
-                    bg={colorMode === COLOR_MODE_TYPE.light ? 'white' : 'gray.700'}
-                    p="0 1rem"
-                    fontWeight="600"
-                  >
-                    or
-                  </Text>
-                  <Text
-                    as="span"
-                    w="100%"
-                    h="1px"
-                    backgroundColor={
-                      colorMode === COLOR_MODE_TYPE.light
-                        ? 'rgba(22, 24, 35, 0.12)'
-                        : 'darkTextColor.400'
-                    }
-                    position="absolute"
-                    zIndex={-1}
-                  ></Text>
-                </Box>
-
-                {renderOthersLogin()}
-              </>
-            )}
           </Box>
         </ModalBody>
 

@@ -38,6 +38,7 @@ import LayoutButton from './components/LayoutButton';
 import Sort from './components/Sort';
 import './Profile.scss';
 import { Wrapper } from './styles';
+import { toast } from 'react-toastify';
 
 const MOCK_DATA = {
   min_width: 230,
@@ -242,7 +243,19 @@ const Profile = () => {
     }
   }, [type, displayType, page, rows]);
 
-  const handleDeletePost = (post) => console.log({ post });
+  const handleDeletePost = async (post) => {
+    try {
+      const { code, message } = await axiosInstance.delete(
+        API_PATH.posts.getDetail.replace(':id', post.id)
+      );
+      if (+code === API_CODE.success) {
+        toast.success({ message });
+        setList((prev) => prev.filter((v) => v.id !== post.id));
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   const renderContextMenu = ({ id, data }) => {
     return (
