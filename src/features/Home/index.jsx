@@ -204,6 +204,8 @@ const Home = () => {
         })}
       </Grid>
 
+      {console.log(123)}
+
       {popularTotalRecords.current > POST_MAX_LENGTH && (
         <Box
           mt={margin}
